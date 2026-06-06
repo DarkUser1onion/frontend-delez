@@ -7,7 +7,6 @@ import {
   RotateCcw,
   Home,
   Maximize2,
-  Minimize2,
   Plus,
   Settings,
 } from "lucide-react";

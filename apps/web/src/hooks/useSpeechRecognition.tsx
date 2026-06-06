@@ -71,7 +71,7 @@ export const useSpeechRecognition = () => {
       setIsSupported(false);
     }
     return () => { recognitionRef.current?.abort(); };
-  }, []);
+  }, [isLinux]);
 
   const startLinuxRecording = async () => {
     if (listeningRef.current) return;
@@ -99,13 +99,13 @@ export const useSpeechRecognition = () => {
     if (recognitionRef.current) {
       if (listeningRef.current) return;
       setTranscript('');
-      try { recognitionRef.current.start(); } catch {}
+      try { recognitionRef.current.start(); } catch { /* already started */ void 0; }
     }
   };
 
   const stopListening = () => {
     if (recognitionRef.current) {
-      try { recognitionRef.current.stop(); } catch {}
+      try { recognitionRef.current.stop(); } catch { /* already stopped */ void 0; }
     }
   };
 
