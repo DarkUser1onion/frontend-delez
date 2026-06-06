@@ -29,6 +29,15 @@ docker-down:
 logs:
 	docker compose logs -f
 
+appimage:
+	./build-appimage.sh
+
+install:
+	./install-debug.sh
+
+uninstall:
+	./uninstall-debug.sh
+
 clean:
 	@echo "Cleaning build artifacts..."
 	rm -rf node_modules/.vite
