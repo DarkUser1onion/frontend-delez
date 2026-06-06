@@ -39,7 +39,6 @@ export function NavigationBar() {
     <div data-tauri-drag-region style={{
       display: "flex", alignItems: "center", justifyContent: "center",
       height: "30px", background: "transparent", paddingLeft: "6px", paddingRight: "6px",
-      userSelect: "none", WebkitAppRegion: "drag", appRegion: "drag",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
         <IconButton onClick={goBack} disabled={!canGoBack} title="Назад"><ChevronLeft size={15} /></IconButton>
@@ -70,7 +69,6 @@ function IconButton({ onClick, disabled, title, children, isWindowControl, isClo
         color: isWindowControl ? "#c6d4df" : "#a3b8cc",
         cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.3 : 1,
         transition: "all 0.12s", outline: "none",
-        WebkitAppRegion: "no-drag", appRegion: "no-drag", fontSize: "12px",
       }}
       onMouseEnter={(e) => {
         if (!disabled) {

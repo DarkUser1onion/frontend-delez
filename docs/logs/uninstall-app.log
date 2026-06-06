@@ -1,0 +1,8 @@
+~/f/a/web ❯❯❯ ./uninstall-debug.sh                                                      main
+=== Удаление Delёz (debug-версия) ===
+[sudo] password for user:
+Удалить модель whisper из кэша (~/.cache/delez/whisper)? [y/N] y
+Модель whisper удалена.
+
+Удаление завершено.
+~/f/a/web ❯❯❯                                                                           main
