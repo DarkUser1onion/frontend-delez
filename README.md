@@ -745,7 +745,7 @@ cd ./apps/web
 docker compose up --build
 ```
 Откройте http://localhost:8080 в браузере.
-```
+
 
 ### Backend (API)
 
