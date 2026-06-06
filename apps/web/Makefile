@@ -1,5 +1,9 @@
 .PHONY: setup run check format docker-build docker-up docker-down logs clean
 
+help: 
+	@echo "Available commands:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
 setup:
 	@echo "Installing dependencies..."
 	npm install
