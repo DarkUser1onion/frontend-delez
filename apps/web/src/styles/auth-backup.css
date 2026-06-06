@@ -1,12 +1,12 @@
 /* Backup of current auth.css styles */
 /* Auth Pages Styles */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap");
 
 @font-face {
-  font-family: 'DM Mono';
-  src: url('../assets/DMMono-Light.ttf') format('truetype');
+  font-family: "DM Mono";
+  src: url("../assets/DMMono-Light.ttf") format("truetype");
   font-weight: 300;
   font-style: normal;
 }
@@ -16,7 +16,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'DM Mono', 'Poppins', monospace;
+  font-family: "DM Mono", "Poppins", monospace;
 }
 
 .auth-body {
@@ -50,7 +50,9 @@
   background: transparent;
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.4), inset 0 0 16px rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 8px 24px rgba(255, 255, 255, 0.4),
+    inset 0 0 16px rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
   transform-style: preserve-3d;
   animation: fadeInSmooth 1s ease-out forwards;
@@ -72,7 +74,7 @@
   color: #ffffff;
   text-align: center;
   margin-bottom: 10px;
-  font-family: 'DM Mono', 'Cinzel', serif;
+  font-family: "DM Mono", "Cinzel", serif;
   font-weight: 700;
   letter-spacing: 2px;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
@@ -124,7 +126,7 @@
   transition: 0.3s;
   z-index: 1;
   position: relative;
-  font-family: 'DM Mono', 'Rajdhani', monospace;
+  font-family: "DM Mono", "Rajdhani", monospace;
 }
 
 .input-field:focus {
@@ -137,7 +139,14 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), #ffffff, rgba(255, 255, 255, 0.5), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    #ffffff,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
   transition: 0.4s;
   z-index: 0;
 }
@@ -197,7 +206,8 @@
   accent-color: #ffffff;
 }
 
-.remember label, .forgot {
+.remember label,
+.forgot {
   color: rgba(255, 255, 255, 0.9);
   font-size: 13px;
 }
@@ -214,7 +224,7 @@
 }
 
 .forgot::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 0;
   height: 1px;
@@ -244,7 +254,7 @@
   position: relative;
   overflow: hidden;
   transform: translateZ(20px);
-  font-family: 'DM Mono', 'Cinzel', serif;
+  font-family: "DM Mono", "Cinzel", serif;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -270,7 +280,14 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: 0.5s;
 }
 
@@ -280,7 +297,9 @@
 
 .auth-btn:hover {
   background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 0 20px rgba(255, 255, 255, 0.5),
+    inset 0 0 10px rgba(255, 255, 255, 0.3);
   transform: translateZ(20px) scale(1.05);
 }
 
@@ -320,7 +339,7 @@
 }
 
 .auth-link a::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 0;
   height: 1px;
@@ -417,11 +436,11 @@
     max-width: 320px;
     padding: 15px;
   }
-  
+
   .form-box {
     padding: 30px 25px;
   }
-  
+
   .auth-title {
     font-size: 18px;
     letter-spacing: 1px;
@@ -434,11 +453,11 @@
     max-width: 300px;
     padding: 10px;
   }
-  
+
   .form-box {
     padding: 25px 20px;
   }
-  
+
   .auth-title {
     font-size: 16px;
     letter-spacing: 0.5px;

@@ -36,11 +36,11 @@ import { getContentString } from "./utils";
 import type { ThreadContext } from "./context-banner";
 
 const SPACES = [
-  { key: "entry",      label: "События" },
-  { key: "goal",       label: "Цели/Желания" },
+  { key: "entry", label: "События" },
+  { key: "goal", label: "Цели/Желания" },
   { key: "experiment", label: "Эксперименты" },
-  { key: "analysis",   label: "Анализ" },
-  { key: "general",    label: "Чатики" },
+  { key: "analysis", label: "Анализ" },
+  { key: "general", label: "Чатики" },
 ] as const;
 
 // ─── Delete Confirm Dialog ────────────────────────────────────────────────────
@@ -79,7 +79,9 @@ function DeleteConfirmDialog({
   useEffect(() => {
     const el = dialogRef.current;
     if (!el) return;
-    const handleClick = (e: MouseEvent) => { if (e.target === el) onClose(); };
+    const handleClick = (e: MouseEvent) => {
+      if (e.target === el) onClose();
+    };
     el.addEventListener("click", handleClick);
     return () => el.removeEventListener("click", handleClick);
   }, [onClose]);
@@ -97,7 +99,9 @@ function DeleteConfirmDialog({
           </div>
           <div>
             <p className="text-white font-medium text-base">Удалить чат?</p>
-            <p className="text-white/50 text-sm mt-1">Это действие необратимо.</p>
+            <p className="text-white/50 text-sm mt-1">
+              Это действие необратимо.
+            </p>
           </div>
         </div>
         <div className="flex gap-2 mt-1">
@@ -145,13 +149,21 @@ function downloadBlob(filename: string, blob: Blob) {
 }
 
 function escapeHtml(s: string): string {
-  return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 // ─── PDF export via browser print ────────────────────────────────────────────
 
 function exportToPdf(messages: Message[], title: string, _threadId: string) {
-  const date = new Date().toLocaleDateString("ru-RU", { year: "numeric", month: "long", day: "numeric" });
+  const date = new Date().toLocaleDateString("ru-RU", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   const rows = messages
     .filter((m) => m.type === "human" || m.type === "ai")
@@ -193,7 +205,8 @@ function exportToPdf(messages: Message[], title: string, _threadId: string) {
 </html>`;
 
   const iframe = document.createElement("iframe");
-  iframe.style.cssText = "position:absolute;top:-9999px;left:-9999px;width:1px;height:1px;border:none;";
+  iframe.style.cssText =
+    "position:absolute;top:-9999px;left:-9999px;width:1px;height:1px;border:none;";
   iframe.srcdoc = html;
   document.body.appendChild(iframe);
 
@@ -206,13 +219,30 @@ function exportToPdf(messages: Message[], title: string, _threadId: string) {
 
 // ─── DOCX export ─────────────────────────────────────────────────────────────
 
-async function exportToDocx(messages: Message[], title: string, threadId: string) {
-  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx");
+async function exportToDocx(
+  messages: Message[],
+  title: string,
+  threadId: string,
+) {
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel } =
+    await import("docx");
 
   const children = [
-    new Paragraph({ text: title || "Экспорт чата", heading: HeadingLevel.HEADING_1 }),
     new Paragraph({
-      children: [new TextRun({ text: new Date().toLocaleDateString("ru-RU", { year: "numeric", month: "long", day: "numeric" }), color: "888888" })],
+      text: title || "Экспорт чата",
+      heading: HeadingLevel.HEADING_1,
+    }),
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: new Date().toLocaleDateString("ru-RU", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+          color: "888888",
+        }),
+      ],
     }),
     new Paragraph({ text: "" }),
   ];
@@ -252,7 +282,8 @@ export function ThreadMoreMenu({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { favoriteIds, toggleFavorite, threads, updateThreadCategory } = useThreads();
+  const { favoriteIds, toggleFavorite, threads, updateThreadCategory } =
+    useThreads();
 
   const isFavorite = useMemo(() => {
     if (!threadId) return false;
@@ -262,7 +293,10 @@ export function ThreadMoreMenu({
   const currentCategory = useMemo(() => {
     if (!threadId) return "general";
     const t = threads.find((t) => t.thread_id === threadId);
-    return (t?.metadata as Record<string, unknown> | undefined)?.category as string ?? "general";
+    return (
+      ((t?.metadata as Record<string, unknown> | undefined)
+        ?.category as string) ?? "general"
+    );
   }, [threadId, threads]);
 
   const headerTitle = useMemo(() => {
@@ -276,27 +310,44 @@ export function ThreadMoreMenu({
   }, [threadContext, messages]);
 
   const handleFavorite = useCallback(() => {
-    if (!threadId) { toast.message("Нет активного чата"); return; }
+    if (!threadId) {
+      toast.message("Нет активного чата");
+      return;
+    }
     toggleFavorite(threadId);
-    toast.success(isFavorite ? "Убрано из избранного" : "Добавлено в избранное");
+    toast.success(
+      isFavorite ? "Убрано из избранного" : "Добавлено в избранное",
+    );
     setOpen(false);
   }, [threadId, isFavorite, toggleFavorite]);
 
-  const handleSelectSpace = useCallback(async (key: string) => {
-    if (!threadId) { toast.message("Нет активного чата"); return; }
-    try {
-      await updateThreadCategory(threadId, key);
-      toast.success("Пространство обновлено");
-    } catch {
-      toast.error("Не удалось обновить пространство");
-    }
-    setOpen(false);
-  }, [threadId, updateThreadCategory]);
+  const handleSelectSpace = useCallback(
+    async (key: string) => {
+      if (!threadId) {
+        toast.message("Нет активного чата");
+        return;
+      }
+      try {
+        await updateThreadCategory(threadId, key);
+        toast.success("Пространство обновлено");
+      } catch {
+        toast.error("Не удалось обновить пространство");
+      }
+      setOpen(false);
+    },
+    [threadId, updateThreadCategory],
+  );
 
   const handleExportMd = useCallback(() => {
-    if (!threadId) { toast.message("Нет активного чата"); return; }
+    if (!threadId) {
+      toast.message("Нет активного чата");
+      return;
+    }
     const md = buildMarkdownExport(messages);
-    if (!md) { toast.message("Нет сообщений для экспорта"); return; }
+    if (!md) {
+      toast.message("Нет сообщений для экспорта");
+      return;
+    }
     const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
     downloadBlob(`delez-${threadId.slice(0, 8)}.md`, blob);
     toast.success("Файл MarkDown сохранён");
@@ -304,8 +355,14 @@ export function ThreadMoreMenu({
   }, [threadId, messages]);
 
   const handleExportPdf = useCallback(() => {
-    if (!threadId) { toast.message("Нет активного чата"); return; }
-    if (!messages.length) { toast.message("Нет сообщений для экспорта"); return; }
+    if (!threadId) {
+      toast.message("Нет активного чата");
+      return;
+    }
+    if (!messages.length) {
+      toast.message("Нет сообщений для экспорта");
+      return;
+    }
     try {
       exportToPdf(messages, headerTitle, threadId);
       toast.success("Открыт диалог печати PDF");
@@ -316,8 +373,14 @@ export function ThreadMoreMenu({
   }, [threadId, messages, headerTitle]);
 
   const handleExportDocx = useCallback(async () => {
-    if (!threadId) { toast.message("Нет активного чата"); return; }
-    if (!messages.length) { toast.message("Нет сообщений для экспорта"); return; }
+    if (!threadId) {
+      toast.message("Нет активного чата");
+      return;
+    }
+    if (!messages.length) {
+      toast.message("Нет сообщений для экспорта");
+      return;
+    }
     try {
       await exportToDocx(messages, headerTitle, threadId);
       toast.success("DOCX сохранён");
@@ -328,7 +391,10 @@ export function ThreadMoreMenu({
   }, [threadId, messages, headerTitle]);
 
   const handleDeleteClick = useCallback(() => {
-    if (!threadId) { toast.message("Нет активного чата"); return; }
+    if (!threadId) {
+      toast.message("Нет активного чата");
+      return;
+    }
     setOpen(false);
     setDeleteDialogOpen(true);
   }, [threadId]);
@@ -382,9 +448,13 @@ export function ThreadMoreMenu({
           className="min-w-[280px] p-0 py-1 border border-white/20 bg-[#000019]/95 text-white shadow-2xl backdrop-blur-md"
         >
           <div className="px-3 pt-2 pb-2 border-b border-white/20">
-            <p className="font-medium text-[15px] leading-snug text-white">{headerTitle}</p>
+            <p className="font-medium text-[15px] leading-snug text-white">
+              {headerTitle}
+            </p>
             <p className="text-xs text-white/45 font-light mt-1">
-              {threadId ? `Чат · ${threadId.slice(0, 12)}…` : "Нет активного чата"}
+              {threadId
+                ? `Чат · ${threadId.slice(0, 12)}…`
+                : "Нет активного чата"}
             </p>
           </div>
           <div className="py-1 px-1">
@@ -393,10 +463,11 @@ export function ThreadMoreMenu({
               onClick={handleFavorite}
               className="gap-3 hover:bg-white/10 focus:bg-white/10"
             >
-              {isFavorite
-                ? <BookmarkCheck className="size-4 shrink-0 text-yellow-400 fill-yellow-400" />
-                : <Bookmark className="size-4 shrink-0 text-white/80" />
-              }
+              {isFavorite ? (
+                <BookmarkCheck className="size-4 shrink-0 text-yellow-400 fill-yellow-400" />
+              ) : (
+                <Bookmark className="size-4 shrink-0 text-white/80" />
+              )}
               {isFavorite ? "Убрать из избранного" : "Добавить в избранное"}
             </DropdownMenuItem>
 
@@ -413,10 +484,11 @@ export function ThreadMoreMenu({
                       onClick={() => handleSelectSpace(s.key)}
                       className="gap-3"
                     >
-                      {currentCategory === s.key
-                        ? <Check className="size-4 shrink-0 text-white/80" />
-                        : <span className="size-4 shrink-0" />
-                      }
+                      {currentCategory === s.key ? (
+                        <Check className="size-4 shrink-0 text-white/80" />
+                      ) : (
+                        <span className="size-4 shrink-0" />
+                      )}
                       {s.label}
                     </DropdownMenuItem>
                   ))}

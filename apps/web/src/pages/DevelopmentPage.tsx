@@ -48,9 +48,24 @@ function loadHabits(): HabitItem[] {
     const raw = localStorage.getItem(HABITS_STORAGE_KEY);
     if (!raw) {
       return [
-        { id: "habit-1", title: "10 минут рефлексии", doneToday: false, streak: 0 },
-        { id: "habit-2", title: "Фокус-сессия 60 минут", doneToday: false, streak: 0 },
-        { id: "habit-3", title: "Физическая активность", doneToday: false, streak: 0 },
+        {
+          id: "habit-1",
+          title: "10 минут рефлексии",
+          doneToday: false,
+          streak: 0,
+        },
+        {
+          id: "habit-2",
+          title: "Фокус-сессия 60 минут",
+          doneToday: false,
+          streak: 0,
+        },
+        {
+          id: "habit-3",
+          title: "Физическая активность",
+          doneToday: false,
+          streak: 0,
+        },
       ];
     }
     const parsed = JSON.parse(raw) as HabitItem[];
@@ -109,7 +124,9 @@ export default function DevelopmentPage() {
   const [habits, setHabits] = useState<HabitItem[]>([]);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [taskTitle, setTaskTitle] = useState<string>("");
-  const [taskDate, setTaskDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
+  const [taskDate, setTaskDate] = useState<string>(() =>
+    new Date().toISOString().slice(0, 10),
+  );
   const [taskGoalId, setTaskGoalId] = useState<string>("");
   const [plannerCells, setPlannerCells] = useState<PlannerCell[]>([]);
 
@@ -144,7 +161,9 @@ export default function DevelopmentPage() {
 
   const smartProgress = useMemo(() => {
     const total = goals.length;
-    const completed = goals.filter((goal) => goal.status === "completed").length;
+    const completed = goals.filter(
+      (goal) => goal.status === "completed",
+    ).length;
     const active = goals.filter((goal) => goal.status === "active").length;
     const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
     return { total, completed, active, percent };
@@ -154,7 +173,10 @@ export default function DevelopmentPage() {
     const total = habits.length;
     const done = habits.filter((habit) => habit.doneToday).length;
     const completion = total > 0 ? Math.round((done / total) * 100) : 0;
-    const bestStreak = habits.reduce((max, habit) => Math.max(max, habit.streak), 0);
+    const bestStreak = habits.reduce(
+      (max, habit) => Math.max(max, habit.streak),
+      0,
+    );
     return { total, done, completion, bestStreak };
   }, [habits]);
 
@@ -163,11 +185,16 @@ export default function DevelopmentPage() {
       achievedGoals: smartProgress.completed,
       activeGoals: smartProgress.active,
       habitsConsistency: habitsStats.completion,
-      strongestHabit: habits
-        .slice()
-        .sort((a, b) => b.streak - a.streak)[0]?.title ?? "Пока нет данных",
+      strongestHabit:
+        habits.slice().sort((a, b) => b.streak - a.streak)[0]?.title ??
+        "Пока нет данных",
     };
-  }, [habits, habitsStats.completion, smartProgress.active, smartProgress.completed]);
+  }, [
+    habits,
+    habitsStats.completion,
+    smartProgress.active,
+    smartProgress.completed,
+  ]);
 
   const toggleHabit = (habitId: string): void => {
     const next = habits.map((habit) => {
@@ -176,7 +203,9 @@ export default function DevelopmentPage() {
       }
 
       const nextDone = !habit.doneToday;
-      const nextStreak = nextDone ? habit.streak + 1 : Math.max(0, habit.streak - 1);
+      const nextStreak = nextDone
+        ? habit.streak + 1
+        : Math.max(0, habit.streak - 1);
       return {
         ...habit,
         doneToday: nextDone,
@@ -223,7 +252,11 @@ export default function DevelopmentPage() {
   if (loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[#000019]">
-        <RadialPulseLoader text="Загрузка раздела Развитие..." size={120} color="#ffffff" />
+        <RadialPulseLoader
+          text="Загрузка раздела Развитие..."
+          size={120}
+          color="#ffffff"
+        />
       </div>
     );
   }
@@ -232,9 +265,16 @@ export default function DevelopmentPage() {
     <div className="min-h-full bg-[#000019] text-white">
       <div className="flex items-start justify-between px-8 pt-8 pb-6">
         <div>
-          <Breadcrumbs crumbs={[{ label: "Главная", to: "/navigation" }, { label: "Развитие" }]} />
+          <Breadcrumbs
+            crumbs={[
+              { label: "Главная", to: "/navigation" },
+              { label: "Развитие" },
+            ]}
+          />
           <h1 className="mt-2 mb-1 text-4xl font-bold">Развитие</h1>
-          <p className="text-sm text-gray-500">Цели, привычки и годовые итоги</p>
+          <p className="text-sm text-gray-500">
+            Цели, привычки и годовые итоги
+          </p>
         </div>
         <Link
           to="/goals"
@@ -269,8 +309,12 @@ export default function DevelopmentPage() {
                   onClick={() => setActiveTab(tab.id as DevelopmentTab)}
                   className="flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm transition-all"
                   style={{
-                    border: isActive ? "1px solid rgba(255,255,255,0.25)" : "1px solid transparent",
-                    background: isActive ? "rgba(255,255,255,0.10)" : "transparent",
+                    border: isActive
+                      ? "1px solid rgba(255,255,255,0.25)"
+                      : "1px solid transparent",
+                    background: isActive
+                      ? "rgba(255,255,255,0.10)"
+                      : "transparent",
                     color: isActive ? "#fff" : "rgba(255,255,255,0.55)",
                   }}
                 >
@@ -295,7 +339,10 @@ export default function DevelopmentPage() {
               <div
                 key={item.label}
                 className="rounded-2xl border p-5"
-                style={{ borderColor: "rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.03)" }}
+                style={{
+                  borderColor: "rgba(255,255,255,0.10)",
+                  background: "rgba(255,255,255,0.03)",
+                }}
               >
                 <p className="text-xs text-gray-500">{item.label}</p>
                 <p className="mt-3 text-3xl font-bold">{item.value}</p>
@@ -303,10 +350,14 @@ export default function DevelopmentPage() {
             ))}
             <div
               className="rounded-2xl border p-5 lg:col-span-4"
-              style={{ borderColor: "rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.03)" }}
+              style={{
+                borderColor: "rgba(255,255,255,0.10)",
+                background: "rgba(255,255,255,0.03)",
+              }}
             >
               <p className="text-sm text-gray-300">
-                Мотивация дня: маленький стабильный шаг каждый день создаёт большую траекторию через год.
+                Мотивация дня: маленький стабильный шаг каждый день создаёт
+                большую траекторию через год.
               </p>
             </div>
           </div>
@@ -318,13 +369,22 @@ export default function DevelopmentPage() {
               {[
                 { label: "Всего привычек", value: String(habitsStats.total) },
                 { label: "Отмечено сегодня", value: String(habitsStats.done) },
-                { label: "Выполнение сегодня", value: `${habitsStats.completion}%` },
-                { label: "Лучшая серия", value: `${habitsStats.bestStreak} дн.` },
+                {
+                  label: "Выполнение сегодня",
+                  value: `${habitsStats.completion}%`,
+                },
+                {
+                  label: "Лучшая серия",
+                  value: `${habitsStats.bestStreak} дн.`,
+                },
               ].map((item) => (
                 <div
                   key={item.label}
                   className="rounded-2xl border p-5"
-                  style={{ borderColor: "rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.03)" }}
+                  style={{
+                    borderColor: "rgba(255,255,255,0.10)",
+                    background: "rgba(255,255,255,0.03)",
+                  }}
                 >
                   <p className="text-xs text-gray-500">{item.label}</p>
                   <p className="mt-3 text-3xl font-bold">{item.value}</p>
@@ -340,19 +400,33 @@ export default function DevelopmentPage() {
                   className="rounded-2xl border p-4 text-left transition-all hover:scale-[1.01]"
                   style={{
                     borderColor: "rgba(255,255,255,0.10)",
-                    background: habit.doneToday ? "rgba(52,211,153,0.15)" : "rgba(255,255,255,0.03)",
+                    background: habit.doneToday
+                      ? "rgba(52,211,153,0.15)"
+                      : "rgba(255,255,255,0.03)",
                   }}
                 >
                   <p className="text-base font-semibold">{habit.title}</p>
-                  <p className="mt-2 text-sm text-gray-400">Серия: {habit.streak} дн.</p>
-                  <p className="mt-1 text-xs" style={{ color: habit.doneToday ? "#34d399" : "rgba(255,255,255,0.5)" }}>
-                    {habit.doneToday ? "Отмечено на сегодня" : "Нажми, чтобы отметить"}
+                  <p className="mt-2 text-sm text-gray-400">
+                    Серия: {habit.streak} дн.
+                  </p>
+                  <p
+                    className="mt-1 text-xs"
+                    style={{
+                      color: habit.doneToday
+                        ? "#34d399"
+                        : "rgba(255,255,255,0.5)",
+                    }}
+                  >
+                    {habit.doneToday
+                      ? "Отмечено на сегодня"
+                      : "Нажми, чтобы отметить"}
                   </p>
                 </button>
               ))}
             </div>
             <p className="text-sm text-gray-300">
-              Мотивация дня: повторяемое действие важнее разового идеального действия.
+              Мотивация дня: повторяемое действие важнее разового идеального
+              действия.
             </p>
           </div>
         ) : null}
@@ -361,7 +435,9 @@ export default function DevelopmentPage() {
           <div className="space-y-4">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
               <h2 className="text-xl font-semibold">Календарь задач</h2>
-              <p className="mt-2 text-sm text-gray-400">Добавляй задачи по датам и связывай их с целями SMART.</p>
+              <p className="mt-2 text-sm text-gray-400">
+                Добавляй задачи по датам и связывай их с целями SMART.
+              </p>
               <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-[1fr_180px_220px_auto]">
                 <input
                   value={taskTitle}
@@ -406,19 +482,34 @@ export default function DevelopmentPage() {
               <div className="grid grid-cols-7 gap-2">
                 {plannerCells.map((cell) => {
                   if (cell.day == null) {
-                    return <div key={cell.dateKey} className="min-h-[96px] rounded-xl border border-transparent" />;
+                    return (
+                      <div
+                        key={cell.dateKey}
+                        className="min-h-[96px] rounded-xl border border-transparent"
+                      />
+                    );
                   }
                   const dayTasks = tasksByDate.get(cell.dateKey) ?? [];
                   return (
-                    <div key={cell.dateKey} className="min-h-[96px] rounded-xl border border-white/10 bg-white/[0.02] p-2">
+                    <div
+                      key={cell.dateKey}
+                      className="min-h-[96px] rounded-xl border border-white/10 bg-white/[0.02] p-2"
+                    >
                       <p className="text-xs text-gray-300">{cell.day}</p>
                       <div className="mt-1 space-y-1">
                         {dayTasks.slice(0, 2).map((task) => (
-                          <div key={task.id} className="rounded-md border border-white/10 bg-black/20 px-2 py-1 text-[10px] text-gray-200">
+                          <div
+                            key={task.id}
+                            className="rounded-md border border-white/10 bg-black/20 px-2 py-1 text-[10px] text-gray-200"
+                          >
                             {task.title}
                           </div>
                         ))}
-                        {dayTasks.length > 2 ? <p className="text-[10px] text-gray-500">+{dayTasks.length - 2} ещё</p> : null}
+                        {dayTasks.length > 2 ? (
+                          <p className="text-[10px] text-gray-500">
+                            +{dayTasks.length - 2} ещё
+                          </p>
+                        ) : null}
                       </div>
                     </div>
                   );
@@ -432,11 +523,15 @@ export default function DevelopmentPage() {
                 {tasks.map((task) => {
                   const goal = goals.find((item) => item.id === task.goalId);
                   return (
-                    <div key={task.id} className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+                    <div
+                      key={task.id}
+                      className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2"
+                    >
                       <div>
                         <p className="text-sm">{task.title}</p>
                         <p className="text-xs text-gray-400">
-                          {task.date} {goal ? `• цель: ${goal.title}` : "• без цели"}
+                          {task.date}{" "}
+                          {goal ? `• цель: ${goal.title}` : "• без цели"}
                         </p>
                       </div>
                       <button
@@ -449,7 +544,9 @@ export default function DevelopmentPage() {
                     </div>
                   );
                 })}
-                {tasks.length === 0 ? <p className="text-sm text-gray-500">Задач пока нет.</p> : null}
+                {tasks.length === 0 ? (
+                  <p className="text-sm text-gray-500">Задач пока нет.</p>
+                ) : null}
               </div>
               <div className="mt-4">
                 <Link
@@ -467,15 +564,30 @@ export default function DevelopmentPage() {
         {activeTab === "year" ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {[
-              { label: "Достигнутые цели", value: String(yearlySummary.achievedGoals) },
-              { label: "Активные цели", value: String(yearlySummary.activeGoals) },
-              { label: "Стабильность привычек", value: `${yearlySummary.habitsConsistency}%` },
-              { label: "Сильнейшая привычка", value: yearlySummary.strongestHabit },
+              {
+                label: "Достигнутые цели",
+                value: String(yearlySummary.achievedGoals),
+              },
+              {
+                label: "Активные цели",
+                value: String(yearlySummary.activeGoals),
+              },
+              {
+                label: "Стабильность привычек",
+                value: `${yearlySummary.habitsConsistency}%`,
+              },
+              {
+                label: "Сильнейшая привычка",
+                value: yearlySummary.strongestHabit,
+              },
             ].map((item) => (
               <div
                 key={item.label}
                 className="rounded-2xl border p-5"
-                style={{ borderColor: "rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.03)" }}
+                style={{
+                  borderColor: "rgba(255,255,255,0.10)",
+                  background: "rgba(255,255,255,0.03)",
+                }}
               >
                 <p className="text-xs text-gray-500">{item.label}</p>
                 <p className="mt-3 text-2xl font-semibold">{item.value}</p>

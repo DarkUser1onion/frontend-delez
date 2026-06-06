@@ -37,7 +37,9 @@ function makeInterrupt(overrides: Partial<any> = {}) {
   };
 }
 
-function renderComponent(overrides: Partial<ComponentProps<typeof InboxItemInput>> = {}) {
+function renderComponent(
+  overrides: Partial<ComponentProps<typeof InboxItemInput>> = {},
+) {
   const setHumanResponse = vi.fn();
   const setSelectedSubmitType = vi.fn();
   const setHasEdited = vi.fn();
@@ -104,12 +106,20 @@ describe("InboxItemInput", () => {
   });
 
   it("updates response text and submits with ctrl+enter", () => {
-    const { setHumanResponse, setSelectedSubmitType, setHasAddedResponse, handleSubmit } =
-      renderComponent();
+    const {
+      setHumanResponse,
+      setSelectedSubmitType,
+      setHasAddedResponse,
+      handleSubmit,
+    } = renderComponent();
 
     const textarea = screen.getByDisplayValue("Initial reply");
     fireEvent.change(textarea, { target: { value: "Updated response" } });
-    fireEvent.keyDown(textarea, { key: "Enter", ctrlKey: true, preventDefault: vi.fn() });
+    fireEvent.keyDown(textarea, {
+      key: "Enter",
+      ctrlKey: true,
+      preventDefault: vi.fn(),
+    });
 
     expect(setSelectedSubmitType).toHaveBeenCalledWith("response");
     expect(setHasAddedResponse).toHaveBeenCalledWith(true);
@@ -119,16 +129,23 @@ describe("InboxItemInput", () => {
     expect(
       updater([
         { type: "response", args: "Initial reply" },
-        { type: "edit", args: { action: "send_email", args: { subject: "Hello", count: 2 } } },
+        {
+          type: "edit",
+          args: { action: "send_email", args: { subject: "Hello", count: 2 } },
+        },
       ]),
     ).toEqual([
       { type: "response", args: "Updated response" },
-      { type: "edit", args: { action: "send_email", args: { subject: "Hello", count: 2 } } },
+      {
+        type: "edit",
+        args: { action: "send_email", args: { subject: "Hello", count: 2 } },
+      },
     ]);
   });
 
   it("resets editable fields back to initial values and switches to accept", () => {
-    const { setHumanResponse, setSelectedSubmitType, setHasEdited } = renderComponent();
+    const { setHumanResponse, setSelectedSubmitType, setHasEdited } =
+      renderComponent();
 
     const subjectField = screen.getByDisplayValue("Hello");
     fireEvent.change(subjectField, { target: { value: "Changed subject" } });
@@ -144,7 +161,10 @@ describe("InboxItemInput", () => {
       resetUpdater([
         {
           type: "edit",
-          args: { action: "send_email", args: { subject: "Changed subject", count: "999" } },
+          args: {
+            action: "send_email",
+            args: { subject: "Changed subject", count: "999" },
+          },
           acceptAllowed: true,
           editsMade: true,
         },
@@ -161,7 +181,9 @@ describe("InboxItemInput", () => {
 
   it("shows accept card when only accept response is available", () => {
     renderComponent({
-      humanResponse: [{ type: "accept", args: null }] as HumanResponseWithEdits[],
+      humanResponse: [
+        { type: "accept", args: null },
+      ] as HumanResponseWithEdits[],
       supportsMultipleMethods: false,
       interruptValue: makeInterrupt({
         config: {
@@ -187,11 +209,7 @@ describe("InboxItemInput", () => {
     expect(screen.getByText("Running...")).toBeInTheDocument();
 
     rerender(
-      <InboxItemInput
-        {...props}
-        streaming={false}
-        streamFinished={true}
-      />,
+      <InboxItemInput {...props} streaming={false} streamFinished={true} />,
     );
 
     expect(

@@ -60,13 +60,21 @@ const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
 // Helper function to check if heading content is empty or whitespace-only
 const isEmptyHeading = (children: React.ReactNode): boolean => {
   if (!children) return true;
-  if (typeof children === 'string') return children.trim() === '';
-  if (Array.isArray(children)) return children.every(child => isEmptyHeading(child));
+  if (typeof children === "string") return children.trim() === "";
+  if (Array.isArray(children))
+    return children.every((child) => isEmptyHeading(child));
   return false;
 };
 
 const defaultComponents: any = {
-  h1: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
+  h1: ({
+    className,
+    children,
+    ...props
+  }: {
+    className?: string;
+    children?: React.ReactNode;
+  }) => {
     // Don't render empty headings
     if (isEmptyHeading(children)) return null;
 
@@ -82,7 +90,14 @@ const defaultComponents: any = {
       </h1>
     );
   },
-  h2: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
+  h2: ({
+    className,
+    children,
+    ...props
+  }: {
+    className?: string;
+    children?: React.ReactNode;
+  }) => {
     if (isEmptyHeading(children)) return null;
 
     return (
@@ -97,7 +112,14 @@ const defaultComponents: any = {
       </h2>
     );
   },
-  h3: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
+  h3: ({
+    className,
+    children,
+    ...props
+  }: {
+    className?: string;
+    children?: React.ReactNode;
+  }) => {
     if (isEmptyHeading(children)) return null;
 
     return (
@@ -112,7 +134,14 @@ const defaultComponents: any = {
       </h3>
     );
   },
-  h4: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
+  h4: ({
+    className,
+    children,
+    ...props
+  }: {
+    className?: string;
+    children?: React.ReactNode;
+  }) => {
     if (isEmptyHeading(children)) return null;
 
     return (
@@ -127,7 +156,14 @@ const defaultComponents: any = {
       </h4>
     );
   },
-  h5: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
+  h5: ({
+    className,
+    children,
+    ...props
+  }: {
+    className?: string;
+    children?: React.ReactNode;
+  }) => {
     if (isEmptyHeading(children)) return null;
 
     return (
@@ -142,7 +178,14 @@ const defaultComponents: any = {
       </h5>
     );
   },
-  h6: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
+  h6: ({
+    className,
+    children,
+    ...props
+  }: {
+    className?: string;
+    children?: React.ReactNode;
+  }) => {
     if (isEmptyHeading(children)) return null;
 
     return (
@@ -156,11 +199,21 @@ const defaultComponents: any = {
   },
   p: ({ className, ...props }: { className?: string }) => (
     <p
-      className={cn("mb-5 mt-5 leading-7 first:mt-0 last:mb-0 break-words", className)}
+      className={cn(
+        "mb-5 mt-5 leading-7 first:mt-0 last:mb-0 break-words",
+        className,
+      )}
       {...props}
     />
   ),
-  a: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
+  a: ({
+    className,
+    children,
+    ...props
+  }: {
+    className?: string;
+    children?: React.ReactNode;
+  }) => {
     // Don't render empty links
     if (isEmptyHeading(children)) return null;
 
@@ -197,7 +250,14 @@ const defaultComponents: any = {
   hr: ({ className, ...props }: { className?: string }) => (
     <hr className={cn("my-5 border-b", className)} {...props} />
   ),
-  table: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => (
+  table: ({
+    className,
+    children,
+    ...props
+  }: {
+    className?: string;
+    children?: React.ReactNode;
+  }) => (
     <table
       className={cn(
         "my-5 w-full border-separate border-spacing-0 overflow-y-auto",
@@ -265,8 +325,8 @@ const defaultComponents: any = {
       const language = match[1];
       // Safely convert children to string, handling React elements properly
       const code = React.Children.toArray(children)
-        .map(child => typeof child === 'string' ? child : '')
-        .join('')
+        .map((child) => (typeof child === "string" ? child : ""))
+        .join("")
         .replace(/\n$/, "");
 
       return (
@@ -280,7 +340,10 @@ const defaultComponents: any = {
     }
 
     return (
-      <code className={cn("rounded font-semibold break-words", className)} {...props}>
+      <code
+        className={cn("rounded font-semibold break-words", className)}
+        {...props}
+      >
         {children}
       </code>
     );

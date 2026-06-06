@@ -12,9 +12,7 @@ import {
   ensureToolCallsHaveResponses,
 } from "@/lib/ensure-tool-responses";
 
-import {
-  ChevronDown,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { ThreadMoreMenu } from "./thread-more-menu";
 import { useThreads } from "@/providers/Thread";
 import { useQueryState, parseAsBoolean } from "nuqs";
@@ -58,14 +56,21 @@ function buildHiddenPersonaMessage(): Message | null {
   };
 }
 
-function ScrollToBottom({ scrollRef, className }: Readonly<{ scrollRef: React.RefObject<HTMLDivElement | null>; className?: string }>) {
+function ScrollToBottom({
+  scrollRef,
+  className,
+}: Readonly<{
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+  className?: string;
+}>) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
     const handleScroll = () => {
-      const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+      const isNearBottom =
+        el.scrollHeight - el.scrollTop - el.clientHeight < 100;
       setShow(!isNearBottom);
     };
     el.addEventListener("scroll", handleScroll);
@@ -80,25 +85,32 @@ function ScrollToBottom({ scrollRef, className }: Readonly<{ scrollRef: React.Re
         "h-11 w-11 rounded-[12px] border-white/20 bg-[#000019]/45 text-white/90 shadow-none backdrop-blur-sm hover:bg-white/10 hover:border-white/30",
         className,
       )}
-      onClick={() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })}
+      onClick={() =>
+        scrollRef.current?.scrollTo({
+          top: scrollRef.current.scrollHeight,
+          behavior: "smooth",
+        })
+      }
     >
       <ChevronDown className="w-6 h-6 text-white" />
     </Button>
   );
 }
 
-function VoiceInputIndicator({ isListening }: Readonly<{ isListening: boolean }>) {
+function VoiceInputIndicator({
+  isListening,
+}: Readonly<{ isListening: boolean }>) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10, scale: 0.8 }}
       animate={{
         opacity: isListening ? 1 : 0,
         y: isListening ? 0 : 10,
-        scale: isListening ? 1 : 0.8
+        scale: isListening ? 1 : 0.8,
       }}
       transition={{
         duration: 0.4,
-        ease: [0.4, 0, 0.2, 1]
+        ease: [0.4, 0, 0.2, 1],
       }}
       className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-white text-[#000019] px-6 py-3 rounded-lg text-sm font-medium z-20 shadow-lg pointer-events-none"
     >
@@ -109,7 +121,7 @@ function VoiceInputIndicator({ isListening }: Readonly<{ isListening: boolean }>
 
 function VoiceInputButton({
   isListening,
-  onVoiceInput
+  onVoiceInput,
 }: Readonly<{
   isListening: boolean;
   onVoiceInput: () => void;
@@ -121,11 +133,11 @@ function VoiceInputButton({
       className="cursor-pointer outline-none focus:outline-none active:opacity-100 bg-transparent hover:bg-transparent focus:bg-transparent border-none flex-shrink-0 relative"
       title={isListening ? "Остановить запись" : "Начать голосовой ввод"}
       animate={{
-        scale: isListening ? 1.25 : 1
+        scale: isListening ? 1.25 : 1,
       }}
       transition={{
         duration: 0.4,
-        ease: [0.4, 0, 0.2, 1]
+        ease: [0.4, 0, 0.2, 1],
       }}
     >
       <img
@@ -133,19 +145,19 @@ function VoiceInputButton({
         alt="Voice Input"
         className={cn(
           "h-4 sm:h-5 w-auto transition-opacity duration-300 ease-in-out",
-          !isListening && "opacity-70 hover:opacity-100"
+          !isListening && "opacity-70 hover:opacity-100",
         )}
       />
       <motion.div
         initial={{ opacity: 0, scale: 0 }}
         animate={{
           opacity: isListening ? 1 : 0,
-          scale: isListening ? 1 : 0
+          scale: isListening ? 1 : 0,
         }}
         transition={{
           duration: 0.3,
           ease: [0.4, 0, 0.2, 1],
-          delay: isListening ? 0.1 : 0
+          delay: isListening ? 0.1 : 0,
         }}
         className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-white rounded-full"
       />
@@ -159,7 +171,7 @@ function ChatInput({
   onSubmit,
   isListening,
   onVoiceInput,
-  chatStarted
+  chatStarted,
 }: Readonly<{
   input: string;
   setInput: (value: string) => void;
@@ -174,29 +186,35 @@ function ChatInput({
 
   useEffect(() => {
     if (input === "" && textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
     }
   }, [input]);
 
-  const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-    e.target.style.height = 'auto';
-    const maxHeight = 120;
-    const newHeight = Math.min(e.target.scrollHeight, maxHeight);
-    e.target.style.height = newHeight + 'px';
-  }, [setInput]);
+  const handleTextareaChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setInput(e.target.value);
+      e.target.style.height = "auto";
+      const maxHeight = 120;
+      const newHeight = Math.min(e.target.scrollHeight, maxHeight);
+      e.target.style.height = newHeight + "px";
+    },
+    [setInput],
+  );
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (
-      e.key === "Enter" &&
-      !e.shiftKey &&
-      !e.metaKey &&
-      !e.nativeEvent.isComposing
-    ) {
-      e.preventDefault();
-      onSubmit();
-    }
-  }, [onSubmit]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (
+        e.key === "Enter" &&
+        !e.shiftKey &&
+        !e.metaKey &&
+        !e.nativeEvent.isComposing
+      ) {
+        e.preventDefault();
+        onSubmit();
+      }
+    },
+    [onSubmit],
+  );
 
   const getPlaceholder = () => {
     if (chatStarted) {
@@ -209,9 +227,14 @@ function ChatInput({
     <div className="flex justify-center w-full max-w-3xl mx-auto pb-2 px-4">
       <VoiceInputIndicator isListening={isListening} />
       <div className="flex-1 bg-[#000019] rounded-[20px] border border-white/20 shadow-xs relative z-10 px-3 sm:px-4 py-2 flex flex-col gap-0">
-        <div className={`flex gap-2 ${input.length > 60 || input.includes('\n') ? 'flex-col' : 'flex-row items-center'}`}>
+        <div
+          className={`flex gap-2 ${input.length > 60 || input.includes("\n") ? "flex-col" : "flex-row items-center"}`}
+        >
           <form
-            onSubmit={(e) => { e.preventDefault(); onSubmit(); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSubmit();
+            }}
             className="flex-1"
           >
             <textarea
@@ -224,14 +247,23 @@ function ChatInput({
               rows={1}
             />
           </form>
-          <div className={`flex items-center gap-2 flex-shrink-0  ${input.length > 60 || input.includes('\n') ? 'justify-end' : ''}`}>
-            <VoiceInputButton isListening={isListening} onVoiceInput={onVoiceInput} />
+          <div
+            className={`flex items-center gap-2 flex-shrink-0  ${input.length > 60 || input.includes("\n") ? "justify-end" : ""}`}
+          >
+            <VoiceInputButton
+              isListening={isListening}
+              onVoiceInput={onVoiceInput}
+            />
             <button
               type="button"
               onClick={onSubmit}
               className="flex items-center justify-center flex-shrink-0 cursor-pointer bg-transparent border-none p-0"
             >
-              <img src="/arrow_right.png" alt="Send" className="h-8 w-8 object-contain brightness-200 -translate-x-0.5" />
+              <img
+                src="/arrow_right.png"
+                alt="Send"
+                className="h-8 w-8 object-contain brightness-200 -translate-x-0.5"
+              />
             </button>
           </div>
         </div>
@@ -243,7 +275,7 @@ function ChatInput({
 function SidebarButton({
   chatHistoryOpen,
   setChatHistoryOpen,
-  isLargeScreen
+  isLargeScreen,
 }: Readonly<{
   chatHistoryOpen: boolean;
   setChatHistoryOpen: (value: boolean | ((prev: boolean) => boolean)) => void;
@@ -297,9 +329,16 @@ function ChatHeader({
 
   const currentThread = threads.find((t) => t.thread_id === threadId);
   const values = currentThread?.values as Record<string, unknown> | undefined;
-  const currentTitle = typeof values?.title === "string" && values.title !== threadId ? values.title : null;
-  const currentCategory = (currentThread?.metadata as Record<string, unknown> | undefined)?.category as string | undefined;
-  const categoryLabel = currentCategory ? CATEGORY_LABELS[currentCategory] ?? currentCategory : null;
+  const currentTitle =
+    typeof values?.title === "string" && values.title !== threadId
+      ? values.title
+      : null;
+  const currentCategory = (
+    currentThread?.metadata as Record<string, unknown> | undefined
+  )?.category as string | undefined;
+  const categoryLabel = currentCategory
+    ? (CATEGORY_LABELS[currentCategory] ?? currentCategory)
+    : null;
 
   const [editValue, setEditValue] = useState("");
 
@@ -317,10 +356,13 @@ function ChatHeader({
     setIsEditing(false);
   }, [threadId, editValue, currentTitle, updateThreadTitle]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") commitEdit();
-    if (e.key === "Escape") setIsEditing(false);
-  }, [commitEdit]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") commitEdit();
+      if (e.key === "Escape") setIsEditing(false);
+    },
+    [commitEdit],
+  );
 
   return (
     <div className="flex items-center justify-between gap-3 p-2 z-10 relative">
@@ -337,8 +379,7 @@ function ChatHeader({
           onClick={() => setThreadId(null)}
           animate={{ marginLeft: chatHistoryOpen ? 0 : 48 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        >
-        </motion.button>
+        ></motion.button>
       </div>
 
       {threadId && currentTitle && (
@@ -363,9 +404,23 @@ function ChatHeader({
                 <span className="text-white/90 text-base font-medium truncate max-w-[180px] sm:max-w-xs">
                   {currentTitle}
                 </span>
-                <button onClick={startEdit} className="text-white/40 hover:text-white/80 transition-colors flex-shrink-0" title="Переименовать">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                <button
+                  onClick={startEdit}
+                  className="text-white/40 hover:text-white/80 transition-colors flex-shrink-0"
+                  title="Переименовать"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                   </svg>
                 </button>
               </>
@@ -398,7 +453,7 @@ function MessagesList({
   handleRegenerate,
   stream,
   hasNoAIOrToolMessages,
-  firstTokenReceived
+  firstTokenReceived,
 }: Readonly<{
   messages: Message[];
   isLoading: boolean;
@@ -435,9 +490,7 @@ function MessagesList({
           handleRegenerate={handleRegenerate}
         />
       )}
-      {isLoading && !firstTokenReceived && (
-        <AssistantMessageLoading />
-      )}
+      {isLoading && !firstTokenReceived && <AssistantMessageLoading />}
     </>
   );
 }
@@ -452,7 +505,9 @@ export function Thread() {
   const [firstTokenReceived, setFirstTokenReceived] = useState(false);
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [threadContext, setThreadContext] = useState<ThreadContext | null>(null);
+  const [threadContext, setThreadContext] = useState<ThreadContext | null>(
+    null,
+  );
 
   const {
     isListening,
@@ -473,26 +528,31 @@ export function Thread() {
 
   useEffect(() => {
     if (transcript) {
-      setInput(prev => {
-        const separator = prev.trim() ? ' ' : '';
+      setInput((prev) => {
+        const separator = prev.trim() ? " " : "";
         return prev + separator + transcript;
       });
       resetTranscript();
     }
   }, [transcript, resetTranscript]);
 
-	const handleVoiceInput = useCallback(() => {
-	    console.log('[Voice] Button clicked. Supported:', isSpeechSupported, 'Listening:', isListening);
-	    if (!isSpeechSupported) {
-	      toast.error("Голосовой ввод не поддерживается в вашем браузере");
-	      return;
-	    }
-	    if (isListening) {
-	      stopListening();
-	    } else {
-	      startListening();
-	    }
-	  }, [isSpeechSupported, isListening, stopListening, startListening]);
+  const handleVoiceInput = useCallback(() => {
+    console.log(
+      "[Voice] Button clicked. Supported:",
+      isSpeechSupported,
+      "Listening:",
+      isListening,
+    );
+    if (!isSpeechSupported) {
+      toast.error("Голосовой ввод не поддерживается в вашем браузере");
+      return;
+    }
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  }, [isSpeechSupported, isListening, stopListening, startListening]);
 
   useEffect(() => {
     if (!stream.error) {
@@ -520,7 +580,8 @@ export function Thread() {
   }, [stream.error]);
 
   useEffect(() => {
-    const hasNewAIMessage = messages.length !== prevMessageLength.current &&
+    const hasNewAIMessage =
+      messages.length !== prevMessageLength.current &&
       messages?.length &&
       messages[messages.length - 1].type === "ai";
     if (hasNewAIMessage) {
@@ -534,13 +595,14 @@ export function Thread() {
       setThreadContext(null);
       return;
     }
-    chatApi.getThreadContext(threadId)
+    chatApi
+      .getThreadContext(threadId)
       .then((data) => {
         if (data?.title) {
           setThreadContext({
             type: data.type ?? "general",
             title: data.title,
-            description: data.description || undefined
+            description: data.description || undefined,
           });
         } else {
           setThreadContext(null);
@@ -549,74 +611,27 @@ export function Thread() {
       .catch(() => setThreadContext(null));
   }, [threadId]);
 
-  const handleSubmit = useCallback((e?: FormEvent) => {
-    e?.preventDefault();
-    if (!input.trim() || isLoading) return;
+  const handleSubmit = useCallback(
+    (e?: FormEvent) => {
+      e?.preventDefault();
+      if (!input.trim() || isLoading) return;
 
-    setFirstTokenReceived(false);
+      setFirstTokenReceived(false);
 
-    const newHumanMessage: Message = {
-      id: uuidv4(),
-      type: "human",
-      content: input,
-    };
-    const hiddenPersona = buildHiddenPersonaMessage();
-    const personaMessages = hiddenPersona ? [hiddenPersona] : [];
-
-    const toolMessages = ensureToolCallsHaveResponses(stream.messages);
-    stream.submit(
-      { messages: [...toolMessages, ...personaMessages, newHumanMessage] },
-      {
-        streamMode: ["values"],
-        optimisticValues: (prev) => ({
-          ...prev,
-          messages: [
-            ...(prev.messages ?? []),
-            ...toolMessages,
-            ...personaMessages,
-            newHumanMessage,
-          ],
-        }),
-      },
-    );
-
-    setInput("");
-  }, [input, isLoading, stream]);
-
-  const handleRegenerate = useCallback((
-    parentCheckpoint: Checkpoint | null | undefined,
-  ) => {
-    prevMessageLength.current = prevMessageLength.current - 1;
-    setFirstTokenReceived(false);
-    stream.submit(undefined, {
-      checkpoint: parentCheckpoint,
-      streamMode: ["values"],
-    });
-  }, [stream]);
-
-  const chatStarted = !!messages.length;
-  const hasNoAIOrToolMessages = !messages.some(
-    (m) => m.type === "ai" || m.type === "tool",
-  );
-
-  const { hints, isLoading: hintsLoading } = useHints(messages, !isLoading);
-
-  const handleHintSelect = useCallback((hint: string) => {
-    setInput(hint);
-    setTimeout(() => {
-      const newHumanMessage = {
+      const newHumanMessage: Message = {
         id: uuidv4(),
-        type: "human" as const,
-        content: hint,
+        type: "human",
+        content: input,
       };
       const hiddenPersona = buildHiddenPersonaMessage();
       const personaMessages = hiddenPersona ? [hiddenPersona] : [];
+
       const toolMessages = ensureToolCallsHaveResponses(stream.messages);
       stream.submit(
         { messages: [...toolMessages, ...personaMessages, newHumanMessage] },
         {
           streamMode: ["values"],
-          optimisticValues: (prev: any) => ({
+          optimisticValues: (prev) => ({
             ...prev,
             messages: [
               ...(prev.messages ?? []),
@@ -627,9 +642,63 @@ export function Thread() {
           }),
         },
       );
+
       setInput("");
-    }, 0);
-  }, [stream, setInput]);
+    },
+    [input, isLoading, stream],
+  );
+
+  const handleRegenerate = useCallback(
+    (parentCheckpoint: Checkpoint | null | undefined) => {
+      prevMessageLength.current = prevMessageLength.current - 1;
+      setFirstTokenReceived(false);
+      stream.submit(undefined, {
+        checkpoint: parentCheckpoint,
+        streamMode: ["values"],
+      });
+    },
+    [stream],
+  );
+
+  const chatStarted = !!messages.length;
+  const hasNoAIOrToolMessages = !messages.some(
+    (m) => m.type === "ai" || m.type === "tool",
+  );
+
+  const { hints, isLoading: hintsLoading } = useHints(messages, !isLoading);
+
+  const handleHintSelect = useCallback(
+    (hint: string) => {
+      setInput(hint);
+      setTimeout(() => {
+        const newHumanMessage = {
+          id: uuidv4(),
+          type: "human" as const,
+          content: hint,
+        };
+        const hiddenPersona = buildHiddenPersonaMessage();
+        const personaMessages = hiddenPersona ? [hiddenPersona] : [];
+        const toolMessages = ensureToolCallsHaveResponses(stream.messages);
+        stream.submit(
+          { messages: [...toolMessages, ...personaMessages, newHumanMessage] },
+          {
+            streamMode: ["values"],
+            optimisticValues: (prev: any) => ({
+              ...prev,
+              messages: [
+                ...(prev.messages ?? []),
+                ...toolMessages,
+                ...personaMessages,
+                newHumanMessage,
+              ],
+            }),
+          },
+        );
+        setInput("");
+      }, 0);
+    },
+    [stream, setInput],
+  );
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -640,12 +709,22 @@ export function Thread() {
 
   const sidebarWidth = 300;
   const sidebarOffset = chatHistoryOpen && isLargeScreen ? sidebarWidth : 0;
-  const mainWidth = chatHistoryOpen && isLargeScreen ? `calc(100% - ${sidebarWidth}px)` : "100%";
+  const mainWidth =
+    chatHistoryOpen && isLargeScreen
+      ? `calc(100% - ${sidebarWidth}px)`
+      : "100%";
   const footerMarginLeft = chatHistoryOpen && isLargeScreen ? 150 : 0;
 
   return (
     // Компенсатор для 30px NavigationBar: возвращает чат наверх и сохраняет полную высоту
-    <div style={{ marginTop: "-30px", paddingTop: "30px", height: "calc(100% + 30px)", boxSizing: "border-box" }}>
+    <div
+      style={{
+        marginTop: "-30px",
+        paddingTop: "30px",
+        height: "calc(100% + 30px)",
+        boxSizing: "border-box",
+      }}
+    >
       <div className="flex w-full h-full overflow-hidden">
         <div className="relative lg:flex hidden bg-[#000019]">
           <motion.div
@@ -659,7 +738,10 @@ export function Thread() {
                 : { duration: 0 }
             }
           >
-            <div className="relative h-full bg-[#000019]" style={{ width: sidebarWidth }}>
+            <div
+              className="relative h-full bg-[#000019]"
+              style={{ width: sidebarWidth }}
+            >
               <ThreadHistory />
             </div>
           </motion.div>
@@ -684,7 +766,11 @@ export function Thread() {
           <motion.div
             className="absolute top-0 left-0 right-0 z-30 bg-[#000019]"
             animate={{ marginLeft: sidebarOffset }}
-            transition={isLargeScreen ? { type: "spring", stiffness: 300, damping: 30 } : { duration: 0 }}
+            transition={
+              isLargeScreen
+                ? { type: "spring", stiffness: 300, damping: 30 }
+                : { duration: 0 }
+            }
           >
             <ChatHeader
               chatHistoryOpen={chatHistoryOpen}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
 interface RadialPulseLoaderProps {
   size?: number;
@@ -9,9 +9,9 @@ interface RadialPulseLoaderProps {
 
 const RadialPulseLoader: React.FC<RadialPulseLoaderProps> = ({
   size = 150,
-  color = '#ffffff',
-  text = 'Loading...',
-  showText = false
+  color = "#ffffff",
+  text = "Loading...",
+  showText = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
@@ -20,7 +20,7 @@ const RadialPulseLoader: React.FC<RadialPulseLoaderProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     canvas.width = size;
@@ -36,7 +36,8 @@ const RadialPulseLoader: React.FC<RadialPulseLoaderProps> = ({
       const numRays = 8;
       for (let i = 0; i < numRays; i++) {
         const angle = (i / numRays) * Math.PI * 2;
-        const pulse = Math.sin(time * 0.03 + i * 0.5) * (size * 0.2) + (size * 0.25);
+        const pulse =
+          Math.sin(time * 0.03 + i * 0.5) * (size * 0.2) + size * 0.25;
 
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
@@ -45,12 +46,12 @@ const RadialPulseLoader: React.FC<RadialPulseLoaderProps> = ({
         ctx.lineTo(x, y);
 
         const opacity = 0.3 + Math.sin(time * 0.03 + i * 0.5) * 0.7;
-        
+
         // Конвертируем hex в rgb для использования с opacity
         const r = Number.parseInt(color.slice(1, 3), 16);
         const g = Number.parseInt(color.slice(3, 5), 16);
         const b = Number.parseInt(color.slice(5, 7), 16);
-        
+
         ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
         ctx.lineWidth = 2;
         ctx.stroke();

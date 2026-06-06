@@ -74,7 +74,8 @@ function DropdownMenuItem({
       className={cn(
         "relative flex cursor-pointer select-none items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-light outline-none",
         "focus:bg-white/10 data-[disabled]:pointer-events-none data-[disabled]:opacity-40",
-        variant === "destructive" && "text-red-300 focus:bg-red-500/15 focus:text-red-200",
+        variant === "destructive" &&
+          "text-red-300 focus:bg-red-500/15 focus:text-red-200",
         inset && "pl-8",
         className,
       )}
@@ -124,10 +125,7 @@ function DropdownMenuShortcut({
   return (
     <span
       data-slot="dropdown-menu-shortcut"
-      className={cn(
-        "text-white/40 ml-auto text-xs tracking-widest",
-        className,
-      )}
+      className={cn("text-white/40 ml-auto text-xs tracking-widest", className)}
       {...props}
     />
   );

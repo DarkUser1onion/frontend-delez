@@ -23,7 +23,11 @@ function HintSkeleton() {
  * Ряд кнопок-подсказок под полем ввода чата.
  * Кнопки равномерно занимают всю ширину контейнера.
  */
-export function ChatHints({ hints, isLoading, onSelect }: Readonly<ChatHintsProps>) {
+export function ChatHints({
+  hints,
+  isLoading,
+  onSelect,
+}: Readonly<ChatHintsProps>) {
   if (isLoading) return <HintSkeleton />;
   if (!hints.length) return null;
 

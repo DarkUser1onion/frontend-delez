@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { toast } from 'sonner';
+import { useState, useEffect, useRef } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { toast } from "sonner";
 
 interface SpeechRecognitionEvent extends Event {
   results: SpeechRecognitionResultList;
@@ -21,8 +21,12 @@ interface SpeechRecognition extends EventTarget {
   abort(): void;
   onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
   onend: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
-  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
+  onresult:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any)
+    | null;
+  onerror:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any)
+    | null;
 }
 
 declare global {
@@ -34,11 +38,13 @@ declare global {
 
 export const useSpeechRecognition = () => {
   const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
+  const [transcript, setTranscript] = useState("");
   const [isSupported, setIsSupported] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const listeningRef = useRef(false);
-  const isLinux = typeof navigator !== 'undefined' && navigator.platform.toLowerCase().includes('linux');
+  const isLinux =
+    typeof navigator !== "undefined" &&
+    navigator.platform.toLowerCase().includes("linux");
 
   useEffect(() => {
     if (isLinux) {
@@ -46,23 +52,32 @@ export const useSpeechRecognition = () => {
       return;
     }
 
-    const SpeechRecognition = (globalThis as any).SpeechRecognition || (globalThis as any).webkitSpeechRecognition;
+    const SpeechRecognition =
+      (globalThis as any).SpeechRecognition ||
+      (globalThis as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       setIsSupported(true);
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
-      recognition.lang = 'ru-RU';
+      recognition.lang = "ru-RU";
 
-      recognition.onstart = () => { listeningRef.current = true; setIsListening(true); };
-      recognition.onend = () => { listeningRef.current = false; setIsListening(false); };
+      recognition.onstart = () => {
+        listeningRef.current = true;
+        setIsListening(true);
+      };
+      recognition.onend = () => {
+        listeningRef.current = false;
+        setIsListening(false);
+      };
       recognition.onresult = (event: SpeechRecognitionEvent) => {
-        let finalTranscript = '';
-        for (const result of event.results) if (result.isFinal) finalTranscript += result[0].transcript;
+        let finalTranscript = "";
+        for (const result of event.results)
+          if (result.isFinal) finalTranscript += result[0].transcript;
         if (finalTranscript) setTranscript(finalTranscript);
       };
       recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        console.error('Speech error:', event.error);
+        console.error("Speech error:", event.error);
         listeningRef.current = false;
         setIsListening(false);
       };
@@ -70,21 +85,23 @@ export const useSpeechRecognition = () => {
     } else {
       setIsSupported(false);
     }
-    return () => { recognitionRef.current?.abort(); };
+    return () => {
+      recognitionRef.current?.abort();
+    };
   }, [isLinux]);
 
   const startLinuxRecording = async () => {
     if (listeningRef.current) return;
     listeningRef.current = true;
     setIsListening(true);
-    toast.info('Запись 5 сек... Говорите.');
+    toast.info("Запись 5 сек... Говорите.");
     try {
-      const text = await invoke<string>('record_and_transcribe');
+      const text = await invoke<string>("record_and_transcribe");
       setTranscript(text);
-      toast.success('Готово');
+      toast.success("Готово");
     } catch (e) {
       console.error(e);
-      toast.error('Ошибка распознавания');
+      toast.error("Ошибка распознавания");
     } finally {
       listeningRef.current = false;
       setIsListening(false);
@@ -98,18 +115,33 @@ export const useSpeechRecognition = () => {
     }
     if (recognitionRef.current) {
       if (listeningRef.current) return;
-      setTranscript('');
-      try { recognitionRef.current.start(); } catch { /* already started */ void 0; }
+      setTranscript("");
+      try {
+        recognitionRef.current.start();
+      } catch {
+        /* already started */ void 0;
+      }
     }
   };
 
   const stopListening = () => {
     if (recognitionRef.current) {
-      try { recognitionRef.current.stop(); } catch { /* already stopped */ void 0; }
+      try {
+        recognitionRef.current.stop();
+      } catch {
+        /* already stopped */ void 0;
+      }
     }
   };
 
-  const resetTranscript = () => setTranscript('');
+  const resetTranscript = () => setTranscript("");
 
-  return { isListening, transcript, isSupported, startListening, stopListening, resetTranscript };
+  return {
+    isListening,
+    transcript,
+    isSupported,
+    startListening,
+    stopListening,
+    resetTranscript,
+  };
 };

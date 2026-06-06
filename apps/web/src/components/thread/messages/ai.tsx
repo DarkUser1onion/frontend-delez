@@ -72,7 +72,9 @@ export function AssistantMessage({
 }: {
   readonly message: Message | undefined;
   readonly isLoading: boolean;
-  readonly handleRegenerate: (parentCheckpoint: Checkpoint | null | undefined) => void;
+  readonly handleRegenerate: (
+    parentCheckpoint: Checkpoint | null | undefined,
+  ) => void;
 }) {
   const content = message?.content ?? [];
   const contentString = getContentString(content);
@@ -142,8 +144,8 @@ export function AssistantMessage({
               <ThreadView interrupt={threadInterrupt.value} />
             )}
           {threadInterrupt?.value &&
-            !isAgentInboxInterruptSchema(threadInterrupt.value) &&
-            isLastMessage ? (
+          !isAgentInboxInterruptSchema(threadInterrupt.value) &&
+          isLastMessage ? (
             <GenericInterruptView interrupt={threadInterrupt.value} />
           ) : null}
           <div className="flex gap-2 items-center mr-auto transition-opacity mb-1">
@@ -160,7 +162,11 @@ export function AssistantMessage({
               handleRegenerate={() => handleRegenerate(parentCheckpoint)}
             />
             {message?.id && (
-              <MessageReactions messageId={message.id} align="left" className="mt-0" />
+              <MessageReactions
+                messageId={message.id}
+                align="left"
+                className="mt-0"
+              />
             )}
           </div>
         </div>

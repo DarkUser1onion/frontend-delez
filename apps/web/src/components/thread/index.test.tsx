@@ -29,7 +29,9 @@ vi.mock("uuid", () => ({
 vi.mock("framer-motion", () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+    button: ({ children, ...props }: any) => (
+      <button {...props}>{children}</button>
+    ),
     span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
@@ -45,7 +47,9 @@ vi.mock("nuqs", () => ({
     }
     return [options?.defaultValue ?? null, vi.fn()];
   }),
-  parseAsBoolean: { withDefault: (value: boolean) => ({ defaultValue: value }) },
+  parseAsBoolean: {
+    withDefault: (value: boolean) => ({ defaultValue: value }),
+  },
 }));
 
 vi.mock("@/providers/Stream", () => ({
@@ -201,7 +205,11 @@ describe("Thread", () => {
     expect(ensureToolCallsHaveResponsesMock).toHaveBeenCalledWith([]);
 
     const optimisticValues = submitMock.mock.calls[0][1].optimisticValues;
-    expect(optimisticValues({ messages: [{ id: "prev", type: "ai", content: "old" }] })).toEqual({
+    expect(
+      optimisticValues({
+        messages: [{ id: "prev", type: "ai", content: "old" }],
+      }),
+    ).toEqual({
       messages: [
         { id: "prev", type: "ai", content: "old" },
         { id: "tool-generated", type: "tool", content: "handled" },
@@ -213,7 +221,9 @@ describe("Thread", () => {
   it("appends transcript to the input and resets it", async () => {
     const { rerender } = render(<Thread />);
 
-    fireEvent.change(screen.getByRole("textbox"), { target: { value: "Manual" } });
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "Manual" },
+    });
 
     speechState = {
       ...speechState,
@@ -307,5 +317,4 @@ describe("Thread", () => {
       });
     });
   });
-
 });

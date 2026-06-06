@@ -10,7 +10,10 @@ import { HumanInterrupt } from "@langchain/langgraph/prebuilt";
 
 interface ThreadActionsViewProps {
   readonly interrupt: HumanInterrupt;
-  readonly handleShowSidePanel: (showState: boolean, showDescription: boolean) => void;
+  readonly handleShowSidePanel: (
+    showState: boolean,
+    showDescription: boolean,
+  ) => void;
   readonly showState: boolean;
   readonly showDescription: boolean;
 }

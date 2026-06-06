@@ -1,5 +1,5 @@
 // src/pages/NavigationPage.tsx
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import {
   MessageCircle,
   CalendarDays,
@@ -7,9 +7,9 @@ import {
   GitFork,
   BookOpenText,
   User,
-} from 'lucide-react';
-import ParticlesBackground from '@/components/ParticlesBackground';
-import '../styles/navigation.css';
+} from "lucide-react";
+import ParticlesBackground from "@/components/ParticlesBackground";
+import "../styles/navigation.css";
 
 interface NavSection {
   title: string;
@@ -20,28 +20,28 @@ interface NavSection {
 
 const sections: NavSection[] = [
   {
-    title: 'Записи',
-    subtitle: 'События и мысли',
+    title: "Записи",
+    subtitle: "События и мысли",
     icon: <CalendarDays strokeWidth={1.5} />,
-    to: '/records',
+    to: "/records",
   },
   {
-    title: 'Развитие',
-    subtitle: 'Цели и рост',
+    title: "Развитие",
+    subtitle: "Цели и рост",
     icon: <Target strokeWidth={1.5} />,
-    to: '/development',
+    to: "/development",
   },
   {
-    title: 'Карта жизни',
-    subtitle: 'Граф связей',
+    title: "Карта жизни",
+    subtitle: "Граф связей",
     icon: <GitFork strokeWidth={1.5} />,
-    to: '/graph',
+    to: "/graph",
   },
   {
-    title: 'Мемуары',
-    subtitle: 'Истории и воспоминания',
+    title: "Мемуары",
+    subtitle: "Истории и воспоминания",
     icon: <BookOpenText strokeWidth={1.5} />,
-    to: '/memoirs',
+    to: "/memoirs",
   },
 ];
 
@@ -52,9 +52,7 @@ function NavCard({ section }: { readonly section: NavSection }) {
         <span className="navpage-card__title">{section.title}</span>
         <span className="navpage-card__subtitle">{section.subtitle}</span>
       </div>
-      <div className="navpage-card__icon-wrap">
-        {section.icon}
-      </div>
+      <div className="navpage-card__icon-wrap">{section.icon}</div>
     </Link>
   );
 }
@@ -78,14 +76,22 @@ export default function NavigationPage() {
         <div className="navpage-banner">
           <div className="navpage-banner__left">
             <span className="navpage-banner__label">Сегодня</span>
-            <h2 className="navpage-banner__title">Что происходит в твоей жизни?</h2>
-            <p className="navpage-banner__sub">Запиши событие — ИИ поможет увидеть главное</p>
+            <h2 className="navpage-banner__title">
+              Что происходит в твоей жизни?
+            </h2>
+            <p className="navpage-banner__sub">
+              Запиши событие — ИИ поможет увидеть главное
+            </p>
             <Link to="/chat" className="navpage-banner__btn">
               Записать
             </Link>
           </div>
           <div className="navpage-banner__penguin">
-            <img src="/penguin3.png" alt="penguin" className="navpage-banner__penguin-img" />
+            <img
+              src="/penguin3.png"
+              alt="penguin"
+              className="navpage-banner__penguin-img"
+            />
           </div>
         </div>
 
@@ -99,7 +105,10 @@ export default function NavigationPage() {
 
         {/* Широкая кнопка чата — как у Мэтч */}
         <Link to="/chat" className="navpage__chat-wide">
-          <MessageCircle strokeWidth={1.5} className="navpage__chat-wide-icon" />
+          <MessageCircle
+            strokeWidth={1.5}
+            className="navpage__chat-wide-icon"
+          />
           <span>ИИ-чат</span>
         </Link>
       </div>

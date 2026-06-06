@@ -8,9 +8,7 @@
   "paths": {
     "/v1/health": {
       "get": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Health Check",
         "operationId": "health_check_v1_health_get",
         "responses": {
@@ -18,9 +16,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           }
@@ -29,9 +25,7 @@
     },
     "/v1/user/me": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "Get Current User Example",
         "description": "Example endpoint showing how to fetch data from the shared User model.",
         "operationId": "get_current_user_example_v1_user_me_get",
@@ -40,9 +34,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           },
@@ -54,9 +46,7 @@
     },
     "/auth/sign-up/email": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Register new user",
         "description": "Register a new user with email and password",
         "operationId": "sign_up_auth_sign_up_email_post",
@@ -116,9 +106,7 @@
     },
     "/auth/sign-in/email": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Sign in with email",
         "description": "Authenticate user with email and password",
         "operationId": "sign_in_auth_sign_in_email_post",
@@ -178,9 +166,7 @@
     },
     "/auth/sign-out": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Sign out",
         "description": "Sign out current user and invalidate session",
         "operationId": "sign_out_auth_sign_out_post",
@@ -210,9 +196,7 @@
     },
     "/auth/get-session": {
       "get": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Get current session",
         "description": "Get current user and session information",
         "operationId": "get_session_auth_get_session_get",
@@ -242,9 +226,7 @@
     },
     "/auth/forget-password": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Request password reset",
         "description": "Send password reset email to user",
         "operationId": "forget_password_auth_forget_password_post",
@@ -304,9 +286,7 @@
     },
     "/auth/reset-password": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Reset password",
         "description": "Reset password using reset token",
         "operationId": "reset_password_auth_reset_password_post",
@@ -366,9 +346,7 @@
     },
     "/auth/resend-verification": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Resend email verification",
         "description": "Resend verification email to user",
         "operationId": "resend_verification_auth_resend_verification_post",
@@ -418,9 +396,7 @@
     },
     "/auth/verify-email": {
       "post": {
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "summary": "Verify email address",
         "description": "Verify user's email address using token from email",
         "operationId": "verify_email_auth_verify_email_post",
@@ -480,9 +456,7 @@
     },
     "/v1/graph/rhizome": {
       "get": {
-        "tags": [
-          "graph"
-        ],
+        "tags": ["graph"],
         "summary": "Get Rhizome Graph",
         "description": "Get the complete graph for a user.\n\nReturns nodes and links in format suitable for react-force-graph.",
         "operationId": "get_rhizome_graph_v1_graph_rhizome_get",
@@ -553,9 +527,7 @@
     },
     "/v1/graph/search": {
       "get": {
-        "tags": [
-          "graph"
-        ],
+        "tags": ["graph"],
         "summary": "Search Graph Nodes",
         "description": "Search nodes by name or title.",
         "operationId": "search_graph_nodes_v1_graph_search_get",
@@ -612,9 +584,7 @@
     },
     "/v1/conversations": {
       "get": {
-        "tags": [
-          "conversations"
-        ],
+        "tags": ["conversations"],
         "summary": "Get Conversations",
         "description": "Get list of conversations.",
         "operationId": "get_conversations_v1_conversations_get",
@@ -666,9 +636,7 @@
     },
     "/v1/conversations/recent": {
       "get": {
-        "tags": [
-          "conversations"
-        ],
+        "tags": ["conversations"],
         "summary": "Get Recent Conversations",
         "description": "Get recent conversations.",
         "operationId": "get_recent_conversations_v1_conversations_recent_get",
@@ -710,9 +678,7 @@
     },
     "/v1/conversations/{id}": {
       "get": {
-        "tags": [
-          "conversations"
-        ],
+        "tags": ["conversations"],
         "summary": "Get Conversation",
         "description": "Get conversation by ID.",
         "operationId": "get_conversation_v1_conversations__id__get",
@@ -754,9 +720,7 @@
     },
     "/v1/conversations/{conversation_id}/messages": {
       "get": {
-        "tags": [
-          "messages"
-        ],
+        "tags": ["messages"],
         "summary": "Get Messages",
         "description": "Get messages for a conversation.",
         "operationId": "get_messages_v1_conversations__conversation_id__messages_get",
@@ -816,9 +780,7 @@
         }
       },
       "post": {
-        "tags": [
-          "messages"
-        ],
+        "tags": ["messages"],
         "summary": "Create Message",
         "description": "Create a new message.",
         "operationId": "create_message_v1_conversations__conversation_id__messages_post",
@@ -870,9 +832,7 @@
     },
     "/v1/messages/{message_id}/reactions": {
       "post": {
-        "tags": [
-          "messages"
-        ],
+        "tags": ["messages"],
         "summary": "Add Reaction",
         "description": "Add a reaction to a message.",
         "operationId": "add_reaction_v1_messages__message_id__reactions_post",
@@ -924,9 +884,7 @@
     },
     "/v1/entries": {
       "get": {
-        "tags": [
-          "entries"
-        ],
+        "tags": ["entries"],
         "summary": "Get Entries",
         "description": "Get list of entries.",
         "operationId": "get_entries_v1_entries_get",
@@ -976,9 +934,7 @@
         }
       },
       "post": {
-        "tags": [
-          "entries"
-        ],
+        "tags": ["entries"],
         "summary": "Create Entry",
         "description": "Create a new entry (DB + Neo4j sync; ChromaDB can be added in entry_service).",
         "operationId": "create_entry_v1_entries_post",
@@ -1018,9 +974,7 @@
     },
     "/v1/entries/recent": {
       "get": {
-        "tags": [
-          "entries"
-        ],
+        "tags": ["entries"],
         "summary": "Get Recent Entries",
         "description": "Get recent entries.",
         "operationId": "get_recent_entries_v1_entries_recent_get",
@@ -1062,9 +1016,7 @@
     },
     "/v1/entries/{id}/analysis": {
       "get": {
-        "tags": [
-          "entries"
-        ],
+        "tags": ["entries"],
         "summary": "Get Entry Analysis",
         "description": "Get complete analysis for an entry.",
         "operationId": "get_entry_analysis_v1_entries__id__analysis_get",
@@ -1106,9 +1058,7 @@
     },
     "/v1/entries/{id}/intensity-metrics": {
       "get": {
-        "tags": [
-          "entries"
-        ],
+        "tags": ["entries"],
         "summary": "Get Entry Intensity Metrics",
         "description": "Get intensity metrics for an entry.",
         "operationId": "get_entry_intensity_metrics_v1_entries__id__intensity_metrics_get",
@@ -1154,9 +1104,7 @@
     },
     "/v1/entries/{id}/related-situations": {
       "get": {
-        "tags": [
-          "entries"
-        ],
+        "tags": ["entries"],
         "summary": "Get Entry Related Situations",
         "description": "Get related situations for an entry.",
         "operationId": "get_entry_related_situations_v1_entries__id__related_situations_get",
@@ -1202,9 +1150,7 @@
     },
     "/v1/entries/{id}/negative-impacts": {
       "get": {
-        "tags": [
-          "entries"
-        ],
+        "tags": ["entries"],
         "summary": "Get Entry Negative Impacts",
         "description": "Get negative impacts for an entry.",
         "operationId": "get_entry_negative_impacts_v1_entries__id__negative_impacts_get",
@@ -1250,9 +1196,7 @@
     },
     "/v1/entries/{id}/transformations": {
       "get": {
-        "tags": [
-          "entries"
-        ],
+        "tags": ["entries"],
         "summary": "Get Entry Transformations",
         "description": "Get transformations for an entry.",
         "operationId": "get_entry_transformations_v1_entries__id__transformations_get",
@@ -1298,9 +1242,7 @@
     },
     "/v1/experiments/{id}": {
       "get": {
-        "tags": [
-          "experiments"
-        ],
+        "tags": ["experiments"],
         "summary": "Get Experiment",
         "description": "Get experiment by ID from Neo4j.",
         "operationId": "get_experiment_v1_experiments__id__get",
@@ -1341,9 +1283,7 @@
     },
     "/v1/experiments/{id}/intensity-metrics": {
       "get": {
-        "tags": [
-          "experiments"
-        ],
+        "tags": ["experiments"],
         "summary": "Get Experiment Intensity Metrics",
         "description": "Get intensity metrics for an experiment.",
         "operationId": "get_experiment_intensity_metrics_v1_experiments__id__intensity_metrics_get",
@@ -1386,9 +1326,7 @@
         }
       },
       "post": {
-        "tags": [
-          "experiments"
-        ],
+        "tags": ["experiments"],
         "summary": "Create Experiment Intensity Metric",
         "description": "Add an intensity metric for an experiment.",
         "operationId": "create_experiment_intensity_metric_v1_experiments__id__intensity_metrics_post",
@@ -1439,9 +1377,7 @@
     },
     "/v1/experiments/{id}/entries": {
       "get": {
-        "tags": [
-          "experiments"
-        ],
+        "tags": ["experiments"],
         "summary": "Get Experiment Entries",
         "description": "Get entries that document an experiment.",
         "operationId": "get_experiment_entries_v1_experiments__id__entries_get",
@@ -1486,9 +1422,7 @@
     },
     "/v1/experiments/{id}/summary": {
       "get": {
-        "tags": [
-          "experiments"
-        ],
+        "tags": ["experiments"],
         "summary": "Get Experiment Summary",
         "description": "Get experiment summary with metrics.",
         "operationId": "get_experiment_summary_v1_experiments__id__summary_get",
@@ -1529,9 +1463,7 @@
     },
     "/v1/goals": {
       "get": {
-        "tags": [
-          "goals"
-        ],
+        "tags": ["goals"],
         "summary": "Get Goals",
         "description": "Get list of goals from Neo4j.",
         "operationId": "get_goals_v1_goals_get",
@@ -1551,9 +1483,7 @@
     },
     "/v1/goals/{id}": {
       "get": {
-        "tags": [
-          "goals"
-        ],
+        "tags": ["goals"],
         "summary": "Get Goal",
         "description": "Get goal by ID from Neo4j.",
         "operationId": "get_goal_v1_goals__id__get",
@@ -1594,9 +1524,7 @@
     },
     "/v1/goals/{id}/related-entries": {
       "get": {
-        "tags": [
-          "goals"
-        ],
+        "tags": ["goals"],
         "summary": "Get Goal Related Entries",
         "description": "Get entries related to a goal.",
         "operationId": "get_goal_related_entries_v1_goals__id__related_entries_get",
@@ -1641,9 +1569,7 @@
     },
     "/v1/goals/{id}/concepts": {
       "get": {
-        "tags": [
-          "goals"
-        ],
+        "tags": ["goals"],
         "summary": "Get Goal Concepts",
         "description": "Get concepts that a goal is based on.",
         "operationId": "get_goal_concepts_v1_goals__id__concepts_get",
@@ -1688,9 +1614,7 @@
     },
     "/v1/analyses/{id}": {
       "get": {
-        "tags": [
-          "analyses"
-        ],
+        "tags": ["analyses"],
         "summary": "Get Analysis",
         "description": "Get analysis by ID from Neo4j.",
         "operationId": "get_analysis_v1_analyses__id__get",
@@ -1731,9 +1655,7 @@
     },
     "/v1/analyses/{id}/concepts": {
       "get": {
-        "tags": [
-          "analyses"
-        ],
+        "tags": ["analyses"],
         "summary": "Get Analysis Concepts",
         "description": "Get concepts produced by an analysis.",
         "operationId": "get_analysis_concepts_v1_analyses__id__concepts_get",
@@ -1778,9 +1700,7 @@
     },
     "/v1/analyses/{id}/goals": {
       "get": {
-        "tags": [
-          "analyses"
-        ],
+        "tags": ["analyses"],
         "summary": "Get Analysis Goals",
         "description": "Get goals that an analysis led to.",
         "operationId": "get_analysis_goals_v1_analyses__id__goals_get",
@@ -1825,9 +1745,7 @@
     },
     "/v1/analyses/{id}/experiments": {
       "get": {
-        "tags": [
-          "analyses"
-        ],
+        "tags": ["analyses"],
         "summary": "Get Analysis Experiments",
         "description": "Get experiments that an analysis led to.",
         "operationId": "get_analysis_experiments_v1_analyses__id__experiments_get",
@@ -1872,9 +1790,7 @@
     },
     "/v1/audio/transcribe": {
       "post": {
-        "tags": [
-          "audio"
-        ],
+        "tags": ["audio"],
         "summary": "Transcribe audio file",
         "description": "Upload and transcribe an audio file (batch mode)",
         "operationId": "transcribe_audio_v1_audio_transcribe_post",
@@ -1967,9 +1883,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-
-                }
+                "schema": {}
               }
             }
           },
@@ -2058,10 +1972,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "user",
-          "session"
-        ],
+        "required": ["user", "session"],
         "title": "AuthResponse",
         "description": "Response for sign up and sign in endpoints."
       },
@@ -2075,9 +1986,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "file"
-        ],
+        "required": ["file"],
         "title": "Body_transcribe_audio_v1_audio_transcribe_post"
       },
       "ConceptResponse": {
@@ -2129,13 +2038,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "user_id",
-          "created_at",
-          "updated_at"
-        ],
+        "required": ["id", "name", "user_id", "created_at", "updated_at"],
         "title": "ConceptResponse",
         "description": "Concept response from Neo4j."
       },
@@ -2150,9 +2053,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "conversations"
-        ],
+        "required": ["conversations"],
         "title": "ConversationListResponse",
         "description": "List of conversations."
       },
@@ -2309,10 +2210,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "description",
-          "event_date"
-        ],
+        "required": ["description", "event_date"],
         "title": "EntryCreateRequest",
         "description": "Request to create an entry."
       },
@@ -2349,12 +2247,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "id",
-          "content",
-          "timestamp",
-          "user_id"
-        ],
+        "required": ["id", "content", "timestamp", "user_id"],
         "title": "EntryForExperimentResponse",
         "description": "Entry that documents an experiment."
       },
@@ -2369,9 +2262,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "entries"
-        ],
+        "required": ["entries"],
         "title": "EntryListResponse",
         "description": "List of entries."
       },
@@ -2441,10 +2332,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "error",
-          "message"
-        ],
+        "required": ["error", "message"],
         "title": "ErrorResponse",
         "description": "Error response schema."
       },
@@ -2573,10 +2461,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "experiment",
-          "intensity_metrics"
-        ],
+        "required": ["experiment", "intensity_metrics"],
         "title": "ExperimentSummaryResponse",
         "description": "Experiment summary with metrics."
       },
@@ -2601,9 +2486,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email"
-        ],
+        "required": ["email"],
         "title": "ForgetPasswordRequest",
         "description": "Request body for forget password endpoint."
       },
@@ -2618,9 +2501,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "goals"
-        ],
+        "required": ["goals"],
         "title": "GoalListResponse",
         "description": "List of goals."
       },
@@ -2736,10 +2617,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "source",
-          "target"
-        ],
+        "required": ["source", "target"],
         "title": "GraphLink",
         "description": "Link/edge in the graph."
       },
@@ -2764,12 +2642,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "id",
-          "user",
-          "description",
-          "type"
-        ],
+        "required": ["id", "user", "description", "type"],
         "title": "GraphNode",
         "description": "Node in the graph."
       },
@@ -2784,9 +2657,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "nodes"
-        ],
+        "required": ["nodes"],
         "title": "GraphSearchResponse",
         "description": "Response for graph search endpoint."
       },
@@ -2827,10 +2698,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "intensity_value",
-          "metric_date"
-        ],
+        "required": ["intensity_value", "metric_date"],
         "title": "IntensityMetricCreateRequest",
         "description": "Request to create an intensity metric."
       },
@@ -2918,9 +2786,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "content"
-        ],
+        "required": ["content"],
         "title": "MessageCreateRequest",
         "description": "Request to create a message."
       },
@@ -2935,9 +2801,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "messages"
-        ],
+        "required": ["messages"],
         "title": "MessageListResponse",
         "description": "List of messages."
       },
@@ -2960,9 +2824,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "reaction_type"
-        ],
+        "required": ["reaction_type"],
         "title": "MessageReactionRequest",
         "description": "Request to add a reaction to a message."
       },
@@ -3164,12 +3026,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "id",
-          "content",
-          "timestamp",
-          "user_id"
-        ],
+        "required": ["id", "content", "timestamp", "user_id"],
         "title": "RelatedEntryResponse",
         "description": "Entry related to a goal."
       },
@@ -3246,9 +3103,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email"
-        ],
+        "required": ["email"],
         "title": "ResendVerificationRequest",
         "description": "Request body for resend verification endpoint."
       },
@@ -3266,10 +3121,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "token",
-          "password"
-        ],
+        "required": ["token", "password"],
         "title": "ResetPasswordRequest",
         "description": "Request body for reset password endpoint."
       },
@@ -3291,10 +3143,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "nodes",
-          "links"
-        ],
+        "required": ["nodes", "links"],
         "title": "RhizomeGraphResponse",
         "description": "Response for rhizome graph endpoint."
       },
@@ -3311,10 +3160,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "token",
-          "expiresAt"
-        ],
+        "required": ["token", "expiresAt"],
         "title": "SessionResponse",
         "description": "Session data in response."
       },
@@ -3331,10 +3177,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
+        "required": ["email", "password"],
         "title": "SignInRequest",
         "description": "Request body for sign in endpoint."
       },
@@ -3382,10 +3225,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
+        "required": ["email", "password"],
         "title": "SignUpRequest",
         "description": "Request body for sign up endpoint."
       },
@@ -3402,9 +3242,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "title": "SuccessResponse",
         "description": "Generic success response."
       },
@@ -3433,13 +3271,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "entry_id",
-          "text",
-          "language",
-          "duration",
-          "created_at"
-        ],
+        "required": ["entry_id", "text", "language", "duration", "created_at"],
         "title": "TranscriptionResponse",
         "description": "Response for audio transcription."
       },
@@ -3548,10 +3380,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "email"
-        ],
+        "required": ["id", "email"],
         "title": "UserResponse",
         "description": "User data in response."
       },
@@ -3588,11 +3417,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       },
       "VerifyEmailRequest": {
@@ -3604,9 +3429,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "token"
-        ],
+        "required": ["token"],
         "title": "VerifyEmailRequest",
         "description": "Request body for verify email endpoint."
       }

@@ -2,8 +2,8 @@
  * Tauri v2 API utilities – официальный пакет @tauri-apps/api
  * Безопасно работает внутри и вне Tauri окружения.
  */
-import { getCurrentWindow } from '@tauri-apps/api/window';
-import { emit, listen } from '@tauri-apps/api/event';
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { emit, listen } from "@tauri-apps/api/event";
 
 // ---------- проверка окружения ----------
 export function isTauri(): boolean {
@@ -23,7 +23,7 @@ function windowApi() {
     try {
       _window = getCurrentWindow();
     } catch (e) {
-      console.warn('Tauri window API недоступно:', e);
+      console.warn("Tauri window API недоступно:", e);
     }
   }
   return _window;
@@ -43,7 +43,7 @@ export async function closeWindow(): Promise<void> {
     try {
       await win.hide();
     } catch (e) {
-      console.error('closeWindow (hide) error:', e);
+      console.error("closeWindow (hide) error:", e);
     }
   }
 }
@@ -53,11 +53,17 @@ export async function isWindowMaximized(): Promise<boolean> {
 }
 
 // ---------- event API ----------
-export async function emitEvent(event: string, payload?: unknown): Promise<void> {
+export async function emitEvent(
+  event: string,
+  payload?: unknown,
+): Promise<void> {
   if (!isTauri()) return;
   await emit(event, payload);
 }
-export async function listenEvent(event: string, handler: (payload: any) => void): Promise<() => void> {
+export async function listenEvent(
+  event: string,
+  handler: (payload: any) => void,
+): Promise<() => void> {
   if (!isTauri()) return () => {};
   const unlisten = await listen(event, (e) => handler(e.payload));
   return unlisten;
@@ -68,7 +74,7 @@ export async function exitApp(code: number = 0): Promise<void> {
   const win = windowApi();
   if (win) {
     await win.close();
-  } else if (typeof window !== 'undefined') {
+  } else if (typeof window !== "undefined") {
     window.close();
   }
 }

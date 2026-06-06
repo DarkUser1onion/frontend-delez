@@ -81,22 +81,25 @@ export default function useInterruptedActions({
     }
   }, [interrupt]);
 
-  const resumeRun = useCallback((response: HumanResponse[]): boolean => {
-    try {
-      thread.submit(
-        {},
-        {
-          command: {
-            resume: response,
+  const resumeRun = useCallback(
+    (response: HumanResponse[]): boolean => {
+      try {
+        thread.submit(
+          {},
+          {
+            command: {
+              resume: response,
+            },
           },
-        },
-      );
-      return true;
-    } catch (e: unknown) {
-      console.error("Error sending human response", e);
-      return false;
-    }
-  }, [thread]);
+        );
+        return true;
+      } catch (e: unknown) {
+        console.error("Error sending human response", e);
+        return false;
+      }
+    },
+    [thread],
+  );
 
   const showErrorToast = useCallback((message: string, description: string) => {
     toast.error(message, {
@@ -107,53 +110,67 @@ export default function useInterruptedActions({
     });
   }, []);
 
-  const showSuccessToast = useCallback((description: string, duration = 5000) => {
-    toast("Success", {
-      description,
-      duration,
-    });
-  }, []);
+  const showSuccessToast = useCallback(
+    (description: string, duration = 5000) => {
+      toast("Success", {
+        description,
+        duration,
+      });
+    },
+    [],
+  );
 
-  const processHumanResponseInput = useCallback((responses: HumanResponseWithEdits[]): HumanResponse[] => {
-    return responses.flatMap((r) => {
-      if (r.type === "edit") {
-        if (r.acceptAllowed && !r.editsMade) {
-          return {
-            type: "accept",
-            args: r.args,
-          };
-        } else {
-          return {
-            type: "edit",
-            args: r.args,
-          };
+  const processHumanResponseInput = useCallback(
+    (responses: HumanResponseWithEdits[]): HumanResponse[] => {
+      return responses.flatMap((r) => {
+        if (r.type === "edit") {
+          if (r.acceptAllowed && !r.editsMade) {
+            return {
+              type: "accept",
+              args: r.args,
+            };
+          } else {
+            return {
+              type: "edit",
+              args: r.args,
+            };
+          }
         }
+
+        if (r.type === "response" && !r.args) {
+          // If response was allowed but no response was given, do not include in the response
+          return [];
+        }
+        return {
+          type: r.type,
+          args: r.args,
+        };
+      });
+    },
+    [],
+  );
+
+  const handleSubmitError = useCallback(
+    (e: unknown) => {
+      console.error("Error sending human response", e);
+
+      if (
+        e &&
+        typeof e === "object" &&
+        "message" in e &&
+        typeof e.message === "string" &&
+        e.message.includes("Invalid assistant ID")
+      ) {
+        showErrorToast(
+          "Error: Invalid assistant ID",
+          "The provided assistant ID was not found in this graph. Please update the assistant ID in the settings and try again.",
+        );
+      } else {
+        showErrorToast("Error", "Failed to submit response.");
       }
-
-      if (r.type === "response" && !r.args) {
-        // If response was allowed but no response was given, do not include in the response
-        return [];
-      }
-      return {
-        type: r.type,
-        args: r.args,
-      };
-    });
-  }, []);
-
-  const handleSubmitError = useCallback((e: unknown) => {
-    console.error("Error sending human response", e);
-
-    if (e && typeof e === 'object' && 'message' in e && 
-        typeof e.message === 'string' && e.message.includes("Invalid assistant ID")) {
-      showErrorToast(
-        "Error: Invalid assistant ID",
-        "The provided assistant ID was not found in this graph. Please update the assistant ID in the settings and try again."
-      );
-    } else {
-      showErrorToast("Error", "Failed to submit response.");
-    }
-  }, [showErrorToast]);
+    },
+    [showErrorToast],
+  );
 
   const handleSubmit = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent> | KeyboardEvent,
@@ -169,8 +186,8 @@ export default function useInterruptedActions({
       initialHumanInterruptEditValue.current = {};
     }
 
-    const hasResponseTypes = humanResponse.some((r) => 
-      ["response", "edit", "accept"].includes(r.type)
+    const hasResponseTypes = humanResponse.some((r) =>
+      ["response", "edit", "accept"].includes(r.type),
     );
 
     if (hasResponseTypes) {
@@ -219,69 +236,71 @@ export default function useInterruptedActions({
     setLoading(false);
   };
 
-  const handleIgnore = useCallback(async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    e.preventDefault();
+  const handleIgnore = useCallback(
+    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.preventDefault();
 
-    const ignoreResponse = humanResponse.find((r) => r.type === "ignore");
-    if (!ignoreResponse) {
-      toast.error("Error", {
-        description: "The selected thread does not support ignoring.",
+      const ignoreResponse = humanResponse.find((r) => r.type === "ignore");
+      if (!ignoreResponse) {
+        toast.error("Error", {
+          description: "The selected thread does not support ignoring.",
+          duration: 5000,
+        });
+        return;
+      }
+
+      setLoading(true);
+      if (initialHumanInterruptEditValue.current) {
+        initialHumanInterruptEditValue.current = {};
+      }
+
+      resumeRun([ignoreResponse]);
+
+      setLoading(false);
+      toast("Successfully ignored thread", {
         duration: 5000,
       });
-      return;
-    }
+    },
+    [humanResponse, resumeRun],
+  );
 
-    setLoading(true);
-    if (initialHumanInterruptEditValue.current) {
-      initialHumanInterruptEditValue.current = {};
-    }
+  const handleResolve = useCallback(
+    async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.preventDefault();
 
-    resumeRun([ignoreResponse]);
+      setLoading(true);
+      if (initialHumanInterruptEditValue.current) {
+        initialHumanInterruptEditValue.current = {};
+      }
 
-    setLoading(false);
-    toast("Successfully ignored thread", {
-      duration: 5000,
-    });
-  }, [humanResponse, resumeRun]);
-
-  const handleResolve = useCallback(async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    e.preventDefault();
-
-    setLoading(true);
-    if (initialHumanInterruptEditValue.current) {
-      initialHumanInterruptEditValue.current = {};
-    }
-
-    try {
-      thread.submit(
-        {},
-        {
-          command: {
-            goto: END,
+      try {
+        thread.submit(
+          {},
+          {
+            command: {
+              goto: END,
+            },
           },
-        },
-      );
+        );
 
-      toast("Success", {
-        description: "Marked thread as resolved.",
-        duration: 3000,
-      });
-    } catch (e) {
-      console.error("Error marking thread as resolved", e);
-      toast.error("Error", {
-        description: "Failed to mark thread as resolved.",
-        richColors: true,
-        closeButton: true,
-        duration: 3000,
-      });
-    }
+        toast("Success", {
+          description: "Marked thread as resolved.",
+          duration: 3000,
+        });
+      } catch (e) {
+        console.error("Error marking thread as resolved", e);
+        toast.error("Error", {
+          description: "Failed to mark thread as resolved.",
+          richColors: true,
+          closeButton: true,
+          duration: 3000,
+        });
+      }
 
-    setLoading(false);
-  }, [thread]);
+      setLoading(false);
+    },
+    [thread],
+  );
 
   const supportsMultipleMethods =
     humanResponse.filter(

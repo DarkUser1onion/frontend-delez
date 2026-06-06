@@ -55,37 +55,55 @@ export function DesktopApp({ children }: DesktopAppProps) {
     if (!isDesktop) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.code === 'KeyN') {
+      if (e.ctrlKey && e.code === "KeyN") {
         e.preventDefault();
-        navigate('/records');
+        navigate("/records");
       }
-      if (e.ctrlKey && e.code === 'Comma') {
+      if (e.ctrlKey && e.code === "Comma") {
         e.preventDefault();
-        navigate('/profile');
+        navigate("/profile");
       }
-      if (e.ctrlKey && e.code === 'KeyQ') {
+      if (e.ctrlKey && e.code === "KeyQ") {
         e.preventDefault();
-        invoke('hide_window').catch(console.error);
+        invoke("hide_window").catch(console.error);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isDesktop, navigate]);
 
   return (
-    <div style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden", background: "#000019" }}>
+    <div
+      style={{
+        position: "relative",
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
+        background: "#000019",
+      }}
+    >
       {isDesktop && (
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 1000 }}>
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
+          }}
+        >
           <NavigationBar />
         </div>
       )}
-      <div style={{
-        width: "100%",
-        height: "100%",
-        boxSizing: "border-box",
-        overflow: "hidden",
-      }}>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          boxSizing: "border-box",
+          overflow: "hidden",
+        }}
+      >
         {children}
       </div>
     </div>

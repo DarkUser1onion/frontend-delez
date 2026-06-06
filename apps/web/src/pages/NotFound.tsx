@@ -19,8 +19,11 @@ export function NotFoundPage() {
 
   return (
     <div className="w-full relative flex min-h-full items-center justify-center overflow-hidden bg-[#000019] text-foreground">
-      <ParticlesBackground/>
-      <div aria-hidden={true} className="-z-10 absolute inset-0 overflow-hidden">
+      <ParticlesBackground />
+      <div
+        aria-hidden={true}
+        className="-z-10 absolute inset-0 overflow-hidden"
+      >
         <motion.div
           animate={{
             x: [

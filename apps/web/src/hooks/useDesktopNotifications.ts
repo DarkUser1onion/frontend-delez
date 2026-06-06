@@ -69,21 +69,27 @@ export function useDesktopNotifications() {
     });
   }, [showNotification]);
 
-  const showReminderNotification = useCallback((message: string) => {
-    showNotification({
-      title: "Напоминание от Delёz",
-      body: message,
-      icon: "/favicon.ico",
-    });
-  }, [showNotification]);
+  const showReminderNotification = useCallback(
+    (message: string) => {
+      showNotification({
+        title: "Напоминание от Delёz",
+        body: message,
+        icon: "/favicon.ico",
+      });
+    },
+    [showNotification],
+  );
 
-  const showErrorNotification = useCallback((error: string) => {
-    showNotification({
-      title: "Ошибка",
-      body: error,
-      icon: "/favicon.ico",
-    });
-  }, [showNotification]);
+  const showErrorNotification = useCallback(
+    (error: string) => {
+      showNotification({
+        title: "Ошибка",
+        body: error,
+        icon: "/favicon.ico",
+      });
+    },
+    [showNotification],
+  );
 
   return {
     showNotification,

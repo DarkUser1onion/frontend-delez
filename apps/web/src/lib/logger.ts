@@ -3,10 +3,10 @@
  */
 
 export enum LogLevel {
-  DEBUG = 0,    // Отладочная информация (только Development)
-  INFO = 1,     // Информационные сообщения
-  WARN = 2,     // Предупреждения
-  ERROR = 3,    // Ошибки
+  DEBUG = 0, // Отладочная информация (только Development)
+  INFO = 1, // Информационные сообщения
+  WARN = 2, // Предупреждения
+  ERROR = 3, // Ошибки
 }
 
 class Logger {
@@ -30,25 +30,25 @@ class Logger {
 
   debug(message: string, data?: any) {
     if (this.shouldLog(LogLevel.DEBUG)) {
-      console.log(this.formatMessage('DEBUG', message), data || '');
+      console.log(this.formatMessage("DEBUG", message), data || "");
     }
   }
 
   info(message: string, data?: any) {
     if (this.shouldLog(LogLevel.INFO)) {
-      console.info(this.formatMessage('INFO', message), data || '');
+      console.info(this.formatMessage("INFO", message), data || "");
     }
   }
 
   warn(message: string, data?: any) {
     if (this.shouldLog(LogLevel.WARN)) {
-      console.warn(this.formatMessage('WARN', message), data || '');
+      console.warn(this.formatMessage("WARN", message), data || "");
     }
   }
 
   error(message: string, error?: any) {
     if (this.shouldLog(LogLevel.ERROR)) {
-      console.error(this.formatMessage('ERROR', message), error || '');
+      console.error(this.formatMessage("ERROR", message), error || "");
     }
   }
 

@@ -33,8 +33,8 @@ export function DesktopStatusBar() {
     battery: null,
     network: {
       online: navigator.onLine,
-      type: "Unknown"
-    }
+      type: "Unknown",
+    },
   });
 
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -42,7 +42,8 @@ export function DesktopStatusBar() {
 
   useEffect(() => {
     // Проверяем наличие Tauri
-    const hasTauri = typeof window !== 'undefined' && (window as any).__TAURI__ !== undefined;
+    const hasTauri =
+      typeof window !== "undefined" && (window as any).__TAURI__ !== undefined;
     setIsTauri(hasTauri);
 
     // Обновляем время каждую секунду
@@ -58,22 +59,22 @@ export function DesktopStatusBar() {
           const platform = await tauriOs.platform();
           const arch = await tauriOs.arch();
           const version = await tauriOs.version();
-          
-          setSystemInfo(prev => ({
+
+          setSystemInfo((prev) => ({
             ...prev,
             platform,
             arch,
-            version
+            version,
           }));
         } catch (error) {
           console.error("Failed to get system info:", error);
         }
       } else {
         // Браузерная версия
-        setSystemInfo(prev => ({
+        setSystemInfo((prev) => ({
           ...prev,
           platform: navigator.platform,
-          version: navigator.userAgent
+          version: navigator.userAgent,
         }));
       }
 
@@ -82,13 +83,13 @@ export function DesktopStatusBar() {
         try {
           const tauriOs = (window as any).__TAURI__.os;
           const memory = await tauriOs.memoryInfo();
-          setSystemInfo(prev => ({
+          setSystemInfo((prev) => ({
             ...prev,
             memory: {
               total: memory.total,
               used: memory.used,
-              free: memory.free
-            }
+              free: memory.free,
+            },
           }));
         } catch (error) {
           console.error("Failed to get memory info:", error);
@@ -96,68 +97,68 @@ export function DesktopStatusBar() {
       }
 
       // Получаем информацию о батарее
-      if ('getBattery' in navigator) {
+      if ("getBattery" in navigator) {
         (navigator as any).getBattery().then((battery: any) => {
-          setSystemInfo(prev => ({
+          setSystemInfo((prev) => ({
             ...prev,
             battery: {
               level: battery.level * 100,
-              charging: battery.charging
-            }
+              charging: battery.charging,
+            },
           }));
 
           // Слушаем изменения батареи
-          battery.addEventListener('levelchange', () => {
-            setSystemInfo(prev => ({
+          battery.addEventListener("levelchange", () => {
+            setSystemInfo((prev) => ({
               ...prev,
               battery: {
                 level: battery.level * 100,
-                charging: battery.charging
-              }
+                charging: battery.charging,
+              },
             }));
           });
 
-          battery.addEventListener('chargingchange', () => {
-            setSystemInfo(prev => ({
+          battery.addEventListener("chargingchange", () => {
+            setSystemInfo((prev) => ({
               ...prev,
               battery: {
                 level: battery.level * 100,
-                charging: battery.charging
-              }
+                charging: battery.charging,
+              },
             }));
           });
         });
       }
 
       // Получаем информацию о сети
-      if ('connection' in navigator) {
+      if ("connection" in navigator) {
         const connection = (navigator as any).connection;
-        setSystemInfo(prev => ({
+        setSystemInfo((prev) => ({
           ...prev,
           network: {
             online: navigator.onLine,
-            type: connection.effectiveType || "Unknown"
-          }
+            type: connection.effectiveType || "Unknown",
+          },
         }));
 
         // Слушаем изменения сети
-        window.addEventListener('online', () => {
-          setSystemInfo(prev => ({
+        window.addEventListener("online", () => {
+          setSystemInfo((prev) => ({
             ...prev,
             network: {
               ...prev.network,
-              online: true
-            }
+              online: true,
+            },
           }));
         });
 
-        window.addEventListener('offline', () => {
-          setSystemInfo(prev => ({
+        window.addEventListener("offline", () => {
+          setSystemInfo((prev) => ({
             ...prev,
             network: {
               ...prev.network,
-              online: false
-            }
+              online: false,
+            },
           }));
         });
       }
@@ -176,10 +177,10 @@ export function DesktopStatusBar() {
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
+    return date.toLocaleTimeString("ru-RU", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
   };
 
@@ -202,27 +203,33 @@ export function DesktopStatusBar() {
         fontFamily: "'Motiva Sans', 'Segoe UI', sans-serif",
         userSelect: "none",
         backdropFilter: "blur(4px)",
-        WebkitBackdropFilter: "blur(4px)"
+        WebkitBackdropFilter: "blur(4px)",
       }}
     >
       {/* Left: System info */}
       <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
           <Cpu size={10} />
-          <span>{systemInfo.platform} {systemInfo.arch}</span>
+          <span>
+            {systemInfo.platform} {systemInfo.arch}
+          </span>
         </div>
 
         {systemInfo.memory && (
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <HardDrive size={10} />
             <span>
-              RAM: {formatMemory(systemInfo.memory.used)} / {formatMemory(systemInfo.memory.total)}
+              RAM: {formatMemory(systemInfo.memory.used)} /{" "}
+              {formatMemory(systemInfo.memory.total)}
             </span>
           </div>
         )}
 
         <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <Wifi size={10} color={systemInfo.network.online ? "#66c0f4" : "#8f98a0"} />
+          <Wifi
+            size={10}
+            color={systemInfo.network.online ? "#66c0f4" : "#8f98a0"}
+          />
           <span>
             {systemInfo.network.online ? systemInfo.network.type : "Offline"}
           </span>
@@ -233,8 +240,8 @@ export function DesktopStatusBar() {
       <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
         {systemInfo.battery && (
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <Battery 
-              size={10} 
+            <Battery
+              size={10}
               color={systemInfo.battery.charging ? "#66c0f4" : "#8f98a0"}
               fill={systemInfo.battery.charging ? "#66c0f4" : "transparent"}
             />

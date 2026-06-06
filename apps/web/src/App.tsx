@@ -15,7 +15,6 @@ import { Thread } from "@/components/thread";
 const App: React.FC = () => {
   return (
     <div className="absolute inset-0 flex flex-col overflow-hidden">
-
       <div className="flex-1 overflow-hidden">
         <ThreadProvider>
           <StreamProvider>

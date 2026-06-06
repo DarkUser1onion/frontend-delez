@@ -10,8 +10,8 @@ export function DesktopRedirect() {
 
   useEffect(() => {
     // Проверяем наличие Tauri API через window.__TAURI__
-    const hasTauri = typeof window !== 'undefined' &&
-      (window as any).__TAURI__ !== undefined;
+    const hasTauri =
+      typeof window !== "undefined" && (window as any).__TAURI__ !== undefined;
     console.log("[DesktopRedirect] Tauri detected:", hasTauri);
     setIsTauri(hasTauri);
   }, []);
@@ -19,13 +19,15 @@ export function DesktopRedirect() {
   // Пока проверяем Tauri, показываем загрузку
   if (isTauri === null) {
     return (
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        background: "#000019"
-      }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          background: "#000019",
+        }}
+      >
         <div style={{ color: "rgba(255,255,255,0.7)" }}>Загрузка...</div>
       </div>
     );

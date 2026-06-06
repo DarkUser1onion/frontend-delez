@@ -1,5 +1,5 @@
 /* Landing Page Styles */
-@import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 
 /* Ограничиваем reset только для лендинга */
 .landing-body,
@@ -7,7 +7,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Shantell Sans', 'Segoe UI', sans-serif;
+  font-family: "Shantell Sans", "Segoe UI", sans-serif;
 }
 
 /* Particles Background */
@@ -123,7 +123,7 @@
   text-decoration: none;
   font-size: 13px;
   font-weight: 500;
-  font-family: 'Shantell Sans', 'Segoe UI', sans-serif;
+  font-family: "Shantell Sans", "Segoe UI", sans-serif;
   transition: all 0.3s ease;
   display: inline-block;
   white-space: nowrap;
@@ -178,7 +178,8 @@
   flex-wrap: wrap;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   padding: 12px 32px;
   border-radius: 25px;
   text-decoration: none;
@@ -327,7 +328,8 @@ section {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
   }
   50% {
@@ -848,7 +850,7 @@ section {
   .landing-header .container {
     flex-direction: row;
   }
-  
+
   .burger {
     width: 30px;
     height: 20px;
@@ -892,7 +894,9 @@ section {
     right: -100%;
     width: 100%;
     height: auto;
-    transition: right 0.3s ease, opacity 0.3s ease;
+    transition:
+      right 0.3s ease,
+      opacity 0.3s ease;
     opacity: 0;
     z-index: 10;
 
@@ -928,24 +932,24 @@ section {
   .container {
     padding: 0 15px;
   }
-  
+
   .hero {
     padding: 120px 0 80px;
   }
-  
+
   .hero-title {
     font-size: 32px;
     line-height: 1.3;
   }
-  
+
   .hero-subtitle {
     font-size: 16px;
   }
-  
+
   .section-title {
     font-size: 28px;
   }
-  
+
   /* Specific sections for tablets */
   .how-it-works,
   .experiments,
@@ -959,38 +963,39 @@ section {
   .cta {
     padding: 80px 0;
   }
-  
+
   .hero-buttons {
     flex-direction: column;
     align-items: center;
     gap: 15px;
   }
-  
-  .btn-primary, .btn-secondary {
+
+  .btn-primary,
+  .btn-secondary {
     width: 100%;
     max-width: 280px;
   }
-  
+
   .problem-list {
     flex-direction: column;
     align-items: center;
     gap: 20px;
   }
-  
+
   .problem-item {
     text-align: center;
     max-width: 250px;
   }
-  
+
   .cycle-image-container {
     max-width: 350px;
   }
-  
+
   .cycle-text {
     font-size: 16px;
     margin-bottom: 15px;
   }
-  
+
   .steps-grid,
   .assistant-grid,
   .analysis-grid,
@@ -998,59 +1003,59 @@ section {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .rhizome-description p {
     font-size: 16px;
     padding: 25px;
   }
-  
+
   .hover-hint {
     font-size: 14px;
     margin-bottom: 15px;
   }
-  
+
   .security-features {
     gap: 30px;
     flex-direction: column;
     align-items: center;
   }
-  
+
   .footer-content {
     grid-template-columns: 1fr;
     gap: 40px;
   }
-  
+
   .footer-links {
     grid-template-columns: repeat(2, 1fr);
     gap: 30px;
   }
-  
+
   .cta-buttons {
     flex-direction: column;
     align-items: center;
     gap: 15px;
   }
-  
+
   .cta-buttons .btn-primary,
   .cta-buttons .btn-secondary {
     width: 100%;
     max-width: 280px;
   }
-  
+
   .landing-header .container {
     padding: 12px 15px;
   }
-  
+
   .nav {
     gap: 15px;
   }
-  
+
   .nav-btn,
   .nav-section-link {
     padding: 6px 12px;
     font-size: 13px;
   }
-  
+
   .logo h1 {
     font-size: 20px;
   }
@@ -1060,24 +1065,24 @@ section {
   .container {
     padding: 0 10px;
   }
-  
+
   .hero {
     padding: 100px 0 60px;
   }
-  
+
   .hero-title {
     font-size: 24px;
     line-height: 1.4;
   }
-  
+
   .hero-subtitle {
     font-size: 14px;
   }
-  
+
   section {
     padding: 60px 0;
   }
-  
+
   /* Specific sections for mobile */
   .how-it-works,
   .experiments,
@@ -1091,85 +1096,86 @@ section {
   .cta {
     padding: 45px 0;
   }
-  
+
   .section-title {
     font-size: 22px;
     line-height: 1.3;
   }
-  
+
   .section-subtitle {
     font-size: 16px;
   }
-  
+
   .cycle-image-container {
     max-width: 280px;
   }
-  
+
   .cycle-text {
     font-size: 14px;
     margin-bottom: 10px;
   }
-  
+
   .cycle-image {
     width: 100%;
     height: auto;
   }
-  
+
   .hover-hint {
     font-size: 13px;
     margin-bottom: 10px;
   }
-  
+
   .concepts-grid {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
     gap: 15px;
   }
-  
+
   .rhizome-description p {
     font-size: 14px;
     padding: 20px;
   }
-  
+
   .step-card,
   .assistant-card,
   .analysis-card,
   .audience-card {
     padding: 20px;
   }
-  
+
   .experiment-example {
     padding: 25px 20px;
   }
-  
+
   .footer-links {
     grid-template-columns: 1fr;
     gap: 25px;
   }
-  
+
   .landing-header .container {
     padding: 10px;
   }
-  
+
   .nav {
     gap: 10px;
   }
-  
+
   .nav-link,
   .nav-section-link {
     font-size: 12px;
   }
-  
+
   .nav-btn {
     padding: 5px 10px;
     font-size: 12px;
   }
-  
+
   .logo h1 {
     font-size: 18px;
   }
-  
-  .btn-primary, .btn-secondary {
+
+  .btn-primary,
+  .btn-secondary {
     font-size: 14px;
     padding: 10px 24px;
   }
@@ -1179,31 +1185,31 @@ section {
   .hero-title {
     font-size: 20px;
   }
-  
+
   .section-title {
     font-size: 20px;
   }
-  
+
   .cycle-text {
     font-size: 12px;
   }
-  
+
   .rhizome-description p {
     font-size: 13px;
     padding: 15px;
   }
-  
+
   .step-card,
   .assistant-card,
   .analysis-card,
   .audience-card {
     padding: 15px;
   }
-  
+
   .logo h1 {
     font-size: 16px;
   }
-  
+
   .nav-link,
   .nav-btn,
   .nav-section-link {

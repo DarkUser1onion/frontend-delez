@@ -36,7 +36,8 @@ export function useHints(messages: Message[], enabled: boolean) {
     try {
       const recent = msgs.slice(-6).map((m) => ({
         type: m.type,
-        content: typeof m.content === "string" ? m.content : JSON.stringify(m.content),
+        content:
+          typeof m.content === "string" ? m.content : JSON.stringify(m.content),
       }));
 
       const response = await apiRequest("/ai/api/v1/hints", {

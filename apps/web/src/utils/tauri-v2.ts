@@ -16,7 +16,10 @@ interface TauriWindow {
 
 interface TauriEvent {
   emit: (event: string, payload?: any) => Promise<void>;
-  listen: (event: string, handler: (payload: any) => void) => Promise<() => void>;
+  listen: (
+    event: string,
+    handler: (payload: any) => void,
+  ) => Promise<() => void>;
 }
 
 interface TauriApp {
@@ -35,12 +38,12 @@ export async function initTauriApi(): Promise<boolean> {
   try {
     // В Tauri v2 API доступен через window.__TAURI_INTERNALS__
     const internals = (window as any).__TAURI_INTERNALS__;
-    
+
     if (!internals) {
-      console.warn('Tauri internals not found');
+      console.warn("Tauri internals not found");
       return false;
     }
-    
+
     // Получаем API объекты
     // В Tauri v2 window API может быть доступен через internals.window
     // или через internals.metadata.windows
@@ -50,24 +53,24 @@ export async function initTauriApi(): Promise<boolean> {
       // Альтернативный путь доступа
       tauriWindow = internals.metadata.windows.main;
     }
-    
+
     if (internals.event) {
       tauriEvent = internals.event;
     }
-    
+
     if (internals.app) {
       tauriApp = internals.app;
     }
-    
-    console.log('Tauri API initialized:', {
+
+    console.log("Tauri API initialized:", {
       window: !!tauriWindow,
       event: !!tauriEvent,
-      app: !!tauriApp
+      app: !!tauriApp,
     });
-    
+
     return !!(tauriWindow && tauriEvent);
   } catch (error) {
-    console.error('Failed to initialize Tauri API:', error);
+    console.error("Failed to initialize Tauri API:", error);
     return false;
   }
 }
@@ -107,11 +110,11 @@ export async function minimizeWindow(): Promise<void> {
   if (!tauriWindow) {
     await initTauriApi();
   }
-  
+
   if (tauriWindow?.minimize) {
     await tauriWindow.minimize();
   } else {
-    console.warn('Window minimize not available');
+    console.warn("Window minimize not available");
   }
 }
 
@@ -119,11 +122,11 @@ export async function toggleMaximizeWindow(): Promise<void> {
   if (!tauriWindow) {
     await initTauriApi();
   }
-  
+
   if (tauriWindow?.toggleMaximize) {
     await tauriWindow.toggleMaximize();
   } else {
-    console.warn('Window toggleMaximize not available');
+    console.warn("Window toggleMaximize not available");
   }
 }
 
@@ -131,11 +134,11 @@ export async function closeWindow(): Promise<void> {
   if (!tauriWindow) {
     await initTauriApi();
   }
-  
+
   if (tauriWindow?.close) {
     await tauriWindow.close();
   } else {
-    console.warn('Window close not available');
+    console.warn("Window close not available");
   }
 }
 
@@ -143,12 +146,12 @@ export async function isWindowMaximized(): Promise<boolean> {
   if (!tauriWindow) {
     await initTauriApi();
   }
-  
+
   if (tauriWindow?.isMaximized) {
     return await tauriWindow.isMaximized();
   }
-  
-  console.warn('Window isMaximized not available');
+
+  console.warn("Window isMaximized not available");
   return false;
 }
 
@@ -159,24 +162,27 @@ export async function emitEvent(event: string, payload?: any): Promise<void> {
   if (!tauriEvent) {
     await initTauriApi();
   }
-  
+
   if (tauriEvent?.emit) {
     await tauriEvent.emit(event, payload);
   } else {
-    console.warn('Event emit not available');
+    console.warn("Event emit not available");
   }
 }
 
-export async function listenEvent(event: string, handler: (payload: any) => void): Promise<() => void> {
+export async function listenEvent(
+  event: string,
+  handler: (payload: any) => void,
+): Promise<() => void> {
   if (!tauriEvent) {
     await initTauriApi();
   }
-  
+
   if (tauriEvent?.listen) {
     return await tauriEvent.listen(event, handler);
   }
-  
-  console.warn('Event listen not available');
+
+  console.warn("Event listen not available");
   return () => {};
 }
 
@@ -187,11 +193,11 @@ export async function exitApp(code: number = 0): Promise<void> {
   if (!tauriApp) {
     await initTauriApi();
   }
-  
+
   if (tauriApp?.exit) {
     await tauriApp.exit(code);
   } else {
-    console.warn('App exit not available');
+    console.warn("App exit not available");
   }
 }
 
@@ -210,9 +216,9 @@ export function getInternals(): any {
 }
 
 // Инициализируем API при загрузке
-if (typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__) {
-  initTauriApi().then(initialized => {
-    console.log('Tauri API auto-initialized:', initialized);
+if (typeof window !== "undefined" && (window as any).__TAURI_INTERNALS__) {
+  initTauriApi().then((initialized) => {
+    console.log("Tauri API auto-initialized:", initialized);
   });
 }
 
@@ -230,5 +236,5 @@ export default {
   listenEvent,
   exitApp,
   isApiAvailable,
-  getInternals
+  getInternals,
 };

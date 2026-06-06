@@ -1,10 +1,25 @@
-import { type PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlaskConical, GitFork, Move, Plus, Sparkles, Split, Trash2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import { virtualFieldsApi } from '@/lib/api-client';
+import {
+  type PointerEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  FlaskConical,
+  GitFork,
+  Move,
+  Plus,
+  Sparkles,
+  Split,
+  Trash2,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { virtualFieldsApi } from "@/lib/api-client";
 
-type FieldNodeType = 'question' | 'answer';
+type FieldNodeType = "question" | "answer";
 
 interface FieldNode {
   id: string;
@@ -30,8 +45,8 @@ interface VirtualFieldsState {
   branchInputs: BranchInputState;
 }
 
-const VIRTUAL_FIELDS_STORAGE_KEY = 'delez_virtual_fields_v1';
-const VIRTUAL_FIELDS_BOARD_ID = 'main';
+const VIRTUAL_FIELDS_STORAGE_KEY = "delez_virtual_fields_v1";
+const VIRTUAL_FIELDS_BOARD_ID = "main";
 
 function generateNodeId(): string {
   return `vf-${globalThis.crypto.randomUUID()}`;
@@ -41,8 +56,8 @@ function createEmptyRootQuestionNode(): FieldNode {
   return {
     id: generateNodeId(),
     parentId: null,
-    type: 'question',
-    text: '',
+    type: "question",
+    text: "",
     x: 80,
     y: 120,
   };
@@ -51,7 +66,7 @@ function createEmptyRootQuestionNode(): FieldNode {
 function buildAiAnswer(question: string): string {
   const normalized = question.trim();
   if (!normalized) {
-    return 'Сформулируй вопрос, и я помогу разложить возможные сценарии.';
+    return "Сформулируй вопрос, и я помогу разложить возможные сценарии.";
   }
 
   return `Если идти по этому пути: "${normalized}", проверь 3 фактора — ресурсы, риски и точку невозврата. Начни с малого шага и зафиксируй признак успеха на 7 дней.`;
@@ -60,7 +75,7 @@ function buildAiAnswer(question: string): string {
 function extractTitle(text: string): string {
   const trimmed = text.trim();
   if (!trimmed) {
-    return 'Пустой узел';
+    return "Пустой узел";
   }
   if (trimmed.length <= 72) {
     return trimmed;
@@ -68,7 +83,10 @@ function extractTitle(text: string): string {
   return `${trimmed.slice(0, 72)}...`;
 }
 
-function calculateBranchPosition(parent: FieldNode, siblingsCount: number): { x: number; y: number } {
+function calculateBranchPosition(
+  parent: FieldNode,
+  siblingsCount: number,
+): { x: number; y: number } {
   const baseX = parent.x + 360;
   const verticalOffset = (siblingsCount - 1) * 110;
   return {
@@ -82,15 +100,17 @@ export default function VirtualFieldsPage() {
   const [nodes, setNodes] = useState<FieldNode[]>([]);
   const [branchInputs, setBranchInputs] = useState<BranchInputState>({});
   const [dragState, setDragState] = useState<DragState | null>(null);
-  const [saveStatus, setSaveStatus] = useState<string>('Загрузка поля...');
+  const [saveStatus, setSaveStatus] = useState<string>("Загрузка поля...");
   const isSyncingRef = useRef<boolean>(false);
   const syncErrorRef = useRef<string | null>(null);
-  const historyItemsRef = useRef<Array<{
-    version_id: string;
-    board_id: string;
-    changed_by: string;
-    changed_at: string;
-  }>>([]);
+  const historyItemsRef = useRef<
+    Array<{
+      version_id: string;
+      board_id: string;
+      changed_by: string;
+      changed_at: string;
+    }>
+  >([]);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [isChatListVisible, setIsChatListVisible] = useState<boolean>(true);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -103,7 +123,7 @@ export default function VirtualFieldsPage() {
         const board = await virtualFieldsApi.getBoard(VIRTUAL_FIELDS_BOARD_ID);
         setNodes(board.payload.nodes ?? []);
         setBranchInputs(board.payload.branchInputs ?? {});
-        setSaveStatus('Поле загружено с сервера');
+        setSaveStatus("Поле загружено с сервера");
       } catch {
         try {
           const raw = localStorage.getItem(VIRTUAL_FIELDS_STORAGE_KEY);
@@ -111,14 +131,14 @@ export default function VirtualFieldsPage() {
             const parsed = JSON.parse(raw) as VirtualFieldsState;
             setNodes(parsed.nodes ?? []);
             setBranchInputs(parsed.branchInputs ?? {});
-            setSaveStatus('Загружено из локального черновика');
+            setSaveStatus("Загружено из локального черновика");
           } else {
-            setSaveStatus('Создай первое поле');
+            setSaveStatus("Создай первое поле");
           }
         } catch {
-          setSaveStatus('Создай первое поле');
+          setSaveStatus("Создай первое поле");
         }
-        syncErrorRef.current = 'Сервер поля недоступен, работаем локально.';
+        syncErrorRef.current = "Сервер поля недоступен, работаем локально.";
       } finally {
         isSyncingRef.current = false;
       }
@@ -155,11 +175,11 @@ export default function VirtualFieldsPage() {
             branchInputs,
           },
         });
-        setSaveStatus('Изменения сохранены автоматически');
+        setSaveStatus("Изменения сохранены автоматически");
         syncErrorRef.current = null;
         loadBoardHistory();
       } catch {
-        setSaveStatus('Сохранено локально: сервер недоступен');
+        setSaveStatus("Сохранено локально: сервер недоступен");
       }
     }, 800);
 
@@ -170,7 +190,7 @@ export default function VirtualFieldsPage() {
     if (!saveStatus) {
       return;
     }
-    const timer = globalThis.setTimeout(() => setSaveStatus(''), 3000);
+    const timer = globalThis.setTimeout(() => setSaveStatus(""), 3000);
     return () => globalThis.clearTimeout(timer);
   }, [saveStatus]);
 
@@ -190,10 +210,16 @@ export default function VirtualFieldsPage() {
           to: node,
         };
       })
-      .filter((item): item is { id: string; from: FieldNode; to: FieldNode } => item !== null);
+      .filter(
+        (item): item is { id: string; from: FieldNode; to: FieldNode } =>
+          item !== null,
+      );
   }, [nodes]);
 
-  const rootNodes = useMemo(() => nodes.filter((node) => node.parentId === null), [nodes]);
+  const rootNodes = useMemo(
+    () => nodes.filter((node) => node.parentId === null),
+    [nodes],
+  );
   const chatItems = useMemo(
     () =>
       rootNodes.map((node) => ({
@@ -214,7 +240,7 @@ export default function VirtualFieldsPage() {
   }, [chatItems, selectedChatId]);
 
   const createBranch = (parentNodeId: string) => {
-    const questionText = (branchInputs[parentNodeId] ?? '').trim();
+    const questionText = (branchInputs[parentNodeId] ?? "").trim();
     if (!questionText) {
       return;
     }
@@ -224,8 +250,13 @@ export default function VirtualFieldsPage() {
       return;
     }
 
-    const currentChildren = nodes.filter((node) => node.parentId === parentNodeId);
-    const branchPosition = calculateBranchPosition(parentNode, currentChildren.length + 1);
+    const currentChildren = nodes.filter(
+      (node) => node.parentId === parentNodeId,
+    );
+    const branchPosition = calculateBranchPosition(
+      parentNode,
+      currentChildren.length + 1,
+    );
 
     const questionNodeId = generateNodeId();
     const answerNodeId = generateNodeId();
@@ -233,7 +264,7 @@ export default function VirtualFieldsPage() {
     const questionNode: FieldNode = {
       id: questionNodeId,
       parentId: parentNodeId,
-      type: 'question',
+      type: "question",
       text: questionText,
       x: branchPosition.x,
       y: branchPosition.y,
@@ -242,14 +273,14 @@ export default function VirtualFieldsPage() {
     const answerNode: FieldNode = {
       id: answerNodeId,
       parentId: questionNodeId,
-      type: 'answer',
+      type: "answer",
       text: buildAiAnswer(questionText),
       x: branchPosition.x + 360,
       y: branchPosition.y,
     };
 
     setNodes((prev) => [...prev, questionNode, answerNode]);
-    setBranchInputs((prev) => ({ ...prev, [parentNodeId]: '' }));
+    setBranchInputs((prev) => ({ ...prev, [parentNodeId]: "" }));
   };
 
   const deleteBranch = (nodeId: string) => {
@@ -263,7 +294,9 @@ export default function VirtualFieldsPage() {
       }
 
       removeIds.add(current);
-      const children = nodes.filter((node) => node.parentId === current).map((node) => node.id);
+      const children = nodes
+        .filter((node) => node.parentId === current)
+        .map((node) => node.id);
       for (const childId of children) {
         stack.push(childId);
       }
@@ -272,7 +305,9 @@ export default function VirtualFieldsPage() {
     setNodes((prev) => prev.filter((node) => !removeIds.has(node.id)));
   };
 
-  const getContainerPoint = (event: PointerEvent<HTMLDivElement>): { x: number; y: number } => {
+  const getContainerPoint = (
+    event: PointerEvent<HTMLDivElement>,
+  ): { x: number; y: number } => {
     const container = canvasContainerRef.current;
     if (!container) {
       return { x: event.clientX, y: event.clientY };
@@ -342,172 +377,204 @@ export default function VirtualFieldsPage() {
     container.scrollTo({
       left: Math.max(node.x - 40, 0),
       top: Math.max(node.y - 40, 0),
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
   const createNewBoard = () => {
     const initialNode = createEmptyRootQuestionNode();
     setNodes([initialNode]);
-    setBranchInputs({ [initialNode.id]: '' });
+    setBranchInputs({ [initialNode.id]: "" });
     setSelectedChatId(initialNode.id);
     syncErrorRef.current = null;
-    setSaveStatus('Создана новая доска');
+    setSaveStatus("Создана новая доска");
   };
 
   return (
     <div className="relative h-screen overflow-hidden bg-[#000019] text-white">
       <div className="h-full overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-      <div className="flex items-start justify-between px-8 pt-8 pb-6">
-        <div>
-          <Breadcrumbs crumbs={[{ label: 'Главная', to: '/navigation' }, { label: 'Карта жизни', to: '/graph' }, { label: 'Виртуальные поля' }]} />
+        <div className="flex items-start justify-between px-8 pt-8 pb-6">
+          <div>
+            <Breadcrumbs
+              crumbs={[
+                { label: "Главная", to: "/navigation" },
+                { label: "Карта жизни", to: "/graph" },
+                { label: "Виртуальные поля" },
+              ]}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={createNewBoard}
+            className="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium text-white transition hover:bg-white/20"
+          >
+            Новая доска
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={createNewBoard}
-          className="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium text-white transition hover:bg-white/20"
-        >
-          Новая доска
-        </button>
-      </div>
 
-      <div className="px-8 pb-16">
-        <div className={`grid gap-4 ${isChatListVisible ? 'lg:grid-cols-[220px_minmax(0,1fr)]' : 'grid-cols-1'}`}>
-          {isChatListVisible && (
-            <aside className="rounded-2xl border border-white/10 bg-[rgba(10,10,25,0.86)] p-3">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-medium text-white/70">Чаты</p>
+        <div className="px-8 pb-16">
+          <div
+            className={`grid gap-4 ${isChatListVisible ? "lg:grid-cols-[220px_minmax(0,1fr)]" : "grid-cols-1"}`}
+          >
+            {isChatListVisible && (
+              <aside className="rounded-2xl border border-white/10 bg-[rgba(10,10,25,0.86)] p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-medium text-white/70">Чаты</p>
+                  <button
+                    type="button"
+                    onClick={() => setIsChatListVisible(false)}
+                    className="rounded-md border border-white/15 bg-white/5 px-2 py-1 text-[10px] text-white/80 transition hover:bg-white/10"
+                  >
+                    Скрыть
+                  </button>
+                </div>
+                {chatItems.length === 0 ? (
+                  <p className="mt-3 text-xs text-white/45">Пока нет чатов</p>
+                ) : (
+                  <div className="mt-3 space-y-1">
+                    {chatItems.map((chat) => {
+                      const isActive = chat.id === selectedChatId;
+                      return (
+                        <button
+                          key={chat.id}
+                          type="button"
+                          onClick={() => focusChatNode(chat.id)}
+                          className="w-full rounded-lg border px-2.5 py-2 text-left text-xs transition"
+                          style={{
+                            borderColor: isActive
+                              ? "rgba(96,165,250,0.6)"
+                              : "rgba(255,255,255,0.1)",
+                            background: isActive
+                              ? "rgba(96,165,250,0.18)"
+                              : "rgba(255,255,255,0.04)",
+                            color: isActive ? "#fff" : "rgba(255,255,255,0.8)",
+                          }}
+                        >
+                          {chat.title}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </aside>
+            )}
+
+            <div
+              ref={canvasContainerRef}
+              className="relative overflow-auto rounded-2xl border border-white/10 bg-[rgba(10,10,25,0.86)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              style={{ minHeight: 540 }}
+              onPointerMove={moveDrag}
+              onPointerUp={stopDrag}
+              onPointerLeave={stopDrag}
+            >
+              {!isChatListVisible && (
                 <button
                   type="button"
-                  onClick={() => setIsChatListVisible(false)}
-                  className="rounded-md border border-white/15 bg-white/5 px-2 py-1 text-[10px] text-white/80 transition hover:bg-white/10"
+                  onClick={() => setIsChatListVisible(true)}
+                  className="absolute left-3 top-3 z-20 rounded-md border border-white/15 bg-[rgba(15,15,30,0.82)] px-2 py-1 text-[10px] text-white/85 transition hover:bg-[rgba(30,30,50,0.82)]"
                 >
-                  Скрыть
+                  Показать чаты
                 </button>
-              </div>
-              {chatItems.length === 0 ? (
-                <p className="mt-3 text-xs text-white/45">Пока нет чатов</p>
-              ) : (
-                <div className="mt-3 space-y-1">
-                  {chatItems.map((chat) => {
-                    const isActive = chat.id === selectedChatId;
-                    return (
-                      <button
-                        key={chat.id}
-                        type="button"
-                        onClick={() => focusChatNode(chat.id)}
-                        className="w-full rounded-lg border px-2.5 py-2 text-left text-xs transition"
-                        style={{
-                          borderColor: isActive ? 'rgba(96,165,250,0.6)' : 'rgba(255,255,255,0.1)',
-                          background: isActive ? 'rgba(96,165,250,0.18)' : 'rgba(255,255,255,0.04)',
-                          color: isActive ? '#fff' : 'rgba(255,255,255,0.8)',
-                        }}
-                      >
-                        {chat.title}
-                      </button>
-                    );
-                  })}
-                </div>
               )}
-            </aside>
-          )}
-
-          <div
-            ref={canvasContainerRef}
-            className="relative overflow-auto rounded-2xl border border-white/10 bg-[rgba(10,10,25,0.86)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-            style={{ minHeight: 540 }}
-            onPointerMove={moveDrag}
-            onPointerUp={stopDrag}
-            onPointerLeave={stopDrag}
-          >
-            {!isChatListVisible && (
-              <button
-                type="button"
-                onClick={() => setIsChatListVisible(true)}
-                className="absolute left-3 top-3 z-20 rounded-md border border-white/15 bg-[rgba(15,15,30,0.82)] px-2 py-1 text-[10px] text-white/85 transition hover:bg-[rgba(30,30,50,0.82)]"
+              <svg
+                className="absolute left-0 top-0 h-full w-full"
+                style={{ minWidth: 1400, minHeight: 800 }}
               >
-                Показать чаты
-              </button>
-            )}
-          <svg className="absolute left-0 top-0 h-full w-full" style={{ minWidth: 1400, minHeight: 800 }}>
-            {edges.map((edge) => (
-              <line
-                key={edge.id}
-                x1={edge.from.x + 280}
-                y1={edge.from.y + 54}
-                x2={edge.to.x}
-                y2={edge.to.y + 54}
-                stroke="rgba(148, 187, 255, 0.55)"
-                strokeWidth={2}
-                strokeDasharray="4 4"
-              />
-            ))}
-          </svg>
-
-            <div className="relative" style={{ minWidth: 1400, minHeight: 800 }}>
-              {nodes.map((node) => (
-              <div
-                key={node.id}
-                className="absolute w-[280px] rounded-2xl border p-4 shadow-[0_8px_28px_rgba(0,0,0,0.35)]"
-                style={{
-                  left: node.x,
-                  top: node.y,
-                  borderColor: node.type === 'question' ? 'rgba(96,165,250,0.45)' : 'rgba(52,211,153,0.45)',
-                  background: node.type === 'question' ? 'rgba(96,165,250,0.12)' : 'rgba(52,211,153,0.12)',
-                }}
-              >
-                <div
-                  className="mb-2 flex cursor-move items-center justify-between gap-2"
-                  onPointerDown={(event) => startDrag(event, node)}
-                >
-                  <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/80">
-                    <Move size={12} />
-                    {node.type === 'question' ? <Split size={12} /> : <Sparkles size={12} />}
-                    {node.type === 'question' ? 'Вопрос' : 'Ответ ИИ'}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => deleteBranch(node.id)}
-                    className="rounded-md border border-white/15 bg-white/5 p-1 text-white/70 transition hover:bg-white/10 hover:text-white"
-                    title="Удалить ветку от этого узла"
-                  >
-                    <Trash2 size={12} />
-                  </button>
-                </div>
-                <textarea
-                  value={node.text}
-                  onChange={(event) => updateNodeText(node.id, event.target.value)}
-                  className="h-20 w-full resize-none rounded-lg border border-white/15 bg-[#070b22]/70 px-2 py-2 text-xs text-white outline-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-                />
-                <p className="mt-1 text-[10px] text-white/50">Кратко: {extractTitle(node.text)}</p>
-
-                <div className="mt-3 space-y-2">
-                  <input
-                    value={branchInputs[node.id] ?? ''}
-                    onChange={(event) =>
-                      setBranchInputs((prev) => ({
-                        ...prev,
-                        [node.id]: event.target.value,
-                      }))
-                    }
-                    placeholder="Вопрос в новую ветку..."
-                    className="h-9 w-full rounded-lg border border-white/15 bg-[#070b22]/90 px-3 text-xs text-white outline-none placeholder:text-white/40"
+                {edges.map((edge) => (
+                  <line
+                    key={edge.id}
+                    x1={edge.from.x + 280}
+                    y1={edge.from.y + 54}
+                    x2={edge.to.x}
+                    y2={edge.to.y + 54}
+                    stroke="rgba(148, 187, 255, 0.55)"
+                    strokeWidth={2}
+                    strokeDasharray="4 4"
                   />
-                  <button
-                    type="button"
-                    onClick={() => createBranch(node.id)}
-                    className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white transition hover:bg-white/20"
+                ))}
+              </svg>
+
+              <div
+                className="relative"
+                style={{ minWidth: 1400, minHeight: 800 }}
+              >
+                {nodes.map((node) => (
+                  <div
+                    key={node.id}
+                    className="absolute w-[280px] rounded-2xl border p-4 shadow-[0_8px_28px_rgba(0,0,0,0.35)]"
+                    style={{
+                      left: node.x,
+                      top: node.y,
+                      borderColor:
+                        node.type === "question"
+                          ? "rgba(96,165,250,0.45)"
+                          : "rgba(52,211,153,0.45)",
+                      background:
+                        node.type === "question"
+                          ? "rgba(96,165,250,0.12)"
+                          : "rgba(52,211,153,0.12)",
+                    }}
                   >
-                    <Plus size={12} />
-                    Ветвить
-                  </button>
-                </div>
+                    <div
+                      className="mb-2 flex cursor-move items-center justify-between gap-2"
+                      onPointerDown={(event) => startDrag(event, node)}
+                    >
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/80">
+                        <Move size={12} />
+                        {node.type === "question" ? (
+                          <Split size={12} />
+                        ) : (
+                          <Sparkles size={12} />
+                        )}
+                        {node.type === "question" ? "Вопрос" : "Ответ ИИ"}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => deleteBranch(node.id)}
+                        className="rounded-md border border-white/15 bg-white/5 p-1 text-white/70 transition hover:bg-white/10 hover:text-white"
+                        title="Удалить ветку от этого узла"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                    <textarea
+                      value={node.text}
+                      onChange={(event) =>
+                        updateNodeText(node.id, event.target.value)
+                      }
+                      className="h-20 w-full resize-none rounded-lg border border-white/15 bg-[#070b22]/70 px-2 py-2 text-xs text-white outline-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                    />
+                    <p className="mt-1 text-[10px] text-white/50">
+                      Кратко: {extractTitle(node.text)}
+                    </p>
+
+                    <div className="mt-3 space-y-2">
+                      <input
+                        value={branchInputs[node.id] ?? ""}
+                        onChange={(event) =>
+                          setBranchInputs((prev) => ({
+                            ...prev,
+                            [node.id]: event.target.value,
+                          }))
+                        }
+                        placeholder="Вопрос в новую ветку..."
+                        className="h-9 w-full rounded-lg border border-white/15 bg-[#070b22]/90 px-3 text-xs text-white outline-none placeholder:text-white/40"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => createBranch(node.id)}
+                        className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white transition hover:bg-white/20"
+                      >
+                        <Plus size={12} />
+                        Ветвить
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-              ))}
             </div>
           </div>
         </div>
-      </div>
       </div>
 
       {/* Нижняя навигация */}
@@ -515,17 +582,27 @@ export default function VirtualFieldsPage() {
         <div
           className="flex items-center gap-1 rounded-2xl px-3 py-2"
           style={{
-            background: 'rgba(15, 15, 30, 0.85)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+            background: "rgba(15, 15, 30, 0.85)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
           }}
         >
           {[
-            { label: 'Карта жизни', icon: GitFork, path: '/graph', color: '#60a5fa' },
-            { label: 'Виртуальные поля', icon: FlaskConical, path: '/virtual-fields', color: '#fbbf24' },
+            {
+              label: "Карта жизни",
+              icon: GitFork,
+              path: "/graph",
+              color: "#60a5fa",
+            },
+            {
+              label: "Виртуальные поля",
+              icon: FlaskConical,
+              path: "/virtual-fields",
+              color: "#fbbf24",
+            },
           ].map(({ label, icon: Icon, path, color }) => {
-            const isActive = path === '/virtual-fields';
+            const isActive = path === "/virtual-fields";
             return (
               <button
                 key={label}
@@ -534,8 +611,8 @@ export default function VirtualFieldsPage() {
                 }}
                 className="flex flex-col items-center gap-1 rounded-xl px-4 py-2 transition-all"
                 style={{
-                  background: isActive ? `${color}22` : 'transparent',
-                  color: isActive ? color : 'rgba(255,255,255,0.5)',
+                  background: isActive ? `${color}22` : "transparent",
+                  color: isActive ? color : "rgba(255,255,255,0.5)",
                   minWidth: 64,
                 }}
               >

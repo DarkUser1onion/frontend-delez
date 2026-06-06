@@ -36,8 +36,12 @@ export default function MemoirsPage() {
   const [activeTab, setActiveTab] = useState<MemoirsTab>("public");
   const [publicFeed, setPublicFeed] = useState<PublicMemoirItem[]>([]);
   const [privateStory, setPrivateStory] = useState<PrivateStory | null>(null);
-  const [recommendations, setRecommendations] = useState<MemoirRecommendation[]>([]);
-  const [storyPeriod, setStoryPeriod] = useState<"month" | "year" | "all">("all");
+  const [recommendations, setRecommendations] = useState<
+    MemoirRecommendation[]
+  >([]);
+  const [storyPeriod, setStoryPeriod] = useState<"month" | "year" | "all">(
+    "all",
+  );
   const [publishTitle, setPublishTitle] = useState<string>("");
   const [publishContent, setPublishContent] = useState<string>("");
   const [publishSaving, setPublishSaving] = useState<boolean>(false);
@@ -45,7 +49,11 @@ export default function MemoirsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([memoirsApi.getPublicFeed(), memoirsApi.getPrivateStory("all"), memoirsApi.getRecommendations()])
+    Promise.all([
+      memoirsApi.getPublicFeed(),
+      memoirsApi.getPrivateStory("all"),
+      memoirsApi.getRecommendations(),
+    ])
       .then(([publicData, privateData, recommendationsData]) => {
         setPublicFeed(
           publicData.items.map((item) => ({
@@ -114,10 +122,10 @@ export default function MemoirsPage() {
   };
 
   const updateMemoirLikes = (memoirId: string, newLikes: number): void => {
-    setPublicFeed((prev) => 
-      prev.map((item) => 
-        item.id === memoirId ? { ...item, likes: newLikes } : item
-      )
+    setPublicFeed((prev) =>
+      prev.map((item) =>
+        item.id === memoirId ? { ...item, likes: newLikes } : item,
+      ),
     );
   };
 
@@ -142,7 +150,11 @@ export default function MemoirsPage() {
   if (loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[#000019]">
-        <RadialPulseLoader text="Загрузка раздела Мемуары..." size={120} color="#ffffff" />
+        <RadialPulseLoader
+          text="Загрузка раздела Мемуары..."
+          size={120}
+          color="#ffffff"
+        />
       </div>
     );
   }
@@ -151,9 +163,16 @@ export default function MemoirsPage() {
     <div className="min-h-full bg-[#000019] text-white">
       <div className="flex items-start justify-between px-8 pt-8 pb-6">
         <div>
-          <Breadcrumbs crumbs={[{ label: "Главная", to: "/navigation" }, { label: "Мемуары" }]} />
+          <Breadcrumbs
+            crumbs={[
+              { label: "Главная", to: "/navigation" },
+              { label: "Мемуары" },
+            ]}
+          />
           <h1 className="mt-2 mb-1 text-4xl font-bold">Мемуары</h1>
-          <p className="text-sm text-gray-500">Публичная и приватная хроника жизненного пути</p>
+          <p className="text-sm text-gray-500">
+            Публичная и приватная хроника жизненного пути
+          </p>
         </div>
         <Link
           to="/report"
@@ -166,7 +185,9 @@ export default function MemoirsPage() {
 
       <div className="px-8 pb-8">
         {error ? (
-          <div className="mb-4 rounded-2xl border border-rose-300/20 bg-rose-500/10 p-4 text-sm text-rose-200">{error}</div>
+          <div className="mb-4 rounded-2xl border border-rose-300/20 bg-rose-500/10 p-4 text-sm text-rose-200">
+            {error}
+          </div>
         ) : null}
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-2">
           <div className="grid grid-cols-2 gap-2">
@@ -183,8 +204,12 @@ export default function MemoirsPage() {
                   onClick={() => setActiveTab(tab.id as MemoirsTab)}
                   className="flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm transition-all"
                   style={{
-                    border: isActive ? "1px solid rgba(255,255,255,0.25)" : "1px solid transparent",
-                    background: isActive ? "rgba(255,255,255,0.10)" : "transparent",
+                    border: isActive
+                      ? "1px solid rgba(255,255,255,0.25)"
+                      : "1px solid transparent",
+                    background: isActive
+                      ? "rgba(255,255,255,0.10)"
+                      : "transparent",
                     color: isActive ? "#fff" : "rgba(255,255,255,0.55)",
                   }}
                 >
@@ -202,7 +227,10 @@ export default function MemoirsPage() {
           <div className="space-y-4">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
               <h2 className="text-lg font-semibold">Публичные мемуары</h2>
-              <p className="mt-2 text-sm text-gray-400">Публикуй личные истории, формируй коллективную хронику и получай отклик сообщества.</p>
+              <p className="mt-2 text-sm text-gray-400">
+                Публикуй личные истории, формируй коллективную хронику и получай
+                отклик сообщества.
+              </p>
               <div className="mt-4 grid grid-cols-1 gap-3">
                 <input
                   value={publishTitle}
@@ -233,12 +261,19 @@ export default function MemoirsPage() {
                 <div
                   key={entry.id}
                   className="rounded-2xl border p-4"
-                  style={{ borderColor: "rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.03)" }}
+                  style={{
+                    borderColor: "rgba(255,255,255,0.10)",
+                    background: "rgba(255,255,255,0.03)",
+                  }}
                 >
                   <p className="text-sm font-semibold">{entry.title}</p>
-                  <p className="mt-2 text-sm text-gray-400">{shortText(entry.description, 140)}</p>
+                  <p className="mt-2 text-sm text-gray-400">
+                    {shortText(entry.description, 140)}
+                  </p>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-xs text-gray-500">{new Date(entry.created_at).toLocaleString("ru-RU")}</span>
+                    <span className="text-xs text-gray-500">
+                      {new Date(entry.created_at).toLocaleString("ru-RU")}
+                    </span>
                     <button
                       type="button"
                       onClick={() => handleLike(entry.id)}
@@ -249,7 +284,11 @@ export default function MemoirsPage() {
                   </div>
                 </div>
               ))}
-              {publicFeed.length === 0 ? <p className="text-sm text-gray-500">Пока нет публичных мемуаров.</p> : null}
+              {publicFeed.length === 0 ? (
+                <p className="text-sm text-gray-500">
+                  Пока нет публичных мемуаров.
+                </p>
+              ) : null}
             </div>
           </div>
         ) : null}
@@ -258,15 +297,30 @@ export default function MemoirsPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
               {[
-                { label: "Пунктов хронологии", value: String(memoirStats.timelineCount) },
-                { label: "Публичных историй", value: String(memoirStats.publicCount) },
-                { label: "Всего реакций", value: String(memoirStats.likesCount) },
-                { label: "Рекомендаций ИИ", value: String(recommendations.length) },
+                {
+                  label: "Пунктов хронологии",
+                  value: String(memoirStats.timelineCount),
+                },
+                {
+                  label: "Публичных историй",
+                  value: String(memoirStats.publicCount),
+                },
+                {
+                  label: "Всего реакций",
+                  value: String(memoirStats.likesCount),
+                },
+                {
+                  label: "Рекомендаций ИИ",
+                  value: String(recommendations.length),
+                },
               ].map((item) => (
                 <div
                   key={item.label}
                   className="rounded-2xl border p-5"
-                  style={{ borderColor: "rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.03)" }}
+                  style={{
+                    borderColor: "rgba(255,255,255,0.10)",
+                    background: "rgba(255,255,255,0.03)",
+                  }}
                 >
                   <p className="text-xs text-gray-500">{item.label}</p>
                   <p className="mt-3 text-3xl font-bold">{item.value}</p>
@@ -275,7 +329,9 @@ export default function MemoirsPage() {
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-              <p className="mb-2 text-xs text-gray-500">Период автосборки истории</p>
+              <p className="mb-2 text-xs text-gray-500">
+                Период автосборки истории
+              </p>
               <div className="flex gap-2">
                 {[
                   { id: "month", label: "Месяц" },
@@ -285,11 +341,19 @@ export default function MemoirsPage() {
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setStoryPeriod(item.id as "month" | "year" | "all")}
+                    onClick={() =>
+                      setStoryPeriod(item.id as "month" | "year" | "all")
+                    }
                     className="rounded-xl border px-3 py-1.5 text-xs transition"
                     style={{
-                      borderColor: storyPeriod === item.id ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.1)",
-                      background: storyPeriod === item.id ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.03)",
+                      borderColor:
+                        storyPeriod === item.id
+                          ? "rgba(255,255,255,0.3)"
+                          : "rgba(255,255,255,0.1)",
+                      background:
+                        storyPeriod === item.id
+                          ? "rgba(255,255,255,0.12)"
+                          : "rgba(255,255,255,0.03)",
                     }}
                   >
                     {item.label}
@@ -298,27 +362,46 @@ export default function MemoirsPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border p-5" style={{ borderColor: "rgba(255,255,255,0.10)", background: "rgba(255,255,255,0.03)" }}>
+            <div
+              className="rounded-2xl border p-5"
+              style={{
+                borderColor: "rgba(255,255,255,0.10)",
+                background: "rgba(255,255,255,0.03)",
+              }}
+            >
               <div className="flex items-center gap-2 text-sm text-gray-300">
                 <Sparkles size={16} />
-                <span>{privateStory?.title ?? "Автосборка приватной хронологии"}</span>
+                <span>
+                  {privateStory?.title ?? "Автосборка приватной хронологии"}
+                </span>
               </div>
-              <p className="mt-2 text-sm text-gray-300">{privateStory?.narrative ?? "Нет данных для нарратива."}</p>
+              <p className="mt-2 text-sm text-gray-300">
+                {privateStory?.narrative ?? "Нет данных для нарратива."}
+              </p>
               <ul className="mt-3 space-y-2 text-sm text-gray-400">
                 {(privateStory?.timeline_points ?? []).map((point) => (
                   <li key={point}>{point}</li>
                 ))}
-                {(privateStory?.timeline_points ?? []).length === 0 ? <li>Нет данных для построения хронологии.</li> : null}
+                {(privateStory?.timeline_points ?? []).length === 0 ? (
+                  <li>Нет данных для построения хронологии.</li>
+                ) : null}
               </ul>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-              <p className="mb-2 text-sm font-semibold">Рекомендательные сценарии ИИ по изменению курса</p>
+              <p className="mb-2 text-sm font-semibold">
+                Рекомендательные сценарии ИИ по изменению курса
+              </p>
               <ul className="space-y-2 text-sm text-gray-300">
                 {recommendations.map((item) => (
-                  <li key={item.title} className="rounded-xl border border-white/10 bg-black/20 p-3">
+                  <li
+                    key={item.title}
+                    className="rounded-xl border border-white/10 bg-black/20 p-3"
+                  >
                     <p className="font-medium">{item.title}</p>
-                    <p className="mt-1 text-xs text-gray-400">{item.description}</p>
+                    <p className="mt-1 text-xs text-gray-400">
+                      {item.description}
+                    </p>
                   </li>
                 ))}
               </ul>

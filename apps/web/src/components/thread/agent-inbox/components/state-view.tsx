@@ -212,9 +212,7 @@ export function StateViewObject(props: Readonly<StateViewProps>) {
       <div className="flex flex-col gap-1 items-start justify-start w-full">
         <p className="text-black font-normal">
           {prettifyText(props.keyName)}{" "}
-          {!expanded && (
-            <HasContentsEllipsis onClick={handleToggleExpanded} />
-          )}
+          {!expanded && <HasContentsEllipsis onClick={handleToggleExpanded} />}
         </p>
         <motion.div
           initial={false}

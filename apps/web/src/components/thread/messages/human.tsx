@@ -39,7 +39,7 @@ function EditableContent({
       onKeyDown={handleKeyDown}
       className={cn(
         "px-3 py-2 sm:px-4 sm:py-2 rounded-2xl bg-[#000019] border border-white/20 text-white/90 text-[15px] md:text-[15px] leading-relaxed w-fit min-w-[120px] ml-auto max-w-full sm:max-w-[600px] whitespace-pre-wrap break-words min-h-0 focus-visible:ring-1 focus-visible:ring-white/10",
-        "resize-none outline-none shadow-none"
+        "resize-none outline-none shadow-none",
       )}
       autoFocus
     />

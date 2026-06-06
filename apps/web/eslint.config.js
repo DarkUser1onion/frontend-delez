@@ -28,7 +28,11 @@ export default tseslint.config(
         "warn",
         {
           allowConstantExport: true,
-          allowExportNames: ["buttonVariants", "useThreads", "useStreamContext"],
+          allowExportNames: [
+            "buttonVariants",
+            "useThreads",
+            "useStreamContext",
+          ],
         },
       ],
     },

@@ -23,13 +23,17 @@
         background-color: #000019;
         height: 100%;
         overflow: hidden;
-        font-family: 'Shantell Sans', 'Segoe UI', sans-serif;
+        font-family: "Shantell Sans", "Segoe UI", sans-serif;
       }
 
       #native-splash {
         position: fixed;
         inset: 0;
-        background: radial-gradient(ellipse at center, #0a0a1a 0%, #000019 100%);
+        background: radial-gradient(
+          ellipse at center,
+          #0a0a1a 0%,
+          #000019 100%
+        );
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -72,11 +76,21 @@
         opacity: 0.6;
       }
 
-      .dot:nth-child(1) { animation-delay: 0s; }
-      .dot:nth-child(2) { animation-delay: 0.15s; }
-      .dot:nth-child(3) { animation-delay: 0.3s; }
-      .dot:nth-child(4) { animation-delay: 0.45s; }
-      .dot:nth-child(5) { animation-delay: 0.6s; }
+      .dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .dot:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .dot:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .dot:nth-child(4) {
+        animation-delay: 0.45s;
+      }
+      .dot:nth-child(5) {
+        animation-delay: 0.6s;
+      }
 
       #native-splash .footer {
         margin-top: 32px;
@@ -117,14 +131,14 @@
 
     <script>
       const MIN_SPLASH_TIME = 1000;
-      const root = document.getElementById('root');
-      const splash = document.getElementById('native-splash');
+      const root = document.getElementById("root");
+      const splash = document.getElementById("native-splash");
       let reactReady = false;
       let timerElapsed = false;
 
       const tryHideSplash = () => {
         if (reactReady && timerElapsed && splash) {
-          splash.style.opacity = '0';
+          splash.style.opacity = "0";
           setTimeout(() => {
             if (splash.parentNode) {
               splash.parentNode.removeChild(splash);

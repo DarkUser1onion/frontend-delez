@@ -45,12 +45,15 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <NuqsAdapter>
         <DesktopApp>
           <Routes>
-            <Route path="/" element={
-              <>
-                <DesktopRedirect />
-                <Landing />
-              </>
-            } />
+            <Route
+              path="/"
+              element={
+                <>
+                  <DesktopRedirect />
+                  <Landing />
+                </>
+              }
+            />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/beta-test" element={<BetaTest />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -60,30 +63,163 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
 
-            <Route path="/navigation" element={<ProtectedRoute><NavigationPage /></ProtectedRoute>} />
-            <Route path="/chat" element={<ProtectedRoute><App /></ProtectedRoute>} />
-            <Route path="/graph" element={<ProtectedRoute><GraphPage /></ProtectedRoute>} />
-            <Route path="/event/:id" element={<ProtectedRoute><Event /></ProtectedRoute>} />
-            <Route path="/event" element={<ProtectedRoute><Event /></ProtectedRoute>} />
-            <Route path="/events" element={<ProtectedRoute><EventsPage /></ProtectedRoute>} />
-            <Route path="/records" element={<ProtectedRoute><RecordsPage /></ProtectedRoute>} />
-            <Route path="/records/notebook/:notebookId" element={<ProtectedRoute><NotebookEntriesPage /></ProtectedRoute>} />
-            <Route path="/goals" element={<ProtectedRoute><GoalsPage /></ProtectedRoute>} />
-            <Route path="/development" element={<ProtectedRoute><DevelopmentPage /></ProtectedRoute>} />
-            <Route path="/goals/:id" element={<ProtectedRoute><GoalPage /></ProtectedRoute>} />
-            <Route path="/report" element={<ProtectedRoute><ReportPage /></ProtectedRoute>} />
-            <Route path="/experiments" element={<ProtectedRoute><ExperimentsPage /></ProtectedRoute>} />
-            <Route path="/virtual-fields" element={<ProtectedRoute><VirtualFieldsPage /></ProtectedRoute>} />
-            <Route path="/experiment/:id" element={<ProtectedRoute><Experiment /></ProtectedRoute>} />
-            <Route path="/experiment" element={<ProtectedRoute><Experiment /></ProtectedRoute>} />
-            <Route path="/memoirs" element={<ProtectedRoute><MemoirsPage /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/mbti-test" element={<ProtectedRoute><MBTITestPage /></ProtectedRoute>} />
+            <Route
+              path="/navigation"
+              element={
+                <ProtectedRoute>
+                  <NavigationPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                <ProtectedRoute>
+                  <App />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/graph"
+              element={
+                <ProtectedRoute>
+                  <GraphPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/event/:id"
+              element={
+                <ProtectedRoute>
+                  <Event />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/event"
+              element={
+                <ProtectedRoute>
+                  <Event />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/events"
+              element={
+                <ProtectedRoute>
+                  <EventsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/records"
+              element={
+                <ProtectedRoute>
+                  <RecordsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/records/notebook/:notebookId"
+              element={
+                <ProtectedRoute>
+                  <NotebookEntriesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/goals"
+              element={
+                <ProtectedRoute>
+                  <GoalsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/development"
+              element={
+                <ProtectedRoute>
+                  <DevelopmentPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/goals/:id"
+              element={
+                <ProtectedRoute>
+                  <GoalPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/report"
+              element={
+                <ProtectedRoute>
+                  <ReportPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/experiments"
+              element={
+                <ProtectedRoute>
+                  <ExperimentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/virtual-fields"
+              element={
+                <ProtectedRoute>
+                  <VirtualFieldsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/experiment/:id"
+              element={
+                <ProtectedRoute>
+                  <Experiment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/experiment"
+              element={
+                <ProtectedRoute>
+                  <Experiment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/memoirs"
+              element={
+                <ProtectedRoute>
+                  <MemoirsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mbti-test"
+              element={
+                <ProtectedRoute>
+                  <MBTITestPage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </DesktopApp>
       </NuqsAdapter>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

@@ -100,7 +100,7 @@ function parseMessageContent(content: string | Record<string, any>): {
 function formatContentForDisplay(
   content: Record<string, any> | string,
   isJsonContent: boolean,
-  isExpanded: boolean
+  isExpanded: boolean,
 ): {
   displayedContent: string;
   shouldTruncate: boolean;
@@ -108,19 +108,20 @@ function formatContentForDisplay(
   let contentStr: string;
   if (isJsonContent) {
     contentStr = JSON.stringify(content, null, 2);
-  } else if (typeof content === 'string') {
+  } else if (typeof content === "string") {
     contentStr = content;
   } else {
     contentStr = JSON.stringify(content);
   }
   const contentLines = contentStr.split("\n");
   const shouldTruncate = contentLines.length > 4 || contentStr.length > 500;
-  
+
   let displayedContent: string;
   if (shouldTruncate && !isExpanded) {
-    displayedContent = contentStr.length > 500
-      ? contentStr.slice(0, 500) + "..."
-      : contentLines.slice(0, 4).join("\n") + "\n...";
+    displayedContent =
+      contentStr.length > 500
+        ? contentStr.slice(0, 500) + "..."
+        : contentLines.slice(0, 4).join("\n") + "\n...";
   } else {
     displayedContent = contentStr;
   }
@@ -128,12 +129,12 @@ function formatContentForDisplay(
   return { displayedContent, shouldTruncate };
 }
 
-function ToolResultHeader({ 
-  name, 
-  toolCallId 
-}: Readonly<{ 
-  name?: string; 
-  toolCallId?: string; 
+function ToolResultHeader({
+  name,
+  toolCallId,
+}: Readonly<{
+  name?: string;
+  toolCallId?: string;
 }>) {
   return (
     <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
@@ -141,9 +142,7 @@ function ToolResultHeader({
         {name ? (
           <h3 className="font-medium text-gray-900">
             Tool Result:{" "}
-            <code className="bg-gray-100 px-2 py-1 rounded">
-              {name}
-            </code>
+            <code className="bg-gray-100 px-2 py-1 rounded">{name}</code>
           </h3>
         ) : (
           <h3 className="font-medium text-gray-900">Tool Result</h3>
@@ -158,19 +157,19 @@ function ToolResultHeader({
   );
 }
 
-function JsonContentTable({ 
-  parsedContent, 
-  isExpanded 
-}: Readonly<{ 
-  parsedContent: Record<string, any> | string; 
-  isExpanded: boolean; 
+function JsonContentTable({
+  parsedContent,
+  isExpanded,
+}: Readonly<{
+  parsedContent: Record<string, any> | string;
+  isExpanded: boolean;
 }>) {
   let items: Array<[string | number, unknown]>;
-  
+
   if (Array.isArray(parsedContent)) {
     const arrayItems = isExpanded ? parsedContent : parsedContent.slice(0, 5);
     items = arrayItems.map((item, index) => [index, item]);
-  } else if (parsedContent && typeof parsedContent === 'object') {
+  } else if (parsedContent && typeof parsedContent === "object") {
     items = Object.entries(parsedContent);
   } else {
     items = [];
@@ -200,12 +199,12 @@ function JsonContentTable({
   );
 }
 
-function ExpandButton({ 
-  isExpanded, 
-  onToggle 
-}: Readonly<{ 
-  isExpanded: boolean; 
-  onToggle: () => void; 
+function ExpandButton({
+  isExpanded,
+  onToggle,
+}: Readonly<{
+  isExpanded: boolean;
+  onToggle: () => void;
 }>) {
   return (
     <motion.button
@@ -223,12 +222,11 @@ function ExpandButton({
 function shouldShowExpandButton(
   shouldTruncate: boolean,
   isJsonContent: boolean,
-  parsedContent: Record<string, any> | string
+  parsedContent: Record<string, any> | string,
 ): boolean {
-  const hasLongArray = isJsonContent && 
-                      Array.isArray(parsedContent) && 
-                      parsedContent.length > 5;
-  
+  const hasLongArray =
+    isJsonContent && Array.isArray(parsedContent) && parsedContent.length > 5;
+
   return (shouldTruncate && !isJsonContent) || hasLongArray;
 }
 
@@ -239,17 +237,17 @@ export function ToolResult({ message }: Readonly<{ message: ToolMessage }>) {
   const { displayedContent, shouldTruncate } = formatContentForDisplay(
     parsedContent,
     isJsonContent,
-    isExpanded
+    isExpanded,
   );
 
   const toggleExpanded = useCallback(() => {
-    setIsExpanded(prev => !prev);
+    setIsExpanded((prev) => !prev);
   }, []);
 
   const showExpandButton = shouldShowExpandButton(
     shouldTruncate,
     isJsonContent,
-    parsedContent
+    parsedContent,
   );
 
   return (
@@ -271,9 +269,9 @@ export function ToolResult({ message }: Readonly<{ message: ToolMessage }>) {
               transition={{ duration: 0.2 }}
             >
               {isJsonContent ? (
-                <JsonContentTable 
-                  parsedContent={parsedContent} 
-                  isExpanded={isExpanded} 
+                <JsonContentTable
+                  parsedContent={parsedContent}
+                  isExpanded={isExpanded}
                 />
               ) : (
                 <code className="text-sm block">{displayedContent}</code>

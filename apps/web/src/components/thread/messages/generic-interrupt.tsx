@@ -83,12 +83,12 @@ export function GenericInterruptView({
                     const [key, value] = Array.isArray(interrupt)
                       ? [argIdx.toString(), item]
                       : (item as [string, any]);
-                    
+
                     // Create a unique key based on the content and position
-                    const uniqueKey = Array.isArray(interrupt) 
-                      ? `item-${argIdx}-${JSON.stringify(item).slice(0, 50)}` 
+                    const uniqueKey = Array.isArray(interrupt)
+                      ? `item-${argIdx}-${JSON.stringify(item).slice(0, 50)}`
                       : `entry-${key}-${typeof value}`;
-                    
+
                     return (
                       <tr key={uniqueKey}>
                         <td className="px-4 py-2 text-sm font-medium text-gray-900 whitespace-nowrap">

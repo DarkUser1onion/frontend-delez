@@ -5,8 +5,18 @@ import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ChevronLeft, ChevronDown, ChevronUp, Plus, Star,
-  MoreHorizontal, Bookmark, BookmarkCheck, FolderInput, Trash2, Check, Pencil,
+  ChevronLeft,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  Star,
+  MoreHorizontal,
+  Bookmark,
+  BookmarkCheck,
+  FolderInput,
+  Trash2,
+  Check,
+  Pencil,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -22,24 +32,20 @@ import {
 
 import { getContentString } from "../utils";
 import { useQueryState, parseAsBoolean } from "nuqs";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { chatApi } from "@/lib/api-client";
 
 const CATEGORIES = [
-  { key: "entry",      label: "События" },
-  { key: "goal",       label: "Цели/Желания" },
+  { key: "entry", label: "События" },
+  { key: "goal", label: "Цели/Желания" },
   { key: "experiment", label: "Эксперименты" },
-  { key: "analysis",   label: "Анализ настоящего/прошлого" },
-  { key: "general",    label: "Чатики" },
+  { key: "analysis", label: "Анализ настоящего/прошлого" },
+  { key: "general", label: "Чатики" },
 ] as const;
 
-type CategoryKey = typeof CATEGORIES[number]["key"];
+type CategoryKey = (typeof CATEGORIES)[number]["key"];
 
 function getThreadTitle(t: Thread): string {
   const values = t.values as Record<string, unknown> | undefined;
@@ -92,21 +98,31 @@ function ThreadContextMenu({
   readonly onRename: () => void;
   readonly children: ReactNode;
 }) {
-  const { toggleFavorite, favoriteIds, updateThreadCategory, getThreads, setThreads } = useThreads();
+  const {
+    toggleFavorite,
+    favoriteIds,
+    updateThreadCategory,
+    getThreads,
+    setThreads,
+  } = useThreads();
   const isFav = favoriteIds.includes(t.thread_id);
-  const currentCat = (t.metadata as { category?: string })?.category ?? "general";
+  const currentCat =
+    (t.metadata as { category?: string })?.category ?? "general";
 
   const handleFavorite = useCallback(() => {
     toggleFavorite(t.thread_id);
     onClose();
   }, [toggleFavorite, t.thread_id, onClose]);
 
-  const handleCategory = useCallback(async (key: string) => {
-    await updateThreadCategory(t.thread_id, key);
-    const updated = await getThreads();
-    setThreads(updated);
-    onClose();
-  }, [updateThreadCategory, t.thread_id, getThreads, setThreads, onClose]);
+  const handleCategory = useCallback(
+    async (key: string) => {
+      await updateThreadCategory(t.thread_id, key);
+      const updated = await getThreads();
+      setThreads(updated);
+      onClose();
+    },
+    [updateThreadCategory, t.thread_id, getThreads, setThreads, onClose],
+  );
 
   return (
     <DropdownMenu
@@ -117,19 +133,22 @@ function ThreadContextMenu({
         if (!nextOpen) onClose();
       }}
     >
-      <DropdownMenuTrigger asChild>
-        {children}
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"
         side="right"
         sideOffset={8}
         className="min-w-[180px] p-1 border border-white/20 bg-[#000019]/95 text-white shadow-2xl backdrop-blur-md"
       >
-        <DropdownMenuItem onClick={handleFavorite} className="gap-2.5 text-sm hover:bg-white/10 focus:bg-white/10">
-          {isFav
-            ? <BookmarkCheck className="size-3.5 shrink-0 text-yellow-400 fill-yellow-400" />
-            : <Bookmark className="size-3.5 shrink-0" />}
+        <DropdownMenuItem
+          onClick={handleFavorite}
+          className="gap-2.5 text-sm hover:bg-white/10 focus:bg-white/10"
+        >
+          {isFav ? (
+            <BookmarkCheck className="size-3.5 shrink-0 text-yellow-400 fill-yellow-400" />
+          ) : (
+            <Bookmark className="size-3.5 shrink-0" />
+          )}
           {isFav ? "Убрать из избранного" : "В избранное"}
         </DropdownMenuItem>
 
@@ -139,14 +158,18 @@ function ThreadContextMenu({
             Пространство
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
-            <DropdownMenuSubContent
-              className="min-w-[180px] border border-white/20 bg-[#000019]/95 text-white shadow-2xl backdrop-blur-md"
-            >
+            <DropdownMenuSubContent className="min-w-[180px] border border-white/20 bg-[#000019]/95 text-white shadow-2xl backdrop-blur-md">
               {CATEGORIES.map((s) => (
-                <DropdownMenuItem key={s.key} onClick={() => handleCategory(s.key)} className="gap-2.5 text-sm hover:bg-white/10 focus:bg-white/10">
-                  {currentCat === s.key
-                    ? <Check className="size-3.5 shrink-0" />
-                    : <span className="size-3.5 shrink-0" />}
+                <DropdownMenuItem
+                  key={s.key}
+                  onClick={() => handleCategory(s.key)}
+                  className="gap-2.5 text-sm hover:bg-white/10 focus:bg-white/10"
+                >
+                  {currentCat === s.key ? (
+                    <Check className="size-3.5 shrink-0" />
+                  ) : (
+                    <span className="size-3.5 shrink-0" />
+                  )}
                   {s.label}
                 </DropdownMenuItem>
               ))}
@@ -154,14 +177,24 @@ function ThreadContextMenu({
           </DropdownMenuPortal>
         </DropdownMenuSub>
 
-        <DropdownMenuItem onClick={() => { onClose(); onRename(); }} className="gap-2.5 text-sm hover:bg-white/10 focus:bg-white/10">
+        <DropdownMenuItem
+          onClick={() => {
+            onClose();
+            onRename();
+          }}
+          className="gap-2.5 text-sm hover:bg-white/10 focus:bg-white/10"
+        >
           <Pencil className="size-3.5 shrink-0" />
           Переименовать
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem variant="destructive" onClick={onClose} className="gap-2.5 text-sm hover:bg-red-500/20 focus:bg-red-500/20">
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={onClose}
+          className="gap-2.5 text-sm hover:bg-red-500/20 focus:bg-red-500/20"
+        >
           <Trash2 className="size-3.5 shrink-0" />
           Удалить
         </DropdownMenuItem>
@@ -200,10 +233,13 @@ function ThreadItem({
     setIsEditing(false);
   }, [editValue, itemText, t.thread_id, updateThreadTitle]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") commitEdit();
-    if (e.key === "Escape") setIsEditing(false);
-  }, [commitEdit]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") commitEdit();
+      if (e.key === "Escape") setIsEditing(false);
+    },
+    [commitEdit],
+  );
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -249,7 +285,9 @@ function ThreadItem({
           />
         </div>
       ) : (
-        <div className={`w-[280px] rounded-md transition-colors ${isActive || menuOpen ? "bg-white/12" : "bg-transparent hover:bg-white/10"}`}>
+        <div
+          className={`w-[280px] rounded-md transition-colors ${isActive || menuOpen ? "bg-white/12" : "bg-transparent hover:bg-white/10"}`}
+        >
           <Button
             variant="ghost"
             className="text-left items-start justify-start font-normal w-[280px] text-white hover:text-white hover:bg-transparent pr-8"
@@ -315,7 +353,11 @@ function CategorySection({
             onClick={() => setCollapsed((c) => !c)}
             aria-label={collapsed ? "Развернуть" : "Свернуть"}
           >
-            {collapsed ? <ChevronDown className="size-3.5" /> : <ChevronUp className="size-3.5" />}
+            {collapsed ? (
+              <ChevronDown className="size-3.5" />
+            ) : (
+              <ChevronUp className="size-3.5" />
+            )}
           </button>
           <span className="text-white/70 text-sm font-light">{label}</span>
           {collapsed && hasMore && (
@@ -381,7 +423,11 @@ function FavoritesSection({
             onClick={() => setCollapsed((c) => !c)}
             aria-label={collapsed ? "Развернуть" : "Свернуть"}
           >
-            {collapsed ? <ChevronDown className="size-3.5" /> : <ChevronUp className="size-3.5" />}
+            {collapsed ? (
+              <ChevronDown className="size-3.5" />
+            ) : (
+              <ChevronUp className="size-3.5" />
+            )}
           </button>
           <Star className="size-3.5 text-yellow-400 fill-yellow-400" />
           <span className="text-white/70 text-sm font-light">Избранное</span>
@@ -424,7 +470,11 @@ function GroupedThreadList({
 
   const threadsByCategory = useMemo(() => {
     const map: Record<CategoryKey, Thread[]> = {
-      entry: [], goal: [], experiment: [], analysis: [], general: [],
+      entry: [],
+      goal: [],
+      experiment: [],
+      analysis: [],
+      general: [],
     };
     for (const t of threads) {
       const cat = (t.metadata as { category?: string })?.category ?? "general";
@@ -434,24 +484,30 @@ function GroupedThreadList({
     return map;
   }, [threads]);
 
-  const handleNewChat = useCallback(async (key: CategoryKey) => {
-    if (key === "general") {
-      setThreadId(null);
-      return;
-    }
-    try {
-      const { thread_id } = await chatApi.createCategoryChat(key);
-      const updated = await getThreads();
-      setThreads(updated);
-      setThreadId(thread_id);
-    } catch (err) {
-      console.error("Не удалось создать чат в категории", err);
-    }
-  }, [setThreadId, getThreads, setThreads]);
+  const handleNewChat = useCallback(
+    async (key: CategoryKey) => {
+      if (key === "general") {
+        setThreadId(null);
+        return;
+      }
+      try {
+        const { thread_id } = await chatApi.createCategoryChat(key);
+        const updated = await getThreads();
+        setThreads(updated);
+        setThreadId(thread_id);
+      } catch (err) {
+        console.error("Не удалось создать чат в категории", err);
+      }
+    },
+    [setThreadId, getThreads, setThreads],
+  );
 
   return (
     <div className="flex flex-col w-full gap-1 py-1">
-      <FavoritesSection threads={favoriteThreads} onThreadClick={onThreadClick} />
+      <FavoritesSection
+        threads={favoriteThreads}
+        onThreadClick={onThreadClick}
+      />
       {CATEGORIES.map((cat) => (
         <CategorySection
           key={cat.key}
@@ -475,7 +531,8 @@ export default function ThreadHistory() {
   );
   const [,] = useQueryState("threadId");
 
-  const { getThreads, threads, setThreads, threadsLoading, setThreadsLoading } = useThreads();
+  const { getThreads, threads, setThreads, threadsLoading, setThreadsLoading } =
+    useThreads();
 
   useEffect(() => {
     if (globalThis.window === undefined) return;
@@ -494,12 +551,17 @@ export default function ThreadHistory() {
         <div className="w-full border-b border-white/20 pb-3 pt-3 bg-[#000019] rounded-tr-[20px] shrink-0">
           <div className="flex items-center justify-between w-full px-4">
             <button
-              style={{ color: 'white' }}
+              style={{ color: "white" }}
               className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none p-0 outline-none"
-              onClick={() => navigate('/navigation')}
+              onClick={() => navigate("/navigation")}
             >
-              <ChevronLeft className="size-5" style={{ color: 'white' }} />
-              <span className="text-base font-light tracking-tight" style={{ color: 'white' }}>На главную</span>
+              <ChevronLeft className="size-5" style={{ color: "white" }} />
+              <span
+                className="text-base font-light tracking-tight"
+                style={{ color: "white" }}
+              >
+                На главную
+              </span>
             </button>
             <button
               className="hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none p-0 outline-none"
@@ -510,7 +572,11 @@ export default function ThreadHistory() {
           </div>
         </div>
         <div className="w-full bg-[#000019] flex-1 overflow-y-auto overflow-x-hidden rounded-br-[20px] delez-scrollbar">
-          {threadsLoading ? <ThreadHistoryLoading /> : <GroupedThreadList threads={threads} />}
+          {threadsLoading ? (
+            <ThreadHistoryLoading />
+          ) : (
+            <GroupedThreadList threads={threads} />
+          )}
         </div>
       </div>
 
@@ -533,7 +599,7 @@ export default function ThreadHistory() {
                 <Button
                   className="text-white absolute left-[1px] top-1/2 -translate-y-1/2 hover:bg-transparent focus:bg-transparent active:bg-transparent hover:text-white focus:text-white active:text-white"
                   variant="ghost"
-                  onClick={() => navigate('/navigation')}
+                  onClick={() => navigate("/navigation")}
                 >
                   <ChevronLeft className="size-6" />
                 </Button>

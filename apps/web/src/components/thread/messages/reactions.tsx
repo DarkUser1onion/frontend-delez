@@ -63,24 +63,48 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
   const handleAddReaction = async (type: string, emoji: string) => {
     setShowPicker(false);
 
-    const existing = reactions.find(r => r.type === type);
+    const existing = reactions.find((r) => r.type === type);
     const isHighlighted = existing?.highlighted ?? false;
 
     if (isHighlighted) {
-      setReactions(prev =>
+      setReactions((prev) =>
         prev
-          .map(r => r.type === type ? { ...r, count: r.count - 1, highlighted: false } : r)
-          .filter(r => r.count > 0)
+          .map((r) =>
+            r.type === type
+              ? { ...r, count: r.count - 1, highlighted: false }
+              : r,
+          )
+          .filter((r) => r.count > 0),
       );
     } else if (existing) {
-      setReactions(prev => prev.map(r => r.type === type ? { ...r, count: r.count + 1, highlighted: true } : r));
+      setReactions((prev) =>
+        prev.map((r) =>
+          r.type === type ? { ...r, count: r.count + 1, highlighted: true } : r,
+        ),
+      );
     } else {
-      setReactions(prev => [...prev, { id: Date.now().toString(), type, emoji, user_id: "me", count: 1, highlighted: true }]);
+      setReactions((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          type,
+          emoji,
+          user_id: "me",
+          count: 1,
+          highlighted: true,
+        },
+      ]);
     }
   };
 
   return (
-    <div className={cn("relative flex items-center gap-1.5", className, align === "right" ? "justify-end" : "justify-start")}>
+    <div
+      className={cn(
+        "relative flex items-center gap-1.5",
+        className,
+        align === "right" ? "justify-end" : "justify-start",
+      )}
+    >
       {/* Existing Reactions */}
       <div className="flex flex-wrap gap-1.5">
         <AnimatePresence>
@@ -96,11 +120,13 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
                 "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[13px] font-medium border transition-colors cursor-pointer",
                 reaction.highlighted
                   ? "bg-white/10 border-white/20 text-white"
-                  : "bg-transparent border-white/10 text-white/70 hover:bg-white/5 hover:text-white"
+                  : "bg-transparent border-white/10 text-white/70 hover:bg-white/5 hover:text-white",
               )}
             >
               <span>{reaction.emoji}</span>
-              {reaction.count > 1 && <span className="text-[11px] opacity-80">{reaction.count}</span>}
+              {reaction.count > 1 && (
+                <span className="text-[11px] opacity-80">{reaction.count}</span>
+              )}
             </motion.button>
           ))}
         </AnimatePresence>
@@ -114,7 +140,7 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
           tooltip="Add reaction"
           className={cn(
             "text-white hover:bg-transparent hover:text-white",
-            showPicker && "bg-white/5"
+            showPicker && "bg-white/5",
           )}
           side={align === "right" ? "left" : "right"}
         >
@@ -130,7 +156,7 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
               transition={{ duration: 0.15 }}
               className={cn(
                 "absolute top-full mt-1.5 flex gap-1 p-1.5 bg-[#1a1a3a]/90 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl z-20",
-                align === "right" ? "right-0" : "left-0"
+                align === "right" ? "right-0" : "left-0",
               )}
             >
               {AVAILABLE_REACTIONS.map((r) => (

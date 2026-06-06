@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 function createKeyDownHandler(
   handleSubmit: (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent> | React.KeyboardEvent,
-  ) => Promise<void>
+  ) => Promise<void>,
 ) {
   return (e: React.KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
@@ -155,8 +155,9 @@ function AcceptComponent({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent> | React.KeyboardEvent,
   ) => Promise<void>;
 }>) {
-  const hasArgs = actionRequestArgs && Object.keys(actionRequestArgs).length > 0;
-  
+  const hasArgs =
+    actionRequestArgs && Object.keys(actionRequestArgs).length > 0;
+
   return (
     <div className="flex flex-col gap-4 items-start w-full p-6 rounded-lg border-[1px] border-gray-300">
       {hasArgs && <ArgsRenderer args={actionRequestArgs} />}
@@ -192,11 +193,11 @@ function getHeaderText(editResponse: HumanResponseWithEdits): string {
 
 function createResetValues(
   initialValues: Record<string, string>,
-  editResponse: HumanResponseWithEdits
+  editResponse: HumanResponseWithEdits,
 ): { keysToReset: string[]; valuesToReset: string[] } {
   const keysToReset: string[] = [];
   const valuesToReset: string[] = [];
-  
+
   if (
     !editResponse?.args ||
     typeof editResponse.args !== "object" ||
@@ -253,7 +254,9 @@ function EditFieldComponent({
       key={`allow-edit-args--${fieldKey}-${index}`}
     >
       <div className="flex flex-col gap-[6px] items-start w-full">
-        <p className="text-sm min-w-fit font-medium">{prettifyText(fieldKey)}</p>
+        <p className="text-sm min-w-fit font-medium">
+          {prettifyText(fieldKey)}
+        </p>
         <Textarea
           disabled={streaming}
           className="h-full"
@@ -291,7 +294,7 @@ function EditAndOrAcceptComponent({
   const defaultRows = React.useRef<Record<string, number>>({});
   const editResponse = humanResponse.find((r) => r.type === "edit");
   const acceptResponse = humanResponse.find((r) => r.type === "accept");
-  
+
   if (
     !editResponse ||
     typeof editResponse.args !== "object" ||
@@ -313,8 +316,11 @@ function EditAndOrAcceptComponent({
   const buttonText = getButtonText(editResponse);
 
   const handleReset = () => {
-    const { keysToReset, valuesToReset } = createResetValues(initialValues, editResponse);
-    
+    const { keysToReset, valuesToReset } = createResetValues(
+      initialValues,
+      editResponse,
+    );
+
     if (keysToReset.length > 0 && valuesToReset.length > 0) {
       onEditChange(valuesToReset, editResponse, keysToReset);
     }
@@ -360,7 +366,7 @@ const EditAndOrAccept = React.memo(EditAndOrAcceptComponent);
 
 function validateEditChange(
   change: string | string[],
-  key: string | string[]
+  key: string | string[],
 ): boolean {
   return !(
     (Array.isArray(change) && !Array.isArray(key)) ||
@@ -371,7 +377,7 @@ function validateEditChange(
 function updateArgsForEdit(
   change: string | string[],
   key: string | string[],
-  responseArgs: Record<string, any> | null
+  responseArgs: Record<string, any> | null,
 ): Record<string, any> {
   const updatedArgs = { ...responseArgs?.args };
 
@@ -392,15 +398,17 @@ function updateSubmitTypeForEdit(
   valuesChanged: boolean,
   acceptAllowed: boolean,
   hasAddedResponse: boolean,
-  setSelectedSubmitType: React.Dispatch<React.SetStateAction<SubmitType | undefined>>,
-  setHasEdited: React.Dispatch<React.SetStateAction<boolean>>
+  setSelectedSubmitType: React.Dispatch<
+    React.SetStateAction<SubmitType | undefined>
+  >,
+  setHasEdited: React.Dispatch<React.SetStateAction<boolean>>,
 ): void {
   if (valuesChanged) {
     setSelectedSubmitType("edit");
     setHasEdited(true);
     return;
   }
-  
+
   setHasEdited(false);
   if (acceptAllowed) {
     setSelectedSubmitType("accept");
@@ -413,7 +421,7 @@ function createNewEditResponse(
   change: string | string[],
   key: string | string[],
   response: HumanResponseWithEdits,
-  valuesChanged: boolean
+  valuesChanged: boolean,
 ): HumanResponseWithEdits {
   const newEdit: HumanResponseWithEdits = {
     type: response.type,
@@ -448,14 +456,16 @@ function updateResponseStateForChange(
   hasEdited: boolean,
   acceptAllowed: boolean,
   setHasAddedResponse: React.Dispatch<React.SetStateAction<boolean>>,
-  setSelectedSubmitType: React.Dispatch<React.SetStateAction<SubmitType | undefined>>
+  setSelectedSubmitType: React.Dispatch<
+    React.SetStateAction<SubmitType | undefined>
+  >,
 ): void {
   if (change) {
     setSelectedSubmitType("response");
     setHasAddedResponse(true);
     return;
   }
-  
+
   setHasAddedResponse(false);
   if (hasEdited) {
     setSelectedSubmitType("edit");
@@ -466,7 +476,7 @@ function updateResponseStateForChange(
 
 function createNewResponseObject(
   change: string,
-  response: HumanResponseWithEdits
+  response: HumanResponseWithEdits,
 ): HumanResponseWithEdits {
   const newResponse: HumanResponseWithEdits = {
     type: response.type,
@@ -480,7 +490,7 @@ function createNewResponseObject(
       editsMade: !!change,
     };
   }
-  
+
   return newResponse;
 }
 
@@ -508,99 +518,120 @@ export function InboxItemInput({
   const showArgsOutsideActionCards =
     hasArgs && !showArgsInResponse && !isEditAllowed && !acceptAllowed;
 
-  const onEditChange = useCallback((
-    change: string | string[],
-    response: HumanResponseWithEdits,
-    key: string | string[],
-  ) => {
-    if (!validateEditChange(change, key)) {
-      toast.error("Error", {
-        description: "Something went wrong",
-        richColors: true,
-        closeButton: true,
-      });
-      return;
-    }
-
-    let valuesChanged = true;
-    if (typeof response.args === "object") {
-      const updatedArgs = updateArgsForEdit(change, key, response.args);
-      const haveValuesChanged = haveArgsChanged(updatedArgs, initialValues);
-      valuesChanged = haveValuesChanged;
-    }
-
-    updateSubmitTypeForEdit(
-      valuesChanged,
-      acceptAllowed,
-      hasAddedResponse,
-      setSelectedSubmitType,
-      setHasEdited
-    );
-
-    setHumanResponse((prev) => {
-      if (typeof response.args !== "object" || !response.args) {
-        console.error(
-          "Mismatched response type",
-          !!response.args,
-          typeof response.args,
-        );
-        return prev;
+  const onEditChange = useCallback(
+    (
+      change: string | string[],
+      response: HumanResponseWithEdits,
+      key: string | string[],
+    ) => {
+      if (!validateEditChange(change, key)) {
+        toast.error("Error", {
+          description: "Something went wrong",
+          richColors: true,
+          closeButton: true,
+        });
+        return;
       }
 
-      const newEdit = createNewEditResponse(change, key, response, valuesChanged);
-      
-      const matchingResponse = prev.find(
-        (p) =>
-          p.type === response.type &&
-          typeof p.args === "object" &&
-          p.args?.action === (response.args as ActionRequest).action,
+      let valuesChanged = true;
+      if (typeof response.args === "object") {
+        const updatedArgs = updateArgsForEdit(change, key, response.args);
+        const haveValuesChanged = haveArgsChanged(updatedArgs, initialValues);
+        valuesChanged = haveValuesChanged;
+      }
+
+      updateSubmitTypeForEdit(
+        valuesChanged,
+        acceptAllowed,
+        hasAddedResponse,
+        setSelectedSubmitType,
+        setHasEdited,
       );
 
-      if (matchingResponse) {
-        return prev.map((p) => {
-          if (
+      setHumanResponse((prev) => {
+        if (typeof response.args !== "object" || !response.args) {
+          console.error(
+            "Mismatched response type",
+            !!response.args,
+            typeof response.args,
+          );
+          return prev;
+        }
+
+        const newEdit = createNewEditResponse(
+          change,
+          key,
+          response,
+          valuesChanged,
+        );
+
+        const matchingResponse = prev.find(
+          (p) =>
             p.type === response.type &&
             typeof p.args === "object" &&
-            p.args?.action === (response.args as ActionRequest).action
-          ) {
-            return newEdit;
-          }
-          return p;
-        });
-      } else {
-        throw new Error("No matching response found");
-      }
-    });
-  }, [acceptAllowed, hasAddedResponse, initialValues, setHasEdited, setHumanResponse, setSelectedSubmitType]);
+            p.args?.action === (response.args as ActionRequest).action,
+        );
 
-  const onResponseChange = useCallback((
-    change: string,
-    response: HumanResponseWithEdits,
-  ) => {
-    updateResponseStateForChange(
-      change,
+        if (matchingResponse) {
+          return prev.map((p) => {
+            if (
+              p.type === response.type &&
+              typeof p.args === "object" &&
+              p.args?.action === (response.args as ActionRequest).action
+            ) {
+              return newEdit;
+            }
+            return p;
+          });
+        } else {
+          throw new Error("No matching response found");
+        }
+      });
+    },
+    [
+      acceptAllowed,
+      hasAddedResponse,
+      initialValues,
+      setHasEdited,
+      setHumanResponse,
+      setSelectedSubmitType,
+    ],
+  );
+
+  const onResponseChange = useCallback(
+    (change: string, response: HumanResponseWithEdits) => {
+      updateResponseStateForChange(
+        change,
+        hasEdited,
+        acceptAllowed,
+        setHasAddedResponse,
+        setSelectedSubmitType,
+      );
+
+      setHumanResponse((prev) => {
+        const newResponse = createNewResponseObject(change, response);
+
+        const matchingResponse = prev.find((p) => p.type === response.type);
+        if (matchingResponse) {
+          return prev.map((p) => {
+            if (p.type === response.type) {
+              return newResponse;
+            }
+            return p;
+          });
+        } else {
+          throw new Error("No human response found for string response");
+        }
+      });
+    },
+    [
       hasEdited,
       acceptAllowed,
       setHasAddedResponse,
-      setSelectedSubmitType
-    );
-
-    setHumanResponse((prev) => {
-      const newResponse = createNewResponseObject(change, response);
-
-      const matchingResponse = prev.find((p) => p.type === response.type);
-      if (matchingResponse) {
-        return prev.map((p) => {
-          if (p.type === response.type) {
-            return newResponse;
-          }
-          return p;
-        });
-      } else {
-        throw new Error("No human response found for string response");
-      }
-    });
-  }, [hasEdited, acceptAllowed, setHasAddedResponse, setSelectedSubmitType, setHumanResponse]);
+      setSelectedSubmitType,
+      setHumanResponse,
+    ],
+  );
 
   return (
     <div className="w-full flex flex-col items-start justify-start gap-2">

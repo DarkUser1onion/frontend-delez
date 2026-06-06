@@ -1,6 +1,21 @@
-import { useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowUp, ChevronLeft, Eraser, Image, Mic, PenLine, Sticker, X } from "lucide-react";
+import {
+  ArrowUp,
+  ChevronLeft,
+  Eraser,
+  Image,
+  Mic,
+  PenLine,
+  Sticker,
+  X,
+} from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 interface NotebookEntryCard {
@@ -126,7 +141,12 @@ const NOTEBOOKS: NotebookMeta[] = [
   { id: "hobby", title: "Хобби", sphere: "Хобби" },
 ];
 
-function getPointerAngle(centerX: number, centerY: number, pointerX: number, pointerY: number): number {
+function getPointerAngle(
+  centerX: number,
+  centerY: number,
+  pointerX: number,
+  pointerY: number,
+): number {
   return (Math.atan2(pointerY - centerY, pointerX - centerX) * 180) / Math.PI;
 }
 
@@ -142,8 +162,13 @@ function loadNotebookEntries(): Record<string, NotebookEntryCard[]> {
   }
 }
 
-function saveNotebookEntries(entriesByNotebook: Record<string, NotebookEntryCard[]>): void {
-  localStorage.setItem(NOTEBOOK_ENTRIES_STORAGE_KEY, JSON.stringify(entriesByNotebook));
+function saveNotebookEntries(
+  entriesByNotebook: Record<string, NotebookEntryCard[]>,
+): void {
+  localStorage.setItem(
+    NOTEBOOK_ENTRIES_STORAGE_KEY,
+    JSON.stringify(entriesByNotebook),
+  );
 }
 
 function createEmptyDraft(): NotebookDraft {
@@ -179,26 +204,46 @@ async function readFileAsDataUrl(file: File): Promise<string> {
 export default function NotebookEntriesPage() {
   const navigate = useNavigate();
   const { notebookId } = useParams<{ notebookId: string }>();
-  const notebook = useMemo(() => NOTEBOOKS.find((item) => item.id === notebookId) ?? null, [notebookId]);
+  const notebook = useMemo(
+    () => NOTEBOOKS.find((item) => item.id === notebookId) ?? null,
+    [notebookId],
+  );
 
-  const [entriesByNotebook, setEntriesByNotebook] = useState<Record<string, NotebookEntryCard[]>>(loadNotebookEntries());
+  const [entriesByNotebook, setEntriesByNotebook] = useState<
+    Record<string, NotebookEntryCard[]>
+  >(loadNotebookEntries());
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [draft, setDraft] = useState<NotebookDraft>(createEmptyDraft());
-  const [stickerPosition, setStickerPosition] = useState<StickerPosition>({ x: 84, y: 220 });
+  const [stickerPosition, setStickerPosition] = useState<StickerPosition>({
+    x: 84,
+    y: 220,
+  });
   const [placedGifs, setPlacedGifs] = useState<PlacedGif[]>([]);
   const [selectedGifId, setSelectedGifId] = useState<string | null>(null);
   const [isStickerSelected, setIsStickerSelected] = useState<boolean>(false);
   const [isDraggingSticker, setIsDraggingSticker] = useState<boolean>(false);
   const [draggingGifId, setDraggingGifId] = useState<string | null>(null);
-  const [gifResizeSession, setGifResizeSession] = useState<GifResizeSession | null>(null);
-  const [gifRotateSession, setGifRotateSession] = useState<GifRotateSession | null>(null);
-  const [stickerRotateSession, setStickerRotateSession] = useState<StickerRotateSession | null>(null);
-  const [stickerResizeSession, setStickerResizeSession] = useState<StickerResizeSession | null>(null);
-  const [stickerDragOffset, setStickerDragOffset] = useState<StickerPosition>({ x: 0, y: 0 });
-  const [gifDragOffset, setGifDragOffset] = useState<StickerPosition>({ x: 0, y: 0 });
+  const [gifResizeSession, setGifResizeSession] =
+    useState<GifResizeSession | null>(null);
+  const [gifRotateSession, setGifRotateSession] =
+    useState<GifRotateSession | null>(null);
+  const [stickerRotateSession, setStickerRotateSession] =
+    useState<StickerRotateSession | null>(null);
+  const [stickerResizeSession, setStickerResizeSession] =
+    useState<StickerResizeSession | null>(null);
+  const [stickerDragOffset, setStickerDragOffset] = useState<StickerPosition>({
+    x: 0,
+    y: 0,
+  });
+  const [gifDragOffset, setGifDragOffset] = useState<StickerPosition>({
+    x: 0,
+    y: 0,
+  });
   const [drawMode, setDrawMode] = useState<boolean>(false);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
-  const [activeTool, setActiveTool] = useState<"text" | "style" | "draw" | "media">("text");
+  const [activeTool, setActiveTool] = useState<
+    "text" | "style" | "draw" | "media"
+  >("text");
   const [brushSize, setBrushSize] = useState<number>(6);
   const [isGifPickerOpen, setIsGifPickerOpen] = useState<boolean>(false);
   const fileUploadErrorRef = useRef<string | null>(null);
@@ -226,7 +271,13 @@ export default function NotebookEntriesPage() {
   if (!notebook) {
     return (
       <div className="min-h-full bg-[#000019] px-8 pt-8 text-white">
-        <Breadcrumbs crumbs={[{ label: "Главная", to: "/navigation" }, { label: "Записи", to: "/records" }, { label: "Блокнот" }]} />
+        <Breadcrumbs
+          crumbs={[
+            { label: "Главная", to: "/navigation" },
+            { label: "Записи", to: "/records" },
+            { label: "Блокнот" },
+          ]}
+        />
         <p className="mt-6 text-sm text-white/70">Блокнот не найден.</p>
       </div>
     );
@@ -289,7 +340,9 @@ export default function NotebookEntriesPage() {
     setIsCreating(false);
   };
 
-  const uploadFiles = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
+  const uploadFiles = async (
+    event: ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
     const files = event.target.files;
     if (!files || files.length === 0) {
       return;
@@ -313,7 +366,9 @@ export default function NotebookEntriesPage() {
           ...prev,
           attachments: [...prev.attachments, ...uploaded],
         };
-        const firstVisual = uploaded.find((item) => item.type.startsWith("image/"));
+        const firstVisual = uploaded.find((item) =>
+          item.type.startsWith("image/"),
+        );
         if (firstVisual) {
           if (firstVisual.type === "image/gif") {
             nextDraft = { ...nextDraft, gifUrl: firstVisual.dataUrl };
@@ -324,7 +379,8 @@ export default function NotebookEntriesPage() {
         return nextDraft;
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Не удалось загрузить файл";
+      const message =
+        error instanceof Error ? error.message : "Не удалось загрузить файл";
       fileUploadErrorRef.current = message;
     } finally {
       event.target.value = "";
@@ -351,7 +407,11 @@ export default function NotebookEntriesPage() {
     setIsDraggingSticker(true);
   };
 
-  const startGifDrag = (event: ReactPointerEvent<HTMLDivElement>, gifId: string, position: StickerPosition): void => {
+  const startGifDrag = (
+    event: ReactPointerEvent<HTMLDivElement>,
+    gifId: string,
+    position: StickerPosition,
+  ): void => {
     const stage = editorStageRef.current;
     if (!stage) {
       return;
@@ -371,7 +431,11 @@ export default function NotebookEntriesPage() {
     setDraggingGifId(gifId);
   };
 
-  const startGifResize = (event: ReactPointerEvent<HTMLButtonElement>, gifId: string, size: number): void => {
+  const startGifResize = (
+    event: ReactPointerEvent<HTMLButtonElement>,
+    gifId: string,
+    size: number,
+  ): void => {
     event.stopPropagation();
     setIsDraggingSticker(false);
     setIsStickerSelected(false);
@@ -422,7 +486,9 @@ export default function NotebookEntriesPage() {
     });
   };
 
-  const startStickerRotate = (event: ReactPointerEvent<HTMLButtonElement>): void => {
+  const startStickerRotate = (
+    event: ReactPointerEvent<HTMLButtonElement>,
+  ): void => {
     event.stopPropagation();
     const stage = editorStageRef.current;
     const stickerElement = stickerRef.current;
@@ -450,7 +516,9 @@ export default function NotebookEntriesPage() {
     });
   };
 
-  const startStickerResize = (event: ReactPointerEvent<HTMLButtonElement>): void => {
+  const startStickerResize = (
+    event: ReactPointerEvent<HTMLButtonElement>,
+  ): void => {
     event.stopPropagation();
     setIsDraggingSticker(false);
     setSelectedGifId(null);
@@ -466,50 +534,92 @@ export default function NotebookEntriesPage() {
     });
   };
 
-  const handleGifRotateMove = (rect: DOMRect, event: ReactPointerEvent<HTMLDivElement>): void => {
+  const handleGifRotateMove = (
+    rect: DOMRect,
+    event: ReactPointerEvent<HTMLDivElement>,
+  ): void => {
     if (!gifRotateSession) return;
     const pointerX = event.clientX - rect.left;
     const pointerY = event.clientY - rect.top;
-    const currentAngle = getPointerAngle(gifRotateSession.centerX, gifRotateSession.centerY, pointerX, pointerY);
-    const nextRotateDeg = gifRotateSession.startRotateDeg + (currentAngle - gifRotateSession.startPointerAngle);
+    const currentAngle = getPointerAngle(
+      gifRotateSession.centerX,
+      gifRotateSession.centerY,
+      pointerX,
+      pointerY,
+    );
+    const nextRotateDeg =
+      gifRotateSession.startRotateDeg +
+      (currentAngle - gifRotateSession.startPointerAngle);
     setPlacedGifs((prev) =>
-      prev.map((gif) => (gif.id === gifRotateSession.gifId ? { ...gif, rotateDeg: nextRotateDeg } : gif)),
+      prev.map((gif) =>
+        gif.id === gifRotateSession.gifId
+          ? { ...gif, rotateDeg: nextRotateDeg }
+          : gif,
+      ),
     );
   };
 
-  const handleStickerRotateMove = (rect: DOMRect, event: ReactPointerEvent<HTMLDivElement>): void => {
+  const handleStickerRotateMove = (
+    rect: DOMRect,
+    event: ReactPointerEvent<HTMLDivElement>,
+  ): void => {
     if (!stickerRotateSession) return;
     const pointerX = event.clientX - rect.left;
     const pointerY = event.clientY - rect.top;
-    const currentAngle = getPointerAngle(stickerRotateSession.centerX, stickerRotateSession.centerY, pointerX, pointerY);
+    const currentAngle = getPointerAngle(
+      stickerRotateSession.centerX,
+      stickerRotateSession.centerY,
+      pointerX,
+      pointerY,
+    );
     setDraft((prev) => ({
       ...prev,
-      rotateDeg: stickerRotateSession.startRotateDeg + (currentAngle - stickerRotateSession.startPointerAngle),
+      rotateDeg:
+        stickerRotateSession.startRotateDeg +
+        (currentAngle - stickerRotateSession.startPointerAngle),
     }));
   };
 
-  const handleStickerResizeMove = (event: ReactPointerEvent<HTMLDivElement>): void => {
+  const handleStickerResizeMove = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ): void => {
     if (!stickerResizeSession) return;
     const deltaX = event.clientX - stickerResizeSession.startX;
     const deltaY = event.clientY - stickerResizeSession.startY;
     const nextFontSize = Math.max(
       STICKER_MIN_FONT_SIZE,
-      Math.min(STICKER_MAX_FONT_SIZE, stickerResizeSession.startFontSize + Math.max(deltaX, deltaY) * 0.18),
+      Math.min(
+        STICKER_MAX_FONT_SIZE,
+        stickerResizeSession.startFontSize + Math.max(deltaX, deltaY) * 0.18,
+      ),
     );
     setDraft((prev) => ({ ...prev, fontSize: nextFontSize }));
   };
 
-  const handleGifResizeMove = (event: ReactPointerEvent<HTMLDivElement>): void => {
+  const handleGifResizeMove = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ): void => {
     if (!gifResizeSession) return;
     const deltaX = event.clientX - gifResizeSession.startX;
     const deltaY = event.clientY - gifResizeSession.startY;
-    const nextSize = Math.max(GIF_MIN_SIZE, Math.min(GIF_MAX_SIZE, gifResizeSession.startSize + Math.max(deltaX, deltaY)));
+    const nextSize = Math.max(
+      GIF_MIN_SIZE,
+      Math.min(
+        GIF_MAX_SIZE,
+        gifResizeSession.startSize + Math.max(deltaX, deltaY),
+      ),
+    );
     setPlacedGifs((prev) =>
-      prev.map((gif) => (gif.id === gifResizeSession.gifId ? { ...gif, size: nextSize } : gif)),
+      prev.map((gif) =>
+        gif.id === gifResizeSession.gifId ? { ...gif, size: nextSize } : gif,
+      ),
     );
   };
 
-  const handleGifDragMove = (rect: DOMRect, event: ReactPointerEvent<HTMLDivElement>): void => {
+  const handleGifDragMove = (
+    rect: DOMRect,
+    event: ReactPointerEvent<HTMLDivElement>,
+  ): void => {
     if (!draggingGifId) return;
     setPlacedGifs((prev) =>
       prev.map((gif) =>
@@ -524,7 +634,10 @@ export default function NotebookEntriesPage() {
     );
   };
 
-  const handleStickerDragMove = (rect: DOMRect, event: ReactPointerEvent<HTMLDivElement>): void => {
+  const handleStickerDragMove = (
+    rect: DOMRect,
+    event: ReactPointerEvent<HTMLDivElement>,
+  ): void => {
     if (!isDraggingSticker) return;
     setStickerPosition({
       x: Math.max(12, event.clientX - rect.left - stickerDragOffset.x),
@@ -532,7 +645,10 @@ export default function NotebookEntriesPage() {
     });
   };
 
-  const handleDrawMove = (rect: DOMRect, event: ReactPointerEvent<HTMLDivElement>): void => {
+  const handleDrawMove = (
+    rect: DOMRect,
+    event: ReactPointerEvent<HTMLDivElement>,
+  ): void => {
     if (!drawMode || !isDrawing) return;
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
@@ -546,12 +662,30 @@ export default function NotebookEntriesPage() {
     if (!stage) return;
     const rect = stage.getBoundingClientRect();
 
-    if (gifRotateSession) { handleGifRotateMove(rect, event); return; }
-    if (stickerRotateSession) { handleStickerRotateMove(rect, event); return; }
-    if (stickerResizeSession) { handleStickerResizeMove(event); return; }
-    if (gifResizeSession) { handleGifResizeMove(event); return; }
-    if (draggingGifId) { handleGifDragMove(rect, event); return; }
-    if (isDraggingSticker) { handleStickerDragMove(rect, event); return; }
+    if (gifRotateSession) {
+      handleGifRotateMove(rect, event);
+      return;
+    }
+    if (stickerRotateSession) {
+      handleStickerRotateMove(rect, event);
+      return;
+    }
+    if (stickerResizeSession) {
+      handleStickerResizeMove(event);
+      return;
+    }
+    if (gifResizeSession) {
+      handleGifResizeMove(event);
+      return;
+    }
+    if (draggingGifId) {
+      handleGifDragMove(rect, event);
+      return;
+    }
+    if (isDraggingSticker) {
+      handleStickerDragMove(rect, event);
+      return;
+    }
     handleDrawMove(rect, event);
   };
 
@@ -651,7 +785,8 @@ export default function NotebookEntriesPage() {
         setGiphyError("По запросу ничего не найдено.");
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Ошибка поиска GIF";
+      const message =
+        error instanceof Error ? error.message : "Ошибка поиска GIF";
       setGiphyError(message);
       setGiphyResults([]);
     } finally {
@@ -687,7 +822,8 @@ export default function NotebookEntriesPage() {
         setGiphyError("Каталог GIF пуст.");
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Ошибка загрузки каталога GIF";
+      const message =
+        error instanceof Error ? error.message : "Ошибка загрузки каталога GIF";
       setGiphyError(message);
       setGiphyResults([]);
     } finally {
@@ -754,7 +890,11 @@ export default function NotebookEntriesPage() {
           >
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_0%,rgba(0,0,0,0.22)_100%)]" />
             {draft.imageUrl ? (
-              <img src={draft.imageUrl} alt="sticker" className="pointer-events-none absolute bottom-24 right-10 h-24 w-24 rounded-xl object-cover opacity-90" />
+              <img
+                src={draft.imageUrl}
+                alt="sticker"
+                className="pointer-events-none absolute bottom-24 right-10 h-24 w-24 rounded-xl object-cover opacity-90"
+              />
             ) : null}
 
             <canvas
@@ -768,9 +908,13 @@ export default function NotebookEntriesPage() {
             {placedGifs.map((gif) => (
               <div
                 key={gif.id}
-                onPointerDown={(event) => startGifDrag(event, gif.id, { x: gif.x, y: gif.y })}
+                onPointerDown={(event) =>
+                  startGifDrag(event, gif.id, { x: gif.x, y: gif.y })
+                }
                 className={`absolute cursor-move overflow-hidden rounded-xl border shadow-[0_12px_24px_rgba(0,0,0,0.35)] ${
-                  selectedGifId === gif.id ? "border-cyan-300/90" : "border-white/15"
+                  selectedGifId === gif.id
+                    ? "border-cyan-300/90"
+                    : "border-white/15"
                 }`}
                 style={{
                   left: gif.x,
@@ -780,19 +924,34 @@ export default function NotebookEntriesPage() {
                   transform: `rotate(${gif.rotateDeg}deg)`,
                 }}
               >
-                <img src={gif.url} alt="gif" className="h-full w-full object-cover" />
+                <img
+                  src={gif.url}
+                  alt="gif"
+                  className="h-full w-full object-cover"
+                />
                 {selectedGifId === gif.id ? (
                   <>
                     <button
                       type="button"
-                      onPointerDown={(event) => startGifResize(event, gif.id, gif.size)}
+                      onPointerDown={(event) =>
+                        startGifResize(event, gif.id, gif.size)
+                      }
                       className="absolute bottom-1 right-1 h-5 w-5 cursor-nwse-resize rounded-full border border-white/70 bg-black/45 text-white/90"
                       aria-label="Изменить размер GIF"
                       title="Потяни для изменения размера"
                     />
                     <button
                       type="button"
-                      onPointerDown={(event) => startGifRotate(event, gif.id, gif.x, gif.y, gif.size, gif.rotateDeg)}
+                      onPointerDown={(event) =>
+                        startGifRotate(
+                          event,
+                          gif.id,
+                          gif.x,
+                          gif.y,
+                          gif.size,
+                          gif.rotateDeg,
+                        )
+                      }
                       className="absolute -top-2 right-1 h-5 w-5 cursor-grab rounded-full border border-cyan-200/80 bg-cyan-400/25"
                       aria-label="Повернуть GIF"
                       title="Потяни для поворота"
@@ -842,7 +1001,6 @@ export default function NotebookEntriesPage() {
                 Начни писать текст в поле Aa снизу
               </div>
             )}
-
           </div>
 
           <div className="relative border-t border-white/10 bg-[rgba(9,14,36,0.96)] px-4 pt-3 pb-4 backdrop-blur-md transition-all duration-300 ease-out">
@@ -856,40 +1014,60 @@ export default function NotebookEntriesPage() {
               className="hidden"
             />
 
-            {(activeTool === "style" || activeTool === "draw") ? (
+            {activeTool === "style" || activeTool === "draw" ? (
               <div className="mb-3 rounded-2xl border border-white/12 bg-black/25 p-3">
                 {activeTool === "style" ? (
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      {["#ffffff", "#000000", "#4aa3ff", "#58c15c", "#7c7cff", "#e65bd8", "#ff8ea1"].map((color) => (
+                      {[
+                        "#ffffff",
+                        "#000000",
+                        "#4aa3ff",
+                        "#58c15c",
+                        "#7c7cff",
+                        "#e65bd8",
+                        "#ff8ea1",
+                      ].map((color) => (
                         <button
                           key={color}
                           type="button"
-                          onClick={() => setDraft({ ...draft, bubbleColor: color })}
+                          onClick={() =>
+                            setDraft({ ...draft, bubbleColor: color })
+                          }
                           className="h-8 w-8 rounded-full border border-white/25"
                           style={{ background: color }}
                         />
                       ))}
                     </div>
                     <div className="flex items-center gap-2 text-xs text-white/70">
-                      Размер{' '}
+                      Размер{" "}
                       <input
                         type="range"
                         min={28}
                         max={72}
                         value={draft.fontSize}
-                        onChange={(event) => setDraft({ ...draft, fontSize: Number(event.target.value) })}
+                        onChange={(event) =>
+                          setDraft({
+                            ...draft,
+                            fontSize: Number(event.target.value),
+                          })
+                        }
                         className="w-full"
                       />
                     </div>
                     <div className="flex items-center gap-2 text-xs text-white/70">
-                      Поворот{' '}
+                      Поворот{" "}
                       <input
                         type="range"
                         min={-30}
                         max={30}
                         value={draft.rotateDeg}
-                        onChange={(event) => setDraft({ ...draft, rotateDeg: Number(event.target.value) })}
+                        onChange={(event) =>
+                          setDraft({
+                            ...draft,
+                            rotateDeg: Number(event.target.value),
+                          })
+                        }
                         className="w-full"
                       />
                     </div>
@@ -916,19 +1094,20 @@ export default function NotebookEntriesPage() {
                       </button>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-white/70">
-                      Толщина кисти{' '}
+                      Толщина кисти{" "}
                       <input
                         type="range"
                         min={2}
                         max={14}
                         value={brushSize}
-                        onChange={(event) => setBrushSize(Number(event.target.value))}
+                        onChange={(event) =>
+                          setBrushSize(Number(event.target.value))
+                        }
                         className="w-full"
                       />
                     </div>
                   </div>
                 ) : null}
-
               </div>
             ) : null}
 
@@ -936,7 +1115,9 @@ export default function NotebookEntriesPage() {
               <div className="flex flex-1 items-center gap-2 rounded-2xl bg-[#1a2447]/80 px-3 py-2">
                 <input
                   value={draft.content}
-                  onChange={(event) => setDraft({ ...draft, content: event.target.value })}
+                  onChange={(event) =>
+                    setDraft({ ...draft, content: event.target.value })
+                  }
                   placeholder=""
                   className="w-full bg-transparent text-base text-white outline-none placeholder:text-white/45"
                 />
@@ -1011,7 +1192,9 @@ export default function NotebookEntriesPage() {
                 <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-white/20" />
 
                 <div className="mb-3 flex items-center justify-between">
-                  <p className="text-sm font-semibold text-white">GIF и стикеры</p>
+                  <p className="text-sm font-semibold text-white">
+                    GIF и стикеры
+                  </p>
                   <button
                     type="button"
                     onClick={() => setIsGifPickerOpen(false)}
@@ -1045,12 +1228,17 @@ export default function NotebookEntriesPage() {
                   </button>
                 </div>
 
-                {giphyError ? <p className="mb-2 text-[11px] text-rose-300">{giphyError}</p> : null}
+                {giphyError ? (
+                  <p className="mb-2 text-[11px] text-rose-300">{giphyError}</p>
+                ) : null}
                 <div
                   className="grid max-h-[42vh] grid-cols-3 gap-2 overflow-y-auto pr-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
                   onScroll={(event) => {
                     const target = event.currentTarget;
-                    const remainingHeight = target.scrollHeight - target.scrollTop - target.clientHeight;
+                    const remainingHeight =
+                      target.scrollHeight -
+                      target.scrollTop -
+                      target.clientHeight;
                     if (remainingHeight < 120) {
                       void loadMoreGifs();
                     }
@@ -1082,12 +1270,18 @@ export default function NotebookEntriesPage() {
                       className="overflow-hidden rounded-md border border-white/10 transition hover:border-white/35"
                       title={gif.title}
                     >
-                      <img src={gif.previewUrl} alt={gif.title} className="h-20 w-full object-cover" />
+                      <img
+                        src={gif.previewUrl}
+                        alt={gif.title}
+                        className="h-20 w-full object-cover"
+                      />
                     </button>
                   ))}
                 </div>
                 {!giphyLoading && !giphyError && giphyResults.length === 0 ? (
-                  <p className="pt-3 text-center text-xs text-white/45">Введи запрос и нажми «Найти»</p>
+                  <p className="pt-3 text-center text-xs text-white/45">
+                    Введи запрос и нажми «Найти»
+                  </p>
                 ) : null}
               </div>
             </div>
@@ -1101,7 +1295,13 @@ export default function NotebookEntriesPage() {
     <div className="min-h-full bg-[#000019] px-8 pt-8 pb-24 text-white">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <Breadcrumbs crumbs={[{ label: "Главная", to: "/navigation" }, { label: "Записи", to: "/records" }, { label: notebook.title }]} />
+          <Breadcrumbs
+            crumbs={[
+              { label: "Главная", to: "/navigation" },
+              { label: "Записи", to: "/records" },
+              { label: notebook.title },
+            ]}
+          />
         </div>
         <button
           type="button"
@@ -1123,15 +1323,27 @@ export default function NotebookEntriesPage() {
               <button
                 key={entry.id}
                 type="button"
-                onClick={() => navigate(`/chat?source=notebook&notebook=${notebook.id}&entry=${entry.id}`)}
+                onClick={() =>
+                  navigate(
+                    `/chat?source=notebook&notebook=${notebook.id}&entry=${entry.id}`,
+                  )
+                }
                 className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-left transition hover:bg-white/[0.06]"
               >
-                <p className="text-sm font-semibold text-white">{entry.title}</p>
-                <p className="mt-2 line-clamp-4 text-sm text-white/75">{entry.content}</p>
+                <p className="text-sm font-semibold text-white">
+                  {entry.title}
+                </p>
+                <p className="mt-2 line-clamp-4 text-sm text-white/75">
+                  {entry.content}
+                </p>
                 {entry.attachments && entry.attachments.length > 0 ? (
-                  <p className="mt-2 text-xs text-white/55">Файлов: {entry.attachments.length}</p>
+                  <p className="mt-2 text-xs text-white/55">
+                    Файлов: {entry.attachments.length}
+                  </p>
                 ) : null}
-                <p className="mt-3 text-xs text-white/45">{new Date(entry.createdAt).toLocaleString("ru-RU")}</p>
+                <p className="mt-3 text-xs text-white/45">
+                  {new Date(entry.createdAt).toLocaleString("ru-RU")}
+                </p>
               </button>
             ))}
           </div>

@@ -7,7 +7,7 @@
  * Check if running in Tauri
  */
 export function isTauri(): boolean {
-  return typeof window !== 'undefined' && !!(window as any).__TAURI_INTERNALS__;
+  return typeof window !== "undefined" && !!(window as any).__TAURI_INTERNALS__;
 }
 
 /**
@@ -33,10 +33,10 @@ export async function minimizeWindow(): Promise<void> {
     if (internals?.window?.minimize) {
       await internals.window.minimize();
     } else {
-      console.warn('minimize method not found');
+      console.warn("minimize method not found");
     }
   } catch (error) {
-    console.error('minimizeWindow error:', error);
+    console.error("minimizeWindow error:", error);
   }
 }
 
@@ -46,10 +46,10 @@ export async function toggleMaximizeWindow(): Promise<void> {
     if (internals?.window?.toggleMaximize) {
       await internals.window.toggleMaximize();
     } else {
-      console.warn('toggleMaximize method not found');
+      console.warn("toggleMaximize method not found");
     }
   } catch (error) {
-    console.error('toggleMaximizeWindow error:', error);
+    console.error("toggleMaximizeWindow error:", error);
   }
 }
 
@@ -59,10 +59,10 @@ export async function closeWindow(): Promise<void> {
     if (internals?.window?.close) {
       await internals.window.close();
     } else {
-      console.warn('close method not found');
+      console.warn("close method not found");
     }
   } catch (error) {
-    console.error('closeWindow error:', error);
+    console.error("closeWindow error:", error);
   }
 }
 
@@ -72,11 +72,11 @@ export async function isWindowMaximized(): Promise<boolean> {
     if (internals?.window?.isMaximized) {
       return await internals.window.isMaximized();
     } else {
-      console.warn('isMaximized method not found');
+      console.warn("isMaximized method not found");
       return false;
     }
   } catch (error) {
-    console.error('isWindowMaximized error:', error);
+    console.error("isWindowMaximized error:", error);
     return false;
   }
 }
@@ -90,24 +90,27 @@ export async function emitEvent(event: string, payload?: any): Promise<void> {
     if (internals?.event?.emit) {
       await internals.event.emit(event, payload);
     } else {
-      console.warn('emit method not found');
+      console.warn("emit method not found");
     }
   } catch (error) {
-    console.error('emitEvent error:', error);
+    console.error("emitEvent error:", error);
   }
 }
 
-export async function listenEvent(event: string, handler: (payload: any) => void): Promise<() => void> {
+export async function listenEvent(
+  event: string,
+  handler: (payload: any) => void,
+): Promise<() => void> {
   try {
     const internals = getInternals();
     if (internals?.event?.listen) {
       return await internals.event.listen(event, handler);
     } else {
-      console.warn('listen method not found');
+      console.warn("listen method not found");
       return () => {};
     }
   } catch (error) {
-    console.error('listenEvent error:', error);
+    console.error("listenEvent error:", error);
     return () => {};
   }
 }
@@ -121,10 +124,10 @@ export async function exitApp(code: number = 0): Promise<void> {
     if (internals?.app?.exit) {
       await internals.app.exit(code);
     } else {
-      console.warn('exit method not found');
+      console.warn("exit method not found");
     }
   } catch (error) {
-    console.error('exitApp error:', error);
+    console.error("exitApp error:", error);
   }
 }
 
@@ -144,8 +147,10 @@ export const tauriDirect = {
   close: () => getInternals()?.window?.close?.(),
   toggleMaximize: () => getInternals()?.window?.toggleMaximize?.(),
   isMaximized: () => getInternals()?.window?.isMaximized?.(),
-  emit: (event: string, payload?: any) => getInternals()?.event?.emit?.(event, payload),
-  listen: (event: string, handler: (payload: any) => void) => getInternals()?.event?.listen?.(event, handler)
+  emit: (event: string, payload?: any) =>
+    getInternals()?.event?.emit?.(event, payload),
+  listen: (event: string, handler: (payload: any) => void) =>
+    getInternals()?.event?.listen?.(event, handler),
 };
 
 export default {
@@ -160,5 +165,5 @@ export default {
   listenEvent,
   exitApp,
   isApiAvailable,
-  tauriDirect
+  tauriDirect,
 };

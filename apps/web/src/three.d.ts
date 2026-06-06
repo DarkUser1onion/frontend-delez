@@ -1,3 +1,3 @@
-declare module 'three' {
-  export * from 'three/src/Three';
+declare module "three" {
+  export * from "three/src/Three";
 }

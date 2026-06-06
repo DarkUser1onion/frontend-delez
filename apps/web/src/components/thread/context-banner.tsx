@@ -35,7 +35,7 @@ export const ContextBanner: React.FC<ContextBannerProps> = ({
             "relative flex items-center gap-3 px-4 py-3 sm:px-5 sm:py-3.5 mx-4 mt-2 mb-4",
             "bg-white/5 border border-white/10 rounded-2xl shadow-xl backdrop-blur-md overflow-hidden",
             "group transition-all hover:bg-white/10",
-            className
+            className,
           )}
         >
           {/* Декоративный градиентный фон */}
@@ -43,8 +43,12 @@ export const ContextBanner: React.FC<ContextBannerProps> = ({
 
           {/* Иконка */}
           <div className="flex-shrink-0 flex items-center justify-center size-10 rounded-full bg-white/10 border border-white/10 shadow-inner group-hover:scale-110 transition-transform duration-300">
-            {context.type === "hackathon" && <MonitorPlay className="size-5 text-blue-300" />}
-            {context.type === "meeting" && <Users className="size-5 text-purple-300" />}
+            {context.type === "hackathon" && (
+              <MonitorPlay className="size-5 text-blue-300" />
+            )}
+            {context.type === "meeting" && (
+              <Users className="size-5 text-purple-300" />
+            )}
             {(context.type === "event" || context.type === "general") && (
               <Info className="size-5 text-indigo-300" />
             )}

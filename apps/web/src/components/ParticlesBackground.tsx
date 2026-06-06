@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 interface Particle {
   x: number;
@@ -10,11 +10,13 @@ interface Particle {
 }
 
 interface ParticlesBackgroundProps {
-  variant?: 'default' | 'chat';
+  variant?: "default" | "chat";
 }
 
-const ParticlesBackground = ({ variant = 'default' }: ParticlesBackgroundProps) => {
-  const isChat = variant === 'chat';
+const ParticlesBackground = ({
+  variant = "default",
+}: ParticlesBackgroundProps) => {
+  const isChat = variant === "chat";
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: 0, y: 0 });
@@ -26,7 +28,7 @@ const ParticlesBackground = ({ variant = 'default' }: ParticlesBackgroundProps) 
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d', { alpha: true });
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     // Установка размеров canvas
@@ -43,7 +45,9 @@ const ParticlesBackground = ({ variant = 'default' }: ParticlesBackgroundProps) 
       // Адаптивная плотность: меньше частиц на маленьких экранах
       const baseParticleCount = isChat ? 100 : 80;
       const areaRatio = area / (1920 * 1080);
-      const particleCount = Math.floor(baseParticleCount * Math.sqrt(areaRatio));
+      const particleCount = Math.floor(
+        baseParticleCount * Math.sqrt(areaRatio),
+      );
       const finalCount = isChat
         ? Math.max(20, Math.min(100, particleCount))
         : Math.max(20, Math.min(120, particleCount));
@@ -55,7 +59,7 @@ const ParticlesBackground = ({ variant = 'default' }: ParticlesBackgroundProps) 
           vx: (Math.random() - 0.5) * (isChat ? 0.5 : 0.6),
           vy: (Math.random() - 0.5) * (isChat ? 0.5 : 0.6),
           size: isChat ? Math.random() * 1.5 + 0.8 : Math.random() * 2 + 1.5,
-          opacity: isChat ? 0.4 : 0.5
+          opacity: isChat ? 0.4 : 0.5,
         });
       }
       return particles;
@@ -66,7 +70,7 @@ const ParticlesBackground = ({ variant = 'default' }: ParticlesBackgroundProps) 
     // Отталкивание частиц от курсора
     const repulseParticles = (mouseX: number, mouseY: number) => {
       const repulseDistance = 140;
-      particlesRef.current.forEach(particle => {
+      particlesRef.current.forEach((particle) => {
         const dx = particle.x - mouseX;
         const dy = particle.y - mouseY;
         const distance = Math.hypot(dx, dy);
@@ -83,7 +87,7 @@ const ParticlesBackground = ({ variant = 'default' }: ParticlesBackgroundProps) 
     // Добавление частиц по клику
     const addParticles = (x: number, y: number) => {
       if (clickCountRef.current >= maxClicks) {
-        console.log('Достигнут лимит создания частиц (10 кликов)');
+        console.log("Достигнут лимит создания частиц (10 кликов)");
         return;
       }
       clickCountRef.current += 1;
@@ -95,7 +99,7 @@ const ParticlesBackground = ({ variant = 'default' }: ParticlesBackgroundProps) 
           vx: (Math.random() - 0.5) * 2,
           vy: (Math.random() - 0.5) * 2,
           size: Math.random() * 2 + 1.5,
-          opacity: 0.5
+          opacity: 0.5,
         });
       }
     };
@@ -198,21 +202,21 @@ const ParticlesBackground = ({ variant = 'default' }: ParticlesBackgroundProps) 
       clickCountRef.current = 0;
     };
 
-    globalThis.addEventListener('mousemove', handleMouseMove);
+    globalThis.addEventListener("mousemove", handleMouseMove);
     if (!isChat) {
-      canvas.addEventListener('click', handleClick);
+      canvas.addEventListener("click", handleClick);
     }
-    globalThis.addEventListener('resize', handleResize);
+    globalThis.addEventListener("resize", handleResize);
 
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
-      globalThis.removeEventListener('mousemove', handleMouseMove);
+      globalThis.removeEventListener("mousemove", handleMouseMove);
       if (!isChat) {
-        canvas.removeEventListener('click', handleClick);
+        canvas.removeEventListener("click", handleClick);
       }
-      globalThis.removeEventListener('resize', handleResize);
+      globalThis.removeEventListener("resize", handleResize);
     };
   }, [isChat, maxClicks]);
 
@@ -220,13 +224,13 @@ const ParticlesBackground = ({ variant = 'default' }: ParticlesBackgroundProps) 
     <canvas
       ref={canvasRef}
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         left: 0,
-        width: '100%',
-        height: '100%',
-        pointerEvents: isChat ? 'none' : 'auto',
-        zIndex: 0
+        width: "100%",
+        height: "100%",
+        pointerEvents: isChat ? "none" : "auto",
+        zIndex: 0,
       }}
     />
   );

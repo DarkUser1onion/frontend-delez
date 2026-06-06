@@ -14,11 +14,11 @@ export function isArrayOfMessages(
   if (value.every((v) => isBaseMessage(v))) {
     return true;
   }
-  
+
   if (!Array.isArray(value)) {
     return false;
   }
-  
+
   return value.every(
     (v) =>
       typeof v === "object" &&
@@ -54,7 +54,7 @@ function formatBaseMessage(item: BaseMessage): string {
   const contentText = formatMessageContent(item.content);
   const toolCallText = formatToolCalls(item);
   const messageType = getMessageType(item);
-  
+
   const contentPart = contentText ? ` ${contentText}` : "";
   return `${messageType}:${contentPart}${toolCallText}`;
 }
@@ -62,7 +62,7 @@ function formatBaseMessage(item: BaseMessage): string {
 function formatObjectMessage(item: any): string {
   const contentText = formatMessageContent(item.content);
   const toolCallText = formatToolCalls(item);
-  
+
   const contentPart = contentText ? ` ${contentText}` : "";
   return `${item.type}:${contentPart}${toolCallText}`;
 }
@@ -71,7 +71,7 @@ export function baseMessageObject(item: unknown): string {
   if (isBaseMessage(item)) {
     return formatBaseMessage(item);
   }
-  
+
   if (typeof item === "object" && item && "type" in item && "content" in item) {
     return formatObjectMessage(item);
   }
@@ -79,20 +79,22 @@ export function baseMessageObject(item: unknown): string {
   if (typeof item === "object") {
     return JSON.stringify(item, null);
   }
-  
+
   return item as string;
 }
 
 export function unknownToPrettyDate(input: unknown): string | undefined {
   try {
-    const isDateObject = Object.prototype.toString.call(input) === "[object Date]";
+    const isDateObject =
+      Object.prototype.toString.call(input) === "[object Date]";
     // Avoid treating ordinary numeric values like 42 as Unix timestamps.
     // We only format numbers that look like real millisecond timestamps.
     const isTimestampNumber =
       typeof input === "number" &&
       Number.isFinite(input) &&
       Math.abs(input) >= 100_000_000_000;
-    const isDateString = typeof input === "string" && !Number.isNaN(Date.parse(input));
+    const isDateString =
+      typeof input === "string" && !Number.isNaN(Date.parse(input));
 
     if (!isDateObject && !isTimestampNumber && !isDateString) {
       return undefined;
@@ -117,7 +119,10 @@ function processEditArgs(
   Object.entries(interrupt.action_request.args).forEach(([k, v]) => {
     const stringValue = typeof v === "string" ? v : JSON.stringify(v, null);
 
-    if (!initialHumanInterruptEditValue.current || !(k in initialHumanInterruptEditValue.current)) {
+    if (
+      !initialHumanInterruptEditValue.current ||
+      !(k in initialHumanInterruptEditValue.current)
+    ) {
       if (initialHumanInterruptEditValue.current) {
         initialHumanInterruptEditValue.current = {
           ...initialHumanInterruptEditValue.current,
@@ -190,7 +195,9 @@ function addIgnoreIfAllowed(
   }
 }
 
-function determineDefaultSubmitType(responses: HumanResponseWithEdits[]): SubmitType | undefined {
+function determineDefaultSubmitType(
+  responses: HumanResponseWithEdits[],
+): SubmitType | undefined {
   const hasResponse = responses.find((r) => r.type === "response");
   const hasAccept = responses.find((r) => r.acceptAllowed);
   const hasEdit = responses.find((r) => r.type === "edit");
@@ -223,7 +230,7 @@ function addMissingResponses(
       args: null,
     });
   }
-  
+
   if (ignoreAllowedConfig && !hasIgnoreResponse) {
     responses.push({
       type: "ignore",
@@ -247,7 +254,8 @@ export function createDefaultHumanResponse(
   addIgnoreIfAllowed(responses, interrupt);
 
   const defaultSubmitType = determineDefaultSubmitType(responses);
-  const hasAccept = responses.some((r) => r.acceptAllowed) || interrupt.config.allow_accept;
+  const hasAccept =
+    responses.some((r) => r.acceptAllowed) || interrupt.config.allow_accept;
 
   addMissingResponses(responses, interrupt);
 
