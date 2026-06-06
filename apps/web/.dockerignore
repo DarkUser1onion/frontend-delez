@@ -1,4 +1,11 @@
-node_modules
-.next
 .git
+.gitignore
+node_modules
+dist
+.vite
+src-tauri/target
+screenshots
+logs
+*.md
 .env
+.env.example

@@ -722,6 +722,31 @@
 
 ## Инструкция по запуску
 
+## Быстрый старт
+
+### Локальный запуск (dev)
+```bash
+cd ./apps/web
+make setup          # или npm install
+make run            # или npm run tauri:dev
+```
+Приложение откроется в окне Tauri.
+
+### Проверка качества кода
+```bash
+cd ./apps/web
+make check          # ESLint + Prettier
+make format         # автоформатирование
+```
+
+### Запуск через Docker (статический фронтенд)
+```bash
+cd ./apps/web
+docker compose up --build
+```
+Откройте http://localhost:8080 в браузере.
+```
+
 ### Backend (API)
 
 1. Клонировать репозиторий:  
