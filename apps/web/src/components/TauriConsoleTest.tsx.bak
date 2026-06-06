@@ -1,0 +1,100 @@
+import React, { useEffect } from "react";
+
+export function TauriConsoleTest() {
+  useEffect(() => {
+    // Добавляем функции для тестирования в консоли
+    (window as any).testTauriConsole = {
+      // Проверить наличие Tauri объектов
+      checkObjects: () => {
+        console.log('=== Tauri Objects Check ===');
+        console.log('window.__TAURI_INTERNALS__:', window.__TAURI_INTERNALS__);
+        console.log('window.__TAURI__:', window.__TAURI__);
+        console.log('window.__TAURI_IPC__:', window.__TAURI_IPC__);
+        
+        if (window.__TAURI_INTERNALS__) {
+          const internals = window.__TAURI_INTERNALS__;
+          console.log('Internals keys:', Object.keys(internals));
+          
+          if (internals.window) {
+            console.log('Window methods:', Object.keys(internals.window));
+          }
+          
+          if (internals.event) {
+            console.log('Event methods:', Object.keys(internals.event));
+          }
+        }
+      },
+      
+      // Тестировать minimize
+      testMinimize: async () => {
+        console.log('Testing minimize...');
+        try {
+          if (window.__TAURI_INTERNALS__?.window?.minimize) {
+            await window.__TAURI_INTERNALS__.window.minimize();
+            console.log('✓ Minimize successful');
+          } else {
+            console.log('✗ Minimize method not found');
+          }
+        } catch (error) {
+          console.error('Minimize error:', error);
+        }
+      },
+      
+      // Тестировать close
+      testClose: async () => {
+        console.log('Testing close...');
+        try {
+          if (window.__TAURI_INTERNALS__?.window?.close) {
+            await window.__TAURI_INTERNALS__.window.close();
+            console.log('✓ Close command sent');
+          } else {
+            console.log('✗ Close method not found');
+          }
+        } catch (error) {
+          console.error('Close error:', error);
+        }
+      },
+      
+      // Тестировать emit события
+      testEmit: async (eventName: string, payload: any = {}) => {
+        console.log(`Testing emit: ${eventName}`, payload);
+        try {
+          if (window.__TAURI_INTERNALS__?.event?.emit) {
+            await window.__TAURI_INTERNALS__.event.emit(eventName, payload);
+            console.log(`✓ Event "${eventName}" emitted`);
+          } else {
+            console.log('✗ Event emit method not found');
+          }
+        } catch (error) {
+          console.error('Emit error:', error);
+        }
+      },
+      
+      // Проверить все методы
+      testAll: async () => {
+        console.log('=== Testing All Tauri Methods ===');
+        await (window as any).testTauriConsole.checkObjects();
+        await (window as any).testTauriConsole.testMinimize();
+        await (window as any).testTauriConsole.testEmit('test-event', { test: true });
+      }
+    };
+    
+    // Выводим инструкции в консоль
+    console.log('=== Tauri Console Test ===');
+    console.log('Available test functions:');
+    console.log('- testTauriConsole.checkObjects()');
+    console.log('- testTauriConsole.testMinimize()');
+    console.log('- testTauriConsole.testClose()');
+    console.log('- testTauriConsole.testEmit("event-name", {data: "test"})');
+    console.log('- testTauriConsole.testAll()');
+    
+    return () => {
+      // Cleanup
+      delete (window as any).testTauriConsole;
+    };
+  }, []);
+
+  return null; // Этот компонент не рендерит ничего видимого
+}
+
+export default TauriConsoleTest;

@@ -1,0 +1,253 @@
+import React, { useState, useEffect } from "react";
+import { 
+  isTauri, 
+  minimizeWindow, 
+  closeWindow, 
+  emitEvent,
+  getInternals,
+  initTauriApi,
+  getCurrentWindow,
+  emit
+} from "@/utils/tauri";
+
+export function TauriTestButton() {
+  const [logs, setLogs] = useState<string[]>([]);
+  const [apiInitialized, setApiInitialized] = useState(false);
+
+  useEffect(() => {
+    // Инициализируем Tauri API при загрузке
+    const initializeApi = async () => {
+      if (isTauri()) {
+        addLog("Initializing Tauri API...");
+        const initialized = await initTauriApi();
+        setApiInitialized(initialized);
+        addLog(`Tauri API initialized: ${initialized}`);
+        
+        if (initialized) {
+          addLog("Tauri API ready to use!");
+        } else {
+          addLog("Failed to initialize Tauri API");
+        }
+      }
+    };
+
+    initializeApi();
+  }, []);
+
+  const addLog = (message: string) => {
+    setLogs(prev => [...prev, `${new Date().toISOString().split('T')[1].slice(0, -1)}: ${message}`]);
+  };
+
+  const testTauri = () => {
+    addLog("=== Testing Tauri API ===");
+    addLog(`isTauri(): ${isTauri()}`);
+    addLog(`API Initialized: ${apiInitialized}`);
+    
+    const win = window as any;
+    addLog(`window.__TAURI_INTERNALS__: ${!!win.__TAURI_INTERNALS__}`);
+    addLog(`window.__TAURI__: ${!!win.__TAURI__}`);
+    addLog(`window.__TAURI_IPC__: ${!!win.__TAURI_IPC__}`);
+    
+    if (win.__TAURI_INTERNALS__) {
+      const internals = win.__TAURI_INTERNALS__;
+      addLog(`__TAURI_INTERNALS__ keys: ${Object.keys(internals).join(', ')}`);
+      
+      if (internals.window) {
+        addLog(`window API methods: ${Object.keys(internals.window).join(', ')}`);
+      }
+      
+      if (internals.event) {
+        addLog(`event API methods: ${Object.keys(internals.event).join(', ')}`);
+      }
+    }
+  };
+
+  const testMinimize = async () => {
+    addLog("Testing minimize...");
+    try {
+      await minimizeWindow();
+      addLog("Minimize command sent");
+    } catch (error) {
+      addLog(`Minimize error: ${error}`);
+    }
+  };
+
+  const testClose = async () => {
+    addLog("Testing close...");
+    try {
+      await closeWindow();
+      addLog("Close command sent");
+    } catch (error) {
+      addLog(`Close error: ${error}`);
+    }
+  };
+
+  const testNewEntryEvent = async () => {
+    addLog("Testing new-entry event...");
+    try {
+      await emitEvent("new-entry", {});
+      addLog("new-entry event emitted");
+    } catch (error) {
+      addLog(`new-entry event error: ${error}`);
+    }
+  };
+
+  const testOpenSettingsEvent = async () => {
+    addLog("Testing open-settings event...");
+    try {
+      await emitEvent("open-settings", {});
+      addLog("open-settings event emitted");
+    } catch (error) {
+      addLog(`open-settings event error: ${error}`);
+    }
+  };
+
+  if (!isTauri()) {
+    return (
+      <div style={{
+        position: "fixed",
+        top: "10px",
+        right: "10px",
+        background: "#ff4444",
+        color: "white",
+        padding: "10px",
+        borderRadius: "4px",
+        fontSize: "12px",
+        zIndex: 9999
+      }}>
+        Not running in Tauri
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: "10px",
+      right: "10px",
+      background: "#1a1a2e",
+      border: "1px solid #3a3a6a",
+      borderRadius: "8px",
+      padding: "10px",
+      fontSize: "12px",
+      color: "#c6d4df",
+      zIndex: 9999,
+      maxWidth: "300px",
+      maxHeight: "400px",
+      overflow: "auto"
+    }}>
+      <div style={{ 
+        display: "flex", 
+        flexDirection: "column", 
+        gap: "5px",
+        marginBottom: "10px"
+      }}>
+        <button 
+          onClick={testTauri}
+          style={{
+            padding: "5px 10px",
+            background: "#2a2a4a",
+            border: "1px solid #3a3a6a",
+            color: "#c6d4df",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "11px"
+          }}
+        >
+          Test Tauri API
+        </button>
+        
+        <button 
+          onClick={testMinimize}
+          style={{
+            padding: "5px 10px",
+            background: "#2a2a4a",
+            border: "1px solid #3a3a6a",
+            color: "#c6d4df",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "11px"
+          }}
+        >
+          Minimize Window
+        </button>
+        
+        <button 
+          onClick={testClose}
+          style={{
+            padding: "5px 10px",
+            background: "#e81123",
+            border: "1px solid #ff3344",
+            color: "white",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "11px"
+          }}
+        >
+          Close Window
+        </button>
+        
+        <button 
+          onClick={testNewEntryEvent}
+          style={{
+            padding: "5px 10px",
+            background: "#2a4a2a",
+            border: "1px solid #3a6a3a",
+            color: "#c6d4df",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "11px"
+          }}
+        >
+          New Entry Event
+        </button>
+        
+        <button 
+          onClick={testOpenSettingsEvent}
+          style={{
+            padding: "5px 10px",
+            background: "#2a4a2a",
+            border: "1px solid #3a6a3a",
+            color: "#c6d4df",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "11px"
+          }}
+        >
+          Open Settings Event
+        </button>
+      </div>
+      
+      <div style={{ 
+        background: "#000000", 
+        padding: "5px", 
+        borderRadius: "4px",
+        height: "150px",
+        overflow: "auto",
+        fontSize: "10px"
+      }}>
+        {logs.map((log, index) => (
+          <div key={index} style={{ marginBottom: "2px" }}>{log}</div>
+        ))}
+      </div>
+      
+      <button 
+        onClick={() => setLogs([])}
+        style={{
+          marginTop: "5px",
+          padding: "3px 6px",
+          background: "#3a3a6a",
+          border: "1px solid #4a4a8a",
+          color: "#c6d4df",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontSize: "10px"
+        }}
+      >
+        Clear Logs
+      </button>
+    </div>
+  );
+}
+
+export default TauriTestButton;

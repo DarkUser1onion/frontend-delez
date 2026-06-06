@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tauri API Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #66c0f4;
+        }
+        .section {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #3a3a6a;
+        }
+        code {
+            background: #000;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #4c9fd4;
+        }
+        pre {
+            background: #000;
+            padding: 10px;
+            border-radius: 4px;
+            overflow: auto;
+        }
+        button {
+            background: #2a2a4a;
+            border: 1px solid #3a3a6a;
+            color: #c6d4df;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-family: monospace;
+        }
+        button:hover {
+            background: #3a3a6a;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .warning {
+            color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tauri API Test Page</h1>
+        
+        <div class="section">
+            <h2>1. Open Browser Console</h2>
+            <p>Press <code>F12</code> or <code>Ctrl+Shift+I</code> to open Developer Tools.</p>
+            <p>Go to the <strong>Console</strong> tab.</p>
+        </div>
+        
+        <div class="section">
+            <h2>2. Check Tauri Objects</h2>
+            <p>In the console, type:</p>
+            <pre>console.log('__TAURI_INTERNALS__:', window.__TAURI_INTERNALS__);
+console.log('__TAURI__:', window.__TAURI__);
+console.log('__TAURI_IPC__:', window.__TAURI_IPC__);</pre>
+            
+            <button onclick="checkTauriObjects()">Check Tauri Objects</button>
+            <div id="tauri-objects-result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>3. Test Window Controls</h2>
+            <p>If Tauri objects exist, test window controls:</p>
+            <button onclick="testMinimize()">Test Minimize</button>
+            <button onclick="testClose()" style="background: #e81123; border-color: #ff3344;">Test Close</button>
+            <div id="window-controls-result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>4. Test Events</h2>
+            <p>Test event emission:</p>
+            <button onclick="testEmit('new-entry')">Emit new-entry</button>
+            <button onclick="testEmit('open-settings')">Emit open-settings</button>
+            <div id="events-result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>5. Debug Information</h2>
+            <button onclick="showDebugInfo()">Show Debug Info</button>
+            <pre id="debug-info"></pre>
+        </div>
+    </div>
+
+    <script>
+        function logResult(elementId, message, type = '') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<p class="${type}">${message}</p>`;
+        }
+
+        function checkTauriObjects() {
+            const internals = window.__TAURI_INTERNALS__;
+            const tauri = window.__TAURI__;
+            const ipc = window.__TAURI_IPC__;
+            
+            let result = '';
+            
+            if (internals) {
+                result += '<span class="success">✓ __TAURI_INTERNALS__ found</span><br>';
+                result += `Keys: ${Object.keys(internals).join(', ')}<br>`;
+                
+                if (internals.window) {
+                    result += `Window methods: ${Object.keys(internals.window).join(', ')}<br>`;
+                }
+                
+                if (internals.event) {
+                    result += `Event methods: ${Object.keys(internals.event).join(', ')}<br>`;
+                }
+            } else {
+                result += '<span class="error">✗ __TAURI_INTERNALS__ not found</span><br>';
+            }
+            
+            if (tauri) {
+                result += '<span class="success">✓ __TAURI__ found</span><br>';
+            } else {
+                result += '<span class="warning">✗ __TAURI__ not found (normal for Tauri v2)</span><br>';
+            }
+            
+            if (ipc) {
+                result += '<span class="success">✓ __TAURI_IPC__ found</span><br>';
+            } else {
+                result += '<span class="warning">✗ __TAURI_IPC__ not found (normal for Tauri v2)</span><br>';
+            }
+            
+            logResult('tauri-objects-result', result);
+        }
+
+        async function testMinimize() {
+            try {
+                if (window.__TAURI_INTERNALS__?.window?.minimize) {
+                    await window.__TAURI_INTERNALS__.window.minimize();
+                    logResult('window-controls-result', '<span class="success">✓ Minimize successful</span>');
+                } else {
+                    logResult('window-controls-result', '<span class="error">✗ Minimize method not found</span>');
+                }
+            } catch (error) {
+                logResult('window-controls-result', `<span class="error">✗ Minimize error: ${error}</span>`);
+            }
+        }
+
+        async function testClose() {
+            try {
+                if (window.__TAURI_INTERNALS__?.window?.close) {
+                    await window.__TAURI_INTERNALS__.window.close();
+                    logResult('window-controls-result', '<span class="success">✓ Close command sent</span>');
+                } else {
+                    logResult('window-controls-result', '<span class="error">✗ Close method not found</span>');
+                }
+            } catch (error) {
+                logResult('window-controls-result', `<span class="error">✗ Close error: ${error}</span>`);
+            }
+        }
+
+        async function testEmit(eventName) {
+            try {
+                if (window.__TAURI_INTERNALS__?.event?.emit) {
+                    await window.__TAURI_INTERNALS__.event.emit(eventName, { timestamp: Date.now() });
+                    logResult('events-result', `<span class="success">✓ Event "${eventName}" emitted</span>`);
+                } else {
+                    logResult('events-result', `<span class="error">✗ Event emit method not found</span>`);
+                }
+            } catch (error) {
+                logResult('events-result', `<span class="error">✗ Event error: ${error}</span>`);
+            }
+        }
+
+        function showDebugInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                windowInnerSize: `${window.innerWidth}x${window.innerHeight}`,
+                windowOuterSize: `${window.outerWidth}x${window.outerHeight}`,
+                location: window.location.href,
+                tauriInternals: window.__TAURI_INTERNALS__ ? 'Present' : 'Absent',
+                allWindowKeys: Object.keys(window).filter(k => k.includes('TAURI') || k.includes('tauri')).join(', ')
+            };
+            
+            document.getElementById('debug-info').textContent = JSON.stringify(info, null, 2);
+        }
+
+        // Auto-check on load
+        window.addEventListener('load', () => {
+            setTimeout(checkTauriObjects, 1000);
+        });
+    </script>
+</body>
+</html>

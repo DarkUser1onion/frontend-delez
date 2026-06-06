@@ -1,0 +1,323 @@
+import { useState, useEffect } from "react";
+import {
+  Minus,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
+  Home,
+  Maximize2,
+  Minimize2,
+  Settings,
+  Plus
+} from "lucide-react";
+import useWindowState from "@/hooks/useWindowState";
+import { 
+  isTauri, 
+  minimizeWindow, 
+  toggleMaximizeWindow, 
+  closeWindow, 
+  isWindowMaximized,
+  emitEvent 
+} from "@/utils/tauri";
+
+interface TitleBarProps {
+  onNavigateBack?: () => void;
+  onNavigateForward?: () => void;
+  onRefresh?: () => void;
+  onHome?: () => void;
+  canGoBack?: boolean;
+  canGoForward?: boolean;
+}
+
+export function TitleBar({
+  onNavigateBack,
+  onNavigateForward,
+  onRefresh,
+  onHome,
+  canGoBack = false,
+  canGoForward = false
+}: TitleBarProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const { windowState, saveState } = useWindowState();
+  const isMaximized = windowState.isMaximized;
+
+  const handleMinimize = async () => {
+    try {
+      await minimizeWindow();
+    } catch (e) {
+      console.error("Failed to minimize:", e);
+    }
+  };
+
+  const handleToggleMaximize = async () => {
+    try {
+      await toggleMaximizeWindow();
+      // Обновляем состояние максимизации
+      const maximized = await isWindowMaximized();
+      saveState({ isMaximized: maximized });
+    } catch (e) {
+      console.error("Failed to toggle maximize:", e);
+    }
+  };
+
+  const handleClose = async () => {
+    try {
+      await closeWindow();
+    } catch (e) {
+      console.error("Failed to close:", e);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    if (onRefresh) {
+      onRefresh();
+    }
+    setTimeout(() => setIsLoading(false), 500);
+  };
+
+  console.log("[TitleBar] Rendering with isTauri:", isTauri());
+  
+  return (
+    <div
+      data-tauri-drag-region
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        height: "40px",
+        background: "linear-gradient(180deg, #171a21 0%, #1b2838 100%)", // Steam-like gradient
+        borderBottom: "1px solid rgba(66, 78, 99, 0.5)",
+        paddingLeft: "12px",
+        paddingRight: "0",
+        userSelect: "none",
+        position: "relative",
+        zIndex: 9999,
+        WebkitAppRegion: "drag",
+        appRegion: "drag",
+        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.3)",
+        fontFamily: "'Motiva Sans', 'Segoe UI', sans-serif"
+      }}
+    >
+      {/* Left: Navigation buttons */}
+      <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+        <TitleBarButton
+          onClick={onNavigateBack}
+          disabled={!canGoBack}
+          title="Назад"
+        >
+          <ChevronLeft size={18} />
+        </TitleBarButton>
+
+        <TitleBarButton
+          onClick={onNavigateForward}
+          disabled={!canGoForward}
+          title="Вперёд"
+        >
+          <ChevronRight size={18} />
+        </TitleBarButton>
+
+        <TitleBarButton
+          onClick={handleRefresh}
+          title="Обновить"
+          active={isLoading}
+        >
+          <RotateCcw size={16} style={{ animation: isLoading ? "spin 1s linear infinite" : "none" }} />
+        </TitleBarButton>
+
+        <TitleBarButton
+          onClick={onHome}
+          title="Главная"
+        >
+          <Home size={16} />
+        </TitleBarButton>
+
+        {/* Separator */}
+        <div style={{ 
+          width: "1px", 
+          height: "20px", 
+          background: "rgba(255, 255, 255, 0.1)",
+          margin: "0 4px"
+        }} />
+
+        {/* Quick Actions (Steam-like) */}
+        <TitleBarButton
+          onClick={() => {
+            // Отправляем событие новой записи
+            emitEvent("new-entry", {});
+          }}
+          title="Новая запись (Ctrl+N)"
+        >
+          <Plus size={16} />
+        </TitleBarButton>
+
+        <TitleBarButton
+          onClick={() => {
+            // Отправляем событие открытия настроек
+            emitEvent("open-settings", {});
+          }}
+          title="Настройки (Ctrl+,)"
+        >
+          <Settings size={16} />
+        </TitleBarButton>
+      </div>
+
+      {/* Center: Title - Steam style */}
+      <div
+        data-tauri-drag-region
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          color: "#c6d4df",
+          fontSize: "14px",
+          fontWeight: 400,
+          letterSpacing: "0.3px",
+          pointerEvents: "none",
+          textShadow: "0 1px 2px rgba(0, 0, 0, 0.5)"
+        }}
+      >
+        <span style={{ 
+          color: "#66c0f4", 
+          fontWeight: 500,
+          fontSize: "15px"
+        }}>Delёz</span>
+        <span style={{ 
+          opacity: 0.5,
+          fontSize: "12px"
+        }}>•</span>
+        <span style={{ 
+          opacity: 0.9,
+          fontSize: "13px"
+        }}>AI-дневник саморефлексии</span>
+      </div>
+
+      {/* Right: Window controls - Steam style */}
+      <div style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        height: "100%",
+        background: "rgba(0, 0, 0, 0.1)"
+      }}>
+        <TitleBarButton
+          onClick={handleMinimize}
+          title="Свернуть"
+          isWindowControl
+        >
+          <Minus size={14} />
+        </TitleBarButton>
+
+        <TitleBarButton
+          onClick={handleToggleMaximize}
+          title={isMaximized ? "Восстановить" : "Развернуть"}
+          isWindowControl
+        >
+          {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+        </TitleBarButton>
+
+        <TitleBarButton
+          onClick={handleClose}
+          title="Закрыть"
+          isWindowControl
+          isClose
+        >
+          <X size={14} />
+        </TitleBarButton>
+      </div>
+    </div>
+  );
+}
+
+interface TitleBarButtonProps {
+  onClick?: () => void;
+  disabled?: boolean;
+  title: string;
+  children: React.ReactNode;
+  isWindowControl?: boolean;
+  isClose?: boolean;
+  active?: boolean;
+}
+
+function TitleBarButton({
+  onClick,
+  disabled = false,
+  title,
+  children,
+  isWindowControl = false,
+  isClose = false,
+  active = false
+}: TitleBarButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: isWindowControl ? "46px" : "32px",
+        height: "100%",
+        border: "none",
+        background: active ? "rgba(90, 120, 170, 0.3)" : "transparent",
+        color: isWindowControl ? "#c6d4df" : "#a3b8cc",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.3 : 1,
+        transition: "all 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        outline: "none",
+        WebkitAppRegion: "no-drag",
+        appRegion: "no-drag",
+        fontSize: "12px",
+        position: "relative",
+        overflow: "hidden"
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled) {
+          const hoverBg = isClose ? "#e81123" : "rgba(90, 120, 170, 0.4)";
+          e.currentTarget.style.background = hoverBg;
+          e.currentTarget.style.color = "#fff";
+          
+          // Steam-like hover effect
+          if (!isWindowControl) {
+            e.currentTarget.style.boxShadow = "inset 0 0 20px rgba(90, 120, 170, 0.2)";
+          }
+        }
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = active ? "rgba(90, 120, 170, 0.3)" : "transparent";
+        e.currentTarget.style.color = isWindowControl ? "#c6d4df" : "#a3b8cc";
+        e.currentTarget.style.boxShadow = "none";
+      }}
+      onMouseDown={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.transform = "scale(0.95)";
+          e.currentTarget.style.transition = "transform 0.1s ease";
+        }
+      }}
+      onMouseUp={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+      }}
+    >
+      {children}
+      {/* Steam-like active indicator */}
+      {active && (
+        <div style={{
+          position: "absolute",
+          bottom: "0",
+          left: "0",
+          right: "0",
+          height: "2px",
+          background: "linear-gradient(90deg, #66c0f4 0%, #4c9fd4 100%)",
+          borderRadius: "1px"
+        }} />
+      )}
+    </button>
+  );
+}
+
+export default TitleBar;

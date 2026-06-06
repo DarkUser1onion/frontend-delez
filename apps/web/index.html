@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon_64x64.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Delёz</title>
+    <style>
+      html,
+      body,
+      #root {
+        margin: 0;
+        padding: 0;
+        background-color: #000019;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Shantell Sans', 'Segoe UI', sans-serif;
+      }
+
+      #native-splash {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(ellipse at center, #0a0a1a 0%, #000019 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        color: #c6d4df;
+        transition: opacity 0.4s ease-out;
+      }
+
+      #native-splash .logo {
+        font-size: 52px;
+        font-weight: bold;
+        background: linear-gradient(135deg, #66c0f4 0%, #9f7aea 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+
+      #native-splash .sub {
+        font-size: 16px;
+        opacity: 0.7;
+        letter-spacing: 1px;
+        text-align: center;
+      }
+
+      #native-splash .dots {
+        margin-top: 24px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      #native-splash .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #66c0f4;
+        animation: pulse 1.2s ease-in-out infinite;
+        opacity: 0.6;
+      }
+
+      .dot:nth-child(1) { animation-delay: 0s; }
+      .dot:nth-child(2) { animation-delay: 0.15s; }
+      .dot:nth-child(3) { animation-delay: 0.3s; }
+      .dot:nth-child(4) { animation-delay: 0.45s; }
+      .dot:nth-child(5) { animation-delay: 0.6s; }
+
+      #native-splash .footer {
+        margin-top: 32px;
+        font-size: 13px;
+        opacity: 0.5;
+        text-align: center;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        50% {
+          transform: scale(1.3);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="native-splash">
+      <div class="logo">Delёz</div>
+      <div class="sub">AI-дневник саморефлексии</div>
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div class="footer">Desktop • Tauri v2</div>
+    </div>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+      const MIN_SPLASH_TIME = 1000;
+      const root = document.getElementById('root');
+      const splash = document.getElementById('native-splash');
+      let reactReady = false;
+      let timerElapsed = false;
+
+      const tryHideSplash = () => {
+        if (reactReady && timerElapsed && splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => {
+            if (splash.parentNode) {
+              splash.parentNode.removeChild(splash);
+            }
+          }, 400);
+        }
+      };
+
+      const observer = new MutationObserver(() => {
+        if (root.children.length > 0) {
+          reactReady = true;
+          observer.disconnect();
+          tryHideSplash();
+        }
+      });
+      observer.observe(root, { childList: true, subtree: true });
+
+      setTimeout(() => {
+        timerElapsed = true;
+        tryHideSplash();
+      }, MIN_SPLASH_TIME);
+    </script>
+  </body>
+</html>

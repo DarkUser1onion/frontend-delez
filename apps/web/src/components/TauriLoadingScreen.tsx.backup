@@ -1,0 +1,183 @@
+import React, { useState, useEffect } from "react";
+import { isTauri } from "@/utils/tauri";
+
+export function TauriLoadingScreen() {
+  const [progress, setProgress] = useState(0);
+  const [message, setMessage] = useState("Запуск приложения...");
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (!isTauri()) return;
+
+    // Ждём, пока нативная заставка (#native-splash) будет удалена
+    const check = () => {
+      if (!document.getElementById("native-splash")) {
+        setShow(true);
+        return;
+      }
+      requestAnimationFrame(check);
+    };
+    check();
+  }, []);
+
+  useEffect(() => {
+    if (!show) return;
+
+    const messages = [
+      "Инициализация ядра...",
+      "Загрузка модулей...",
+      "Подготовка интерфейса...",
+      "Проверка соединения...",
+      "Готово!"
+    ];
+
+    let currentStep = 0;
+    const interval = setInterval(() => {
+      if (currentStep < messages.length) {
+        setMessage(messages[currentStep]);
+        setProgress(((currentStep + 1) / messages.length) * 100);
+        currentStep++;
+      } else {
+        clearInterval(interval);
+        setTimeout(() => {
+          setShow(false);
+        }, 500);
+      }
+    }, 800); // каждые 800 мс меняем сообщение
+
+    return () => clearInterval(interval);
+  }, [show]);
+
+  if (!show) return null;
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: "linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 99999,
+        fontFamily: "'Motiva Sans', 'Segoe UI', sans-serif",
+        color: "#c6d4df",
+        transition: "opacity 0.5s ease-out"
+      }}
+    >
+      {/* Логотип */}
+      <div style={{ 
+        marginBottom: "40px",
+        textAlign: "center"
+      }}>
+        <div style={{
+          fontSize: "48px",
+          fontWeight: "bold",
+          background: "linear-gradient(90deg, #66c0f4 0%, #4c9fd4 100%)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          marginBottom: "10px"
+        }}>
+          Delёz
+        </div>
+        <div style={{
+          fontSize: "16px",
+          opacity: 0.8,
+          letterSpacing: "1px"
+        }}>
+          AI-дневник саморефлексии
+        </div>
+      </div>
+
+      {/* Индикатор прогресса */}
+      <div style={{ 
+        width: "300px",
+        marginBottom: "20px"
+      }}>
+        <div style={{
+          width: "100%",
+          height: "4px",
+          background: "rgba(255, 255, 255, 0.1)",
+          borderRadius: "2px",
+          overflow: "hidden"
+        }}>
+          <div 
+            style={{
+              width: `${progress}%`,
+              height: "100%",
+              background: "linear-gradient(90deg, #66c0f4 0%, #4c9fd4 100%)",
+              borderRadius: "2px",
+              transition: "width 0.3s ease"
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Сообщение */}
+      <div style={{
+        fontSize: "14px",
+        marginBottom: "30px",
+        textAlign: "center",
+        minHeight: "20px"
+      }}>
+        {message}
+      </div>
+
+      {/* Анимация загрузки */}
+      <div style={{
+        display: "flex",
+        gap: "8px",
+        marginBottom: "40px"
+      }}>
+        {[0, 1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            style={{
+              width: "10px",
+              height: "10px",
+              borderRadius: "50%",
+              background: "#66c0f4",
+              animation: `pulse 1.5s ease-in-out ${i * 0.2}s infinite`,
+              opacity: 0.6
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Информация о системе */}
+      <div style={{
+        fontSize: "12px",
+        opacity: 0.5,
+        textAlign: "center",
+        marginTop: "20px",
+        borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+        paddingTop: "20px",
+        width: "300px"
+      }}>
+        <div>Desktop версия • Tauri v2</div>
+        <div style={{ marginTop: "5px", fontSize: "11px" }}>
+          Нажмите Ctrl+N для новой записи, Ctrl+, для настроек
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 0.6;
+          }
+          50% {
+            transform: scale(1.2);
+            opacity: 1;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default TauriLoadingScreen;

@@ -1,0 +1,348 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+export function TauriStatusPage() {
+  const navigate = useNavigate();
+  const [status, setStatus] = useState({
+    isTauri: false,
+    hasInternals: false,
+    hasWindowApi: false,
+    hasEventApi: false,
+    windowMethods: [] as string[],
+    eventMethods: [] as string[],
+    allWindowKeys: [] as string[]
+  });
+
+  useEffect(() => {
+    const checkTauriStatus = () => {
+      const win = window as any;
+      const isTauri = !!win.__TAURI_INTERNALS__;
+      const hasInternals = !!win.__TAURI_INTERNALS__;
+      
+      let windowMethods: string[] = [];
+      let eventMethods: string[] = [];
+      
+      if (win.__TAURI_INTERNALS__) {
+        const internals = win.__TAURI_INTERNALS__;
+        
+        if (internals.window) {
+          windowMethods = Object.keys(internals.window);
+        }
+        
+        if (internals.event) {
+          eventMethods = Object.keys(internals.event);
+        }
+      }
+      
+      const allWindowKeys = Object.keys(window).filter(k => 
+        k.includes('TAURI') || k.includes('tauri') || k.includes('Tauri')
+      );
+      
+      setStatus({
+        isTauri,
+        hasInternals,
+        hasWindowApi: windowMethods.length > 0,
+        hasEventApi: eventMethods.length > 0,
+        windowMethods,
+        eventMethods,
+        allWindowKeys
+      });
+    };
+    
+    checkTauriStatus();
+    const interval = setInterval(checkTauriStatus, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const testMinimize = async () => {
+    const win = window as any;
+    if (win.__TAURI_INTERNALS__?.window?.minimize) {
+      try {
+        await win.__TAURI_INTERNALS__.window.minimize();
+        alert('Окно свернуто!');
+      } catch (error) {
+        alert(`Ошибка: ${error}`);
+      }
+    } else {
+      alert('Метод minimize не доступен');
+    }
+  };
+
+  const testClose = async () => {
+    const win = window as any;
+    if (win.__TAURI_INTERNALS__?.window?.close) {
+      try {
+        await win.__TAURI_INTERNALS__.window.close();
+        alert('Команда закрытия отправлена!');
+      } catch (error) {
+        alert(`Ошибка: ${error}`);
+      }
+    } else {
+      alert('Метод close не доступен');
+    }
+  };
+
+  const testEmit = async (eventName: string) => {
+    const win = window as any;
+    if (win.__TAURI_INTERNALS__?.event?.emit) {
+      try {
+        await win.__TAURI_INTERNALS__.event.emit(eventName, { test: true });
+        alert(`Событие "${eventName}" отправлено!`);
+      } catch (error) {
+        alert(`Ошибка: ${error}`);
+      }
+    } else {
+      alert('Метод emit не доступен');
+    }
+  };
+
+  return (
+    <div style={{ 
+      padding: "20px", 
+      background: "#0a0a0f",
+      color: "#e0e0e0",
+      minHeight: "100vh",
+      fontFamily: "monospace"
+    }}>
+      <h1 style={{ color: "#66c0f4", marginBottom: "20px" }}>Tauri Status Page</h1>
+      
+      <div style={{ 
+        background: "#1a1a2e", 
+        padding: "20px", 
+        borderRadius: "8px",
+        marginBottom: "20px"
+      }}>
+        <h2 style={{ color: "#4c9fd4", marginBottom: "10px" }}>Статус Tauri</h2>
+        
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+          <StatusItem 
+            label="Tauri обнаружен" 
+            value={status.isTauri} 
+            good={status.isTauri}
+          />
+          <StatusItem 
+            label="__TAURI_INTERNALS__" 
+            value={status.hasInternals} 
+            good={status.hasInternals}
+          />
+          <StatusItem 
+            label="Window API доступен" 
+            value={status.hasWindowApi} 
+            good={status.hasWindowApi}
+          />
+          <StatusItem 
+            label="Event API доступен" 
+            value={status.hasEventApi} 
+            good={status.hasEventApi}
+          />
+        </div>
+      </div>
+      
+      <div style={{ 
+        background: "#1a1a2e", 
+        padding: "20px", 
+        borderRadius: "8px",
+        marginBottom: "20px"
+      }}>
+        <h2 style={{ color: "#4c9fd4", marginBottom: "10px" }}>Доступные методы</h2>
+        
+        <div style={{ marginBottom: "15px" }}>
+          <h3 style={{ color: "#c6d4df", fontSize: "14px" }}>Window методы:</h3>
+          <div style={{ 
+            background: "#000000", 
+            padding: "10px", 
+            borderRadius: "4px",
+            marginTop: "5px"
+          }}>
+            {status.windowMethods.length > 0 ? (
+              status.windowMethods.map((method, index) => (
+                <div key={index} style={{ marginBottom: "2px" }}>
+                  <code style={{ color: "#4c9fd4" }}>{method}</code>
+                </div>
+              ))
+            ) : (
+              <div style={{ color: "#f44336" }}>Нет доступных методов</div>
+            )}
+          </div>
+        </div>
+        
+        <div style={{ marginBottom: "15px" }}>
+          <h3 style={{ color: "#c6d4df", fontSize: "14px" }}>Event методы:</h3>
+          <div style={{ 
+            background: "#000000", 
+            padding: "10px", 
+            borderRadius: "4px",
+            marginTop: "5px"
+          }}>
+            {status.eventMethods.length > 0 ? (
+              status.eventMethods.map((method, index) => (
+                <div key={index} style={{ marginBottom: "2px" }}>
+                  <code style={{ color: "#4c9fd4" }}>{method}</code>
+                </div>
+              ))
+            ) : (
+              <div style={{ color: "#f44336" }}>Нет доступных методов</div>
+            )}
+          </div>
+        </div>
+        
+        <div>
+          <h3 style={{ color: "#c6d4df", fontSize: "14px" }}>Все Tauri ключи в window:</h3>
+          <div style={{ 
+            background: "#000000", 
+            padding: "10px", 
+            borderRadius: "4px",
+            marginTop: "5px"
+          }}>
+            {status.allWindowKeys.length > 0 ? (
+              status.allWindowKeys.map((key, index) => (
+                <div key={index} style={{ marginBottom: "2px" }}>
+                  <code style={{ color: "#4c9fd4" }}>{key}</code>
+                </div>
+              ))
+            ) : (
+              <div style={{ color: "#f44336" }}>Нет Tauri ключей</div>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      <div style={{ 
+        background: "#1a1a2e", 
+        padding: "20px", 
+        borderRadius: "8px",
+        marginBottom: "20px"
+      }}>
+        <h2 style={{ color: "#4c9fd4", marginBottom: "10px" }}>Тестирование</h2>
+        
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <button 
+            onClick={testMinimize}
+            disabled={!status.hasWindowApi}
+            style={{
+              padding: "10px 20px",
+              background: status.hasWindowApi ? "#2a2a4a" : "#3a3a3a",
+              border: `1px solid ${status.hasWindowApi ? "#3a3a6a" : "#5a5a5a"}`,
+              color: status.hasWindowApi ? "#c6d4df" : "#888",
+              borderRadius: "4px",
+              cursor: status.hasWindowApi ? "pointer" : "not-allowed"
+            }}
+          >
+            Тест: Свернуть окно
+          </button>
+          
+          <button 
+            onClick={() => testClose()}
+            disabled={!status.hasWindowApi}
+            style={{
+              padding: "10px 20px",
+              background: status.hasWindowApi ? "#e81123" : "#8a1a1a",
+              border: `1px solid ${status.hasWindowApi ? "#ff3344" : "#aa2a2a"}`,
+              color: "white",
+              borderRadius: "4px",
+              cursor: status.hasWindowApi ? "pointer" : "not-allowed"
+            }}
+          >
+            Тест: Закрыть окно
+          </button>
+          
+          <button 
+            onClick={() => testEmit("new-entry")}
+            disabled={!status.hasEventApi}
+            style={{
+              padding: "10px 20px",
+              background: status.hasEventApi ? "#2a4a2a" : "#3a5a3a",
+              border: `1px solid ${status.hasEventApi ? "#3a6a3a" : "#5a7a5a"}`,
+              color: status.hasEventApi ? "#c6d4df" : "#888",
+              borderRadius: "4px",
+              cursor: status.hasEventApi ? "pointer" : "not-allowed"
+            }}
+          >
+            Тест: Событие new-entry
+          </button>
+          
+          <button 
+            onClick={() => testEmit("open-settings")}
+            disabled={!status.hasEventApi}
+            style={{
+              padding: "10px 20px",
+              background: status.hasEventApi ? "#2a4a2a" : "#3a5a3a",
+              border: `1px solid ${status.hasEventApi ? "#3a6a3a" : "#5a7a5a"}`,
+              color: status.hasEventApi ? "#c6d4df" : "#888",
+              borderRadius: "4px",
+              cursor: status.hasEventApi ? "pointer" : "not-allowed"
+            }}
+          >
+            Тест: Событие open-settings
+          </button>
+        </div>
+      </div>
+      
+      <div style={{ 
+        background: "#1a1a2e", 
+        padding: "20px", 
+        borderRadius: "8px"
+      }}>
+        <h2 style={{ color: "#4c9fd4", marginBottom: "10px" }}>Инструкции</h2>
+        
+        <div style={{ marginBottom: "10px" }}>
+          <h3 style={{ color: "#c6d4df", fontSize: "14px" }}>Проверка в консоли браузера:</h3>
+          <ol style={{ marginLeft: "20px", marginTop: "5px" }}>
+            <li>Откройте консоль (F12)</li>
+            <li>Введите: <code>window.__TAURI_INTERNALS__</code></li>
+            <li>Если объект существует, проверьте его структуру</li>
+            <li>Попробуйте: <code>window.__TAURI_INTERNALS__?.window?.minimize()</code></li>
+          </ol>
+        </div>
+        
+        <div>
+          <h3 style={{ color: "#c6d4df", fontSize: "14px" }}>Горячие клавиши:</h3>
+          <ul style={{ marginLeft: "20px", marginTop: "5px" }}>
+            <li><strong>Ctrl+N</strong> - Новая запись</li>
+            <li><strong>Ctrl+,</strong> - Настройки</li>
+            <li><strong>Ctrl+Q</strong> - Выход (только в Tauri)</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+        <button 
+          onClick={() => navigate("/")}
+          style={{
+            padding: "10px 20px",
+            background: "#2a2a4a",
+            border: "1px solid #3a3a6a",
+            color: "#c6d4df",
+            borderRadius: "4px",
+            cursor: "pointer"
+          }}
+        >
+          Вернуться на главную
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StatusItem({ label, value, good }: { label: string, value: boolean, good: boolean }) {
+  return (
+    <div style={{ 
+      padding: "10px",
+      background: "#000000",
+      borderRadius: "4px",
+      borderLeft: `3px solid ${good ? "#4caf50" : "#f44336"}`
+    }}>
+      <div style={{ fontSize: "12px", opacity: 0.8 }}>{label}</div>
+      <div style={{ 
+        fontSize: "14px", 
+        fontWeight: "bold",
+        color: good ? "#4caf50" : "#f44336"
+      }}>
+        {value ? "✓ ДА" : "✗ НЕТ"}
+      </div>
+    </div>
+  );
+}
+
+export default TauriStatusPage;

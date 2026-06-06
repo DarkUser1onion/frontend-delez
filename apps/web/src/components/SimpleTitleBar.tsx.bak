@@ -1,0 +1,292 @@
+import React, { useState } from "react";
+import {
+  Minus,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
+  Home,
+  Maximize2,
+  Minimize2,
+  Settings,
+  Plus
+} from "lucide-react";
+import { invoke } from "@tauri-apps/api/core";
+
+interface SimpleTitleBarProps {
+  onNavigateBack?: () => void;
+  onNavigateForward?: () => void;
+  onRefresh?: () => void;
+  onHome?: () => void;
+  canGoBack?: boolean;
+  canGoForward?: boolean;
+  onNewEntry?: () => void;
+  onOpenSettings?: () => void;
+}
+
+export function SimpleTitleBar({
+  onNavigateBack,
+  onNavigateForward,
+  onRefresh,
+  onHome,
+  canGoBack = false,
+  canGoForward = false,
+  onNewEntry,
+  onOpenSettings
+}: SimpleTitleBarProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
+
+  // Минимизация через старое API (если нужно)
+  const handleMinimize = () => {
+    const win = window as any;
+    if (win.__TAURI_INTERNALS__?.window?.minimize) {
+      win.__TAURI_INTERNALS__.window.minimize().catch(console.error);
+    }
+  };
+
+  const handleToggleMaximize = () => {
+    const win = window as any;
+    if (win.__TAURI_INTERNALS__?.window?.toggleMaximize) {
+      win.__TAURI_INTERNALS__.window.toggleMaximize()
+        .then(() => {
+          if (win.__TAURI_INTERNALS__?.window?.isMaximized) {
+            return win.__TAURI_INTERNALS__.window.isMaximized();
+          }
+          return false;
+        })
+        .then((maximized: boolean) => {
+          setIsMaximized(maximized);
+        })
+        .catch(console.error);
+    } else {
+      setIsMaximized(!isMaximized);
+    }
+  };
+
+  // Закрытие: вызываем Rust-команду, которая скрывает окно и обновляет трей
+  const handleClose = async () => {
+    try {
+      await invoke("hide_window");
+    } catch (error) {
+      console.error("Ошибка скрытия окна:", error);
+      // Запасной вариант для браузера
+      if (window.location.href !== "about:blank") {
+        window.history.back();
+      }
+    }
+  };
+
+  const handleRefresh = () => {
+    setIsLoading(true);
+    if (onRefresh) onRefresh();
+    setTimeout(() => setIsLoading(false), 500);
+  };
+
+  const handleNewEntry = () => {
+    if (onNewEntry) onNewEntry();
+    const win = window as any;
+    if (win.__TAURI_INTERNALS__?.event?.emit) {
+      win.__TAURI_INTERNALS__.event.emit("new-entry", {}).catch(console.error);
+    }
+  };
+
+  const handleOpenSettings = () => {
+    if (onOpenSettings) onOpenSettings();
+    const win = window as any;
+    if (win.__TAURI_INTERNALS__?.event?.emit) {
+      win.__TAURI_INTERNALS__.event.emit("open-settings", {}).catch(console.error);
+    }
+  };
+
+  const isTauri = !!(window as any).__TAURI_INTERNALS__;
+
+  return (
+    <div
+      data-tauri-drag-region
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        height: "30px",
+        background: "linear-gradient(180deg, #171a21 0%, #1b2838 100%)",
+        borderBottom: "1px solid rgba(66, 78, 99, 0.5)",
+        paddingLeft: "8px",
+        paddingRight: "0",
+        userSelect: "none",
+        position: "relative",
+        zIndex: 9999,
+        WebkitAppRegion: "drag",
+        appRegion: "drag",
+        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.3)",
+        fontFamily: "'Motiva Sans', 'Segoe UI', sans-serif"
+      }}
+    >
+      {/* Левая часть: навигация */}
+      <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+        <TitleBarButton onClick={onNavigateBack} disabled={!canGoBack} title="Назад">
+          <ChevronLeft size={15} />
+        </TitleBarButton>
+        <TitleBarButton onClick={onNavigateForward} disabled={!canGoForward} title="Вперёд">
+          <ChevronRight size={15} />
+        </TitleBarButton>
+        <TitleBarButton onClick={handleRefresh} title="Обновить" active={isLoading}>
+          <RotateCcw size={13} style={{ animation: isLoading ? "spin 1s linear infinite" : "none" }} />
+        </TitleBarButton>
+        <TitleBarButton onClick={onHome} title="Главная">
+          <Home size={13} />
+        </TitleBarButton>
+
+        <div style={{ width: "1px", height: "16px", background: "rgba(255,255,255,0.1)", margin: "0 4px" }} />
+
+        <TitleBarButton onClick={handleNewEntry} title="Новая запись (Ctrl+N)">
+          <Plus size={13} />
+        </TitleBarButton>
+        <TitleBarButton onClick={handleOpenSettings} title="Настройки (Ctrl+,)">
+          <Settings size={13} />
+        </TitleBarButton>
+
+        <div style={{
+          marginLeft: "8px",
+          padding: "1px 4px",
+          background: isTauri ? "rgba(76, 175, 80, 0.2)" : "rgba(244, 67, 54, 0.2)",
+          border: `1px solid ${isTauri ? "#4caf50" : "#f44336"}`,
+          borderRadius: "3px",
+          fontSize: "9px",
+          color: isTauri ? "#4caf50" : "#f44336"
+        }}>
+          {isTauri ? "Tauri ✓" : "Browser"}
+        </div>
+      </div>
+
+      {/* Центр: заголовок */}
+      <div
+        data-tauri-drag-region
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          color: "#c6d4df",
+          fontSize: "12px",
+          fontWeight: 400,
+          letterSpacing: "0.3px",
+          pointerEvents: "none",
+          textShadow: "0 1px 2px rgba(0, 0, 0, 0.5)"
+        }}
+      >
+        <span style={{ color: "#66c0f4", fontWeight: 500, fontSize: "13px" }}>Delёz</span>
+        <span style={{ opacity: 0.5, fontSize: "10px" }}>•</span>
+        <span style={{ opacity: 0.9, fontSize: "11px" }}>AI-дневник саморефлексии</span>
+      </div>
+
+      {/* Правая часть: управление окном */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        height: "100%",
+        background: "rgba(0, 0, 0, 0.1)"
+      }}>
+        <TitleBarButton onClick={handleMinimize} title="Свернуть" isWindowControl>
+          <Minus size={12} />
+        </TitleBarButton>
+        <TitleBarButton onClick={handleToggleMaximize} title={isMaximized ? "Восстановить" : "Развернуть"} isWindowControl>
+          {isMaximized ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+        </TitleBarButton>
+        <TitleBarButton onClick={handleClose} title="Закрыть" isWindowControl isClose>
+          <X size={12} />
+        </TitleBarButton>
+      </div>
+    </div>
+  );
+}
+
+// Кнопка для TitleBar
+interface TitleBarButtonProps {
+  onClick?: () => void;
+  disabled?: boolean;
+  title: string;
+  children: React.ReactNode;
+  isWindowControl?: boolean;
+  isClose?: boolean;
+  active?: boolean;
+}
+
+function TitleBarButton({
+  onClick,
+  disabled = false,
+  title,
+  children,
+  isWindowControl = false,
+  isClose = false,
+  active = false
+}: TitleBarButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: isWindowControl ? "38px" : "28px",
+        height: "100%",
+        border: "none",
+        background: active ? "rgba(90, 120, 170, 0.3)" : "transparent",
+        color: isWindowControl ? "#c6d4df" : "#a3b8cc",
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.3 : 1,
+        transition: "all 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        outline: "none",
+        WebkitAppRegion: "no-drag",
+        appRegion: "no-drag",
+        fontSize: "12px",
+        position: "relative",
+        overflow: "hidden"
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled) {
+          const hoverBg = isClose ? "#e81123" : "rgba(90, 120, 170, 0.4)";
+          e.currentTarget.style.background = hoverBg;
+          e.currentTarget.style.color = "#fff";
+          if (!isWindowControl) {
+            e.currentTarget.style.boxShadow = "inset 0 0 20px rgba(90, 120, 170, 0.2)";
+          }
+        }
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = active ? "rgba(90, 120, 170, 0.3)" : "transparent";
+        e.currentTarget.style.color = isWindowControl ? "#c6d4df" : "#a3b8cc";
+        e.currentTarget.style.boxShadow = "none";
+      }}
+      onMouseDown={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.transform = "scale(0.95)";
+          e.currentTarget.style.transition = "transform 0.1s ease";
+        }
+      }}
+      onMouseUp={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+      }}
+    >
+      {children}
+      {active && (
+        <div style={{
+          position: "absolute",
+          bottom: "0",
+          left: "0",
+          right: "0",
+          height: "2px",
+          background: "linear-gradient(90deg, #66c0f4 0%, #4c9fd4 100%)",
+          borderRadius: "1px"
+        }} />
+      )}
+    </button>
+  );
+}
+
+export default SimpleTitleBar;

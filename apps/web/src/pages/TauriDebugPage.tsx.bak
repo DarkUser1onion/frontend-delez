@@ -1,0 +1,349 @@
+import React, { useState, useEffect } from "react";
+import { 
+  isTauri, 
+  getTauriWindow, 
+  getTauriEvent, 
+  getTauriApp,
+  minimizeWindow,
+  toggleMaximizeWindow,
+  closeWindow,
+  isWindowMaximized,
+  emitEvent,
+  listenEvent,
+  exitApp,
+  isTauriApiAvailable
+} from "@/utils/tauri";
+
+export function TauriDebugPage() {
+  const [logs, setLogs] = useState<string[]>([]);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [windowInfo, setWindowInfo] = useState<any>(null);
+
+  const addLog = (message: string) => {
+    setLogs(prev => [...prev, `${new Date().toISOString().split('T')[1].slice(0, -1)}: ${message}`]);
+  };
+
+  useEffect(() => {
+    addLog("Tauri Debug Page loaded");
+    addLog(`isTauri(): ${isTauri()}`);
+    addLog(`isTauriApiAvailable(): ${isTauriApiAvailable()}`);
+    addLog(`window.__TAURI_INTERNALS__: ${!!(window as any).__TAURI_INTERNALS__}`);
+    addLog(`window.__TAURI__: ${!!(window as any).__TAURI__}`);
+    addLog(`window.__TAURI_IPC__: ${!!(window as any).__TAURI_IPC__}`);
+
+    // Проверяем все ключи window
+    const tauriKeys = Object.keys(window).filter(k => 
+      k.includes('TAURI') || k.includes('tauri') || k.includes('Tauri')
+    );
+    addLog(`Tauri keys in window: ${tauriKeys.join(', ')}`);
+
+    // Если есть __TAURI_INTERNALS__, выводим его структуру
+    if ((window as any).__TAURI_INTERNALS__) {
+      const internals = (window as any).__TAURI_INTERNALS__;
+      addLog(`__TAURI_INTERNALS__ keys: ${Object.keys(internals).join(', ')}`);
+      
+      if (internals.window) {
+        addLog(`window API available: true`);
+        setWindowInfo({
+          minimize: typeof internals.window.minimize === 'function',
+          toggleMaximize: typeof internals.window.toggleMaximize === 'function',
+          close: typeof internals.window.close === 'function',
+          isMaximized: typeof internals.window.isMaximized === 'function'
+        });
+      }
+      
+      if (internals.event) {
+        addLog(`event API available: true`);
+        addLog(`event.emit: ${typeof internals.event.emit === 'function'}`);
+        addLog(`event.listen: ${typeof internals.event.listen === 'function'}`);
+      }
+    }
+
+    // Проверяем состояние окна
+    const checkWindowState = async () => {
+      if (isTauriApiAvailable()) {
+        try {
+          const maximized = await isWindowMaximized();
+          setIsMaximized(maximized);
+          addLog(`Window is maximized: ${maximized}`);
+        } catch (error) {
+          addLog(`Error checking window state: ${error}`);
+        }
+      }
+    };
+
+    checkWindowState();
+
+    // Подписываемся на события
+    const setupEventListeners = async () => {
+      if (isTauriApiAvailable()) {
+        try {
+          const unlisten = await listenEvent("test-event", (payload) => {
+            addLog(`Received test-event: ${JSON.stringify(payload)}`);
+          });
+          addLog("Subscribed to test-event");
+          
+          return unlisten;
+        } catch (error) {
+          addLog(`Error setting up event listener: ${error}`);
+        }
+      }
+      return () => {};
+    };
+
+    let cleanup: (() => void) | null = null;
+    setupEventListeners().then((cleanupFn) => {
+      cleanup = cleanupFn;
+    });
+
+    return () => {
+      if (cleanup) cleanup();
+    };
+  }, []);
+
+  const testMinimize = async () => {
+    addLog("Testing minimize...");
+    try {
+      await minimizeWindow();
+      addLog("Minimize command sent");
+    } catch (error) {
+      addLog(`Minimize error: ${error}`);
+    }
+  };
+
+  const testToggleMaximize = async () => {
+    addLog("Testing toggle maximize...");
+    try {
+      await toggleMaximizeWindow();
+      const maximized = await isWindowMaximized();
+      setIsMaximized(maximized);
+      addLog(`Window maximized: ${maximized}`);
+    } catch (error) {
+      addLog(`Toggle maximize error: ${error}`);
+    }
+  };
+
+  const testClose = async () => {
+    addLog("Testing close...");
+    try {
+      await closeWindow();
+      addLog("Close command sent");
+    } catch (error) {
+      addLog(`Close error: ${error}`);
+    }
+  };
+
+  const testEmitEvent = async () => {
+    addLog("Testing emit event...");
+    try {
+      await emitEvent("test-event", { timestamp: Date.now(), message: "Hello from debug page" });
+      addLog("Event emitted");
+    } catch (error) {
+      addLog(`Emit event error: ${error}`);
+    }
+  };
+
+  const testNewEntryEvent = async () => {
+    addLog("Testing new-entry event...");
+    try {
+      await emitEvent("new-entry", {});
+      addLog("new-entry event emitted");
+    } catch (error) {
+      addLog(`new-entry event error: ${error}`);
+    }
+  };
+
+  const testOpenSettingsEvent = async () => {
+    addLog("Testing open-settings event...");
+    try {
+      await emitEvent("open-settings", {});
+      addLog("open-settings event emitted");
+    } catch (error) {
+      addLog(`open-settings event error: ${error}`);
+    }
+  };
+
+  const testExitApp = async () => {
+    addLog("Testing exit app...");
+    try {
+      await exitApp();
+      addLog("Exit command sent");
+    } catch (error) {
+      addLog(`Exit error: ${error}`);
+    }
+  };
+
+  return (
+    <div style={{ 
+      padding: "20px", 
+      background: "#0a0a0f",
+      color: "#e0e0e0",
+      minHeight: "100vh",
+      fontFamily: "monospace"
+    }}>
+      <h1 style={{ color: "#66c0f4", marginBottom: "20px" }}>Tauri Debug Page</h1>
+      
+      <div style={{ 
+        background: "#1a1a2e", 
+        padding: "20px", 
+        borderRadius: "8px",
+        marginBottom: "20px"
+      }}>
+        <h2 style={{ color: "#4c9fd4", marginBottom: "10px" }}>Window Controls</h2>
+        <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
+          <button 
+            onClick={testMinimize}
+            style={{
+              padding: "10px 20px",
+              background: "#2a2a4a",
+              border: "1px solid #3a3a6a",
+              color: "#c6d4df",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            Minimize
+          </button>
+          <button 
+            onClick={testToggleMaximize}
+            style={{
+              padding: "10px 20px",
+              background: "#2a2a4a",
+              border: "1px solid #3a3a6a",
+              color: "#c6d4df",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            {isMaximized ? "Restore" : "Maximize"}
+          </button>
+          <button 
+            onClick={testClose}
+            style={{
+              padding: "10px 20px",
+              background: "#e81123",
+              border: "1px solid #ff3344",
+              color: "white",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            Close Window
+          </button>
+          <button 
+            onClick={testExitApp}
+            style={{
+              padding: "10px 20px",
+              background: "#8b0000",
+              border: "1px solid #a00000",
+              color: "white",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            Exit App
+          </button>
+        </div>
+
+        <h2 style={{ color: "#4c9fd4", marginBottom: "10px" }}>Event Testing</h2>
+        <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
+          <button 
+            onClick={testEmitEvent}
+            style={{
+              padding: "10px 20px",
+              background: "#2a4a2a",
+              border: "1px solid #3a6a3a",
+              color: "#c6d4df",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            Test Event
+          </button>
+          <button 
+            onClick={testNewEntryEvent}
+            style={{
+              padding: "10px 20px",
+              background: "#2a4a2a",
+              border: "1px solid #3a6a3a",
+              color: "#c6d4df",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            New Entry Event
+          </button>
+          <button 
+            onClick={testOpenSettingsEvent}
+            style={{
+              padding: "10px 20px",
+              background: "#2a4a2a",
+              border: "1px solid #3a6a3a",
+              color: "#c6d4df",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            Open Settings Event
+          </button>
+        </div>
+
+        <h2 style={{ color: "#4c9fd4", marginBottom: "10px" }}>Window Info</h2>
+        <pre style={{ 
+          background: "#000000", 
+          padding: "10px", 
+          borderRadius: "4px",
+          overflow: "auto"
+        }}>
+          {JSON.stringify(windowInfo, null, 2)}
+        </pre>
+      </div>
+
+      <div style={{ 
+        background: "#1a1a2e", 
+        padding: "20px", 
+        borderRadius: "8px"
+      }}>
+        <h2 style={{ color: "#4c9fd4", marginBottom: "10px" }}>Logs</h2>
+        <div style={{ 
+          background: "#000000", 
+          padding: "10px", 
+          borderRadius: "4px",
+          height: "300px",
+          overflow: "auto",
+          fontFamily: "monospace",
+          fontSize: "12px"
+        }}>
+          {logs.map((log, index) => (
+            <div key={index} style={{ marginBottom: "4px" }}>{log}</div>
+          ))}
+        </div>
+        <button 
+          onClick={() => setLogs([])}
+          style={{
+            marginTop: "10px",
+            padding: "5px 10px",
+            background: "#3a3a6a",
+            border: "1px solid #4a4a8a",
+            color: "#c6d4df",
+            borderRadius: "4px",
+            cursor: "pointer"
+          }}
+        >
+          Clear Logs
+        </button>
+      </div>
+
+      <div style={{ marginTop: "20px", color: "#888" }}>
+        <p>Hotkeys to test:</p>
+        <ul>
+          <li>Ctrl+N: New Entry</li>
+          <li>Ctrl+,: Open Settings</li>
+          <li>Ctrl+Q: Quit App</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+export default TauriDebugPage;

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tauri API Direct Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #66c0f4;
+        }
+        .test-area {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #3a3a6a;
+        }
+        button {
+            background: #2a2a4a;
+            border: 1px solid #3a3a6a;
+            color: #c6d4df;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-family: monospace;
+        }
+        button:hover {
+            background: #3a3a6a;
+        }
+        .close-btn {
+            background: #e81123;
+            border-color: #ff3344;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .error {
+            color: #f44336;
+        }
+        code {
+            background: #000;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #4c9fd4;
+        }
+        pre {
+            background: #000;
+            padding: 10px;
+            border-radius: 4px;
+            overflow: auto;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tauri API Direct Test</h1>
+        
+        <div class="test-area">
+            <h2>1. Проверка Tauri объектов</h2>
+            <button onclick="checkTauriObjects()">Проверить объекты</button>
+            <pre id="objects-result">Нажмите кнопку для проверки</pre>
+        </div>
+        
+        <div class="test-area">
+            <h2>2. Тестирование Window API</h2>
+            <button onclick="testMinimize()">Тест: Свернуть окно</button>
+            <button onclick="testClose()" class="close-btn">Тест: Закрыть окно</button>
+            <div id="window-test-result"></div>
+        </div>
+        
+        <div class="test-area">
+            <h2>3. Тестирование Event API</h2>
+            <button onclick="testEmit('new-entry')">Тест: Событие new-entry</button>
+            <button onclick="testEmit('open-settings')">Тест: Событие open-settings</button>
+            <div id="event-test-result"></div>
+        </div>
+        
+        <div class="test-area">
+            <h2>4. Инструкции для консоли</h2>
+            <p>Откройте консоль (F12) и выполните команды:</p>
+            <code>window.__TAURI_INTERNALS__</code><br>
+            <code>window.__TAURI_INTERNALS__?.window?.minimize()</code><br>
+            <code>window.__TAURI_INTERNALS__?.event?.emit('test', {})</code>
+        </div>
+    </div>
+
+    <script>
+        function logResult(elementId, message, type = '') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function checkTauriObjects() {
+            const result = document.getElementById('objects-result');
+            let output = '';
+            
+            const internals = window.__TAURI_INTERNALS__;
+            const tauri = window.__TAURI__;
+            const ipc = window.__TAURI_IPC__;
+            
+            output += `window.__TAURI_INTERNALS__: ${internals ? '✓ Найден' : '✗ Не найден'}\n`;
+            output += `window.__TAURI__: ${tauri ? '✓ Найден' : '✗ Не найден'}\n`;
+            output += `window.__TAURI_IPC__: ${ipc ? '✓ Найден' : '✗ Не найден'}\n\n`;
+            
+            if (internals) {
+                output += `Ключи __TAURI_INTERNALS__: ${Object.keys(internals).join(', ')}\n\n`;
+                
+                if (internals.window) {
+                    output += `Window методы: ${Object.keys(internals.window).join(', ')}\n`;
+                }
+                
+                if (internals.event) {
+                    output += `Event методы: ${Object.keys(internals.event).join(', ')}\n`;
+                }
+            }
+            
+            result.textContent = output;
+        }
+
+        async function testMinimize() {
+            try {
+                if (window.__TAURI_INTERNALS__?.window?.minimize) {
+                    await window.__TAURI_INTERNALS__.window.minimize();
+                    logResult('window-test-result', '✓ Окно свернуто!', 'success');
+                } else {
+                    logResult('window-test-result', '✗ Метод minimize не найден', 'error');
+                }
+            } catch (error) {
+                logResult('window-test-result', `✗ Ошибка: ${error}`, 'error');
+            }
+        }
+
+        async function testClose() {
+            try {
+                if (window.__TAURI_INTERNALS__?.window?.close) {
+                    await window.__TAURI_INTERNALS__.window.close();
+                    logResult('window-test-result', '✓ Команда закрытия отправлена!', 'success');
+                } else {
+                    logResult('window-test-result', '✗ Метод close не найден', 'error');
+                }
+            } catch (error) {
+                logResult('window-test-result', `✗ Ошибка: ${error}`, 'error');
+            }
+        }
+
+        async function testEmit(eventName) {
+            try {
+                if (window.__TAURI_INTERNALS__?.event?.emit) {
+                    await window.__TAURI_INTERNALS__.event.emit(eventName, { timestamp: Date.now() });
+                    logResult('event-test-result', `✓ Событие "${eventName}" отправлено!`, 'success');
+                } else {
+                    logResult('event-test-result', '✗ Метод emit не найден', 'error');
+                }
+            } catch (error) {
+                logResult('event-test-result', `✗ Ошибка: ${error}`, 'error');
+            }
+        }
+
+        // Автопроверка при загрузке
+        window.addEventListener('load', () => {
+            setTimeout(checkTauriObjects, 1000);
+        });
+    </script>
+</body>
+</html>
