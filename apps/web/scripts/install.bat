@@ -4,7 +4,7 @@ cd /d "%~dp0\.."
 
 set INSTALL_DIR=%ProgramFiles%\Delez
 set BINARY_SRC=src-tauri\target\debug\delez.exe
-set ICON_SRC=src-tauri\icons\128x128.png
+set ICON_SRC=src-tauri\icons\icon.ico
 set ICON_DIR=%ProgramData%\Microsoft\Windows\Start Menu\Programs\Delez
 set DESKTOP_DIR=%USERPROFILE%\Desktop
 set START_MENU_DIR=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Delez
@@ -54,7 +54,7 @@ copy /Y "%BINARY_SRC%" "%INSTALL_DIR%\src-tauri\target\debug\delez.exe" >nul
 
 echo Установка иконки...
 mkdir "%ICON_DIR%" 2>nul
-copy /Y "%ICON_SRC%" "%ICON_DIR%\delez.png" >nul
+copy /Y "%ICON_SRC%" "%ICON_DIR%\delez.ico" >nul
 
 cd /d "%INSTALL_DIR%"
 echo Установка зависимостей в %INSTALL_DIR%...
@@ -77,7 +77,7 @@ powershell -Command ^
     "$Shortcut.TargetPath = 'wscript.exe'; " ^
     "$Shortcut.Arguments = '\"%INSTALL_DIR%\launch.vbs\"'; " ^
     "$Shortcut.WorkingDirectory = '%INSTALL_DIR%'; " ^
-    "$Shortcut.IconLocation = '%ICON_DIR%\delez.png,0'; " ^
+    "$Shortcut.IconLocation = '%ICON_DIR%\delez.ico,0'; " ^
     "$Shortcut.Save()"
 
 mkdir "%START_MENU_DIR%" 2>nul
@@ -87,7 +87,7 @@ powershell -Command ^
     "$Shortcut.TargetPath = 'wscript.exe'; " ^
     "$Shortcut.Arguments = '\"%INSTALL_DIR%\launch.vbs\"'; " ^
     "$Shortcut.WorkingDirectory = '%INSTALL_DIR%'; " ^
-    "$Shortcut.IconLocation = '%ICON_DIR%\delez.png,0'; " ^
+    "$Shortcut.IconLocation = '%ICON_DIR%\delez.ico,0'; " ^
     "$Shortcut.Save()"
 
 echo.
