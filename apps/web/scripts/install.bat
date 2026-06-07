@@ -5,6 +5,7 @@ cd /d "%~dp0\.."
 set INSTALL_DIR=%ProgramFiles%\Delez
 set BINARY_SRC=src-tauri\target\debug\delez.exe
 set ICON_SRC=src-tauri\icons\128x128.png
+set ICON_DIR=%ProgramData%\Microsoft\Windows\Start Menu\Programs\Delez
 set DESKTOP_DIR=%USERPROFILE%\Desktop
 set START_MENU_DIR=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Delez
 
@@ -51,7 +52,9 @@ echo Копирование бинарника...
 mkdir "%INSTALL_DIR%\src-tauri\target\debug" 2>nul
 copy /Y "%BINARY_SRC%" "%INSTALL_DIR%\src-tauri\target\debug\delez.exe" >nul
 
-copy /Y "%ICON_SRC%" "%INSTALL_DIR%\delez.png" >nul
+echo Установка иконки...
+mkdir "%ICON_DIR%" 2>nul
+copy /Y "%ICON_SRC%" "%ICON_DIR%\delez.png" >nul
 
 cd /d "%INSTALL_DIR%"
 echo Установка зависимостей в %INSTALL_DIR%...
@@ -65,7 +68,7 @@ if %errorlevel% neq 0 (
 (
 echo Set WshShell = CreateObject^("WScript.Shell"^)
 echo WshShell.CurrentDirectory = "%INSTALL_DIR%"
-echo WshShell.Run "cmd /c set TAURI_DEV_URL=http://127.0.0.1:3000 && start "" /B npx vite --port 3000 --host 127.0.0.1 && start "" /B src-tauri\target\debug\delez.exe --open http://127.0.0.1:3000", 0, False
+echo WshShell.Run "cmd /c npm run tauri dev", 0, False
 ) > "%INSTALL_DIR%\launch.vbs"
 
 powershell -Command ^
@@ -74,7 +77,7 @@ powershell -Command ^
     "$Shortcut.TargetPath = 'wscript.exe'; " ^
     "$Shortcut.Arguments = '\"%INSTALL_DIR%\launch.vbs\"'; " ^
     "$Shortcut.WorkingDirectory = '%INSTALL_DIR%'; " ^
-    "$Shortcut.IconLocation = '%INSTALL_DIR%\delez.png'; " ^
+    "$Shortcut.IconLocation = '%ICON_DIR%\delez.png,0'; " ^
     "$Shortcut.Save()"
 
 mkdir "%START_MENU_DIR%" 2>nul
@@ -84,7 +87,7 @@ powershell -Command ^
     "$Shortcut.TargetPath = 'wscript.exe'; " ^
     "$Shortcut.Arguments = '\"%INSTALL_DIR%\launch.vbs\"'; " ^
     "$Shortcut.WorkingDirectory = '%INSTALL_DIR%'; " ^
-    "$Shortcut.IconLocation = '%INSTALL_DIR%\delez.png'; " ^
+    "$Shortcut.IconLocation = '%ICON_DIR%\delez.png,0'; " ^
     "$Shortcut.Save()"
 
 echo.
