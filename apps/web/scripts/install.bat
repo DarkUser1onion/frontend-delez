@@ -48,7 +48,10 @@ if %errorlevel% geq 8 (
 )
 
 echo Копирование бинарника...
+mkdir "%INSTALL_DIR%\src-tauri\target\debug" 2>nul
 copy /Y "%BINARY_SRC%" "%INSTALL_DIR%\src-tauri\target\debug\delez.exe" >nul
+
+copy /Y "%ICON_SRC%" "%INSTALL_DIR%\delez.png" >nul
 
 cd /d "%INSTALL_DIR%"
 echo Установка зависимостей в %INSTALL_DIR%...
@@ -59,23 +62,29 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+(
+echo Set WshShell = CreateObject^("WScript.Shell"^)
+echo WshShell.CurrentDirectory = "%INSTALL_DIR%"
+echo WshShell.Run "cmd /c set TAURI_DEV_URL=http://127.0.0.1:3000 && start "" /B npx vite --port 3000 --host 127.0.0.1 && start "" /B src-tauri\target\debug\delez.exe --open http://127.0.0.1:3000", 0, False
+) > "%INSTALL_DIR%\launch.vbs"
+
 powershell -Command ^
     "$WshShell = New-Object -ComObject WScript.Shell; " ^
     "$Shortcut = $WshShell.CreateShortcut('%DESKTOP_DIR%\Delёz.lnk'); " ^
-    "$Shortcut.TargetPath = 'cmd.exe'; " ^
-    "$Shortcut.Arguments = '/c cd /d \"%INSTALL_DIR%\" && set TAURI_DEV_URL=http://127.0.0.1:3000 && start \"\" /B npx vite --port 3000 --host 127.0.0.1 && timeout /t 4 /nobreak > nul && start \"\" \"%INSTALL_DIR%\src-tauri\target\debug\delez.exe\" --open http://127.0.0.1:3000'; " ^
+    "$Shortcut.TargetPath = 'wscript.exe'; " ^
+    "$Shortcut.Arguments = '\"%INSTALL_DIR%\launch.vbs\"'; " ^
     "$Shortcut.WorkingDirectory = '%INSTALL_DIR%'; " ^
-    "$Shortcut.IconLocation = '%INSTALL_DIR%\src-tauri\icons\128x128.png'; " ^
+    "$Shortcut.IconLocation = '%INSTALL_DIR%\delez.png'; " ^
     "$Shortcut.Save()"
 
 mkdir "%START_MENU_DIR%" 2>nul
 powershell -Command ^
     "$WshShell = New-Object -ComObject WScript.Shell; " ^
     "$Shortcut = $WshShell.CreateShortcut('%START_MENU_DIR%\Delёz.lnk'); " ^
-    "$Shortcut.TargetPath = 'cmd.exe'; " ^
-    "$Shortcut.Arguments = '/c cd /d \"%INSTALL_DIR%\" && set TAURI_DEV_URL=http://127.0.0.1:3000 && start \"\" /B npx vite --port 3000 --host 127.0.0.1 && timeout /t 4 /nobreak > nul && start \"\" \"%INSTALL_DIR%\src-tauri\target\debug\delez.exe\" --open http://127.0.0.1:3000'; " ^
+    "$Shortcut.TargetPath = 'wscript.exe'; " ^
+    "$Shortcut.Arguments = '\"%INSTALL_DIR%\launch.vbs\"'; " ^
     "$Shortcut.WorkingDirectory = '%INSTALL_DIR%'; " ^
-    "$Shortcut.IconLocation = '%INSTALL_DIR%\src-tauri\icons\128x128.png'; " ^
+    "$Shortcut.IconLocation = '%INSTALL_DIR%\delez.png'; " ^
     "$Shortcut.Save()"
 
 echo.
