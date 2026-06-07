@@ -1,62 +1,44 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+RELEASE_BINARY="$PROJECT_DIR/src-tauri/target/release/delez"
 INSTALL_DIR="/opt/delez"
-ICON_SRC="$SCRIPT_DIR/src-tauri/icons/128x128.png"
+ICON_SRC="$PROJECT_DIR/src-tauri/icons/128x128.png"
 DESKTOP_FILE="/usr/share/applications/delez.desktop"
+WHISPER_SRC="$PROJECT_DIR/src-tauri/DelezApp/usr/bin/whisper-cli"
 
-echo "=== Установка Delёz (ПОЛНОЕ КОПИРОВАНИЕ) ==="
+echo "=== Production-установка Delёz ==="
 
-# 1. Удаляем старую установку
-sudo rm -rf "$INSTALL_DIR" 2>/dev/null || true
-sudo rm -f "$DESKTOP_FILE" 2>/dev/null || true
-sudo rm -f /usr/share/icons/hicolor/128x128/apps/delez.png 2>/dev/null || true
-
-# 2. КОПИРУЕМ ВСЮ ПАПКУ ПРОЕКТА
-sudo mkdir -p "$INSTALL_DIR"
-echo "Копирование проекта..."
-sudo cp -a "$SCRIPT_DIR" "$INSTALL_DIR/web"
-echo "Проект скопирован в $INSTALL_DIR/web"
-
-# 3. Копируем debug-бинарник
-DEBUG_BINARY="$SCRIPT_DIR/src-tauri/target/debug/delez"
-if [ -f "$DEBUG_BINARY" ]; then
-    sudo cp "$DEBUG_BINARY" "$INSTALL_DIR/delez"
-    sudo chmod +x "$INSTALL_DIR/delez"
-    echo "Debug-бинарник скопирован"
-else
-    echo "Debug-бинарник не найден. Запустите 'npm run tauri dev' для его сборки."
-    exit 1
+if [ ! -f "$RELEASE_BINARY" ]; then
+    echo "Release-бинарник не найден, собираем..."
+    npm run tauri build -- --no-bundle
 fi
 
-# 4. Скрипт запуска
+sudo mkdir -p "$INSTALL_DIR"
+sudo cp "$RELEASE_BINARY" "$INSTALL_DIR/delez"
+sudo chmod +x "$INSTALL_DIR/delez"
+
+if [ -f "$WHISPER_SRC" ]; then
+    sudo cp "$WHISPER_SRC" "$INSTALL_DIR/whisper-cli"
+    sudo chmod +x "$INSTALL_DIR/whisper-cli"
+    echo "whisper-cli скопирован"
+fi
+
+if [ -f "$ICON_SRC" ]; then
+    sudo mkdir -p /usr/share/icons/hicolor/128x128/apps
+    sudo cp "$ICON_SRC" "/usr/share/icons/hicolor/128x128/apps/delez.png"
+fi
+
 sudo tee "$INSTALL_DIR/run-delez.sh" > /dev/null << 'EOF'
 #!/bin/bash
-cd /opt/delez/web
-
-echo "Запуск Vite..."
-npx vite --port 3000 --host 127.0.0.1 &
-VITE_PID=$!
-
-echo "Ожидание Vite..."
-until curl -s http://127.0.0.1:3000 > /dev/null 2>&1; do
-    sleep 0.5
-done
-
-echo "Запуск Delёz..."
-/opt/delez/delez
-
-kill $VITE_PID 2>/dev/null
-wait $VITE_PID 2>/dev/null
+export WHISPER_CLI_PATH=/opt/delez/whisper-cli
+export WHISPER_MODEL_PATH=$HOME/.cache/delez/whisper/ggml-small.bin
+exec /opt/delez/delez
 EOF
 sudo chmod +x "$INSTALL_DIR/run-delez.sh"
 
-# 5. Иконка и ярлык
-echo "Установка иконки и ярлыка..."
-sudo mkdir -p /usr/share/icons/hicolor/128x128/apps
-sudo cp "$ICON_SRC" /usr/share/icons/hicolor/128x128/apps/delez.png
-sudo tee "$DESKTOP_FILE" > /dev/null << DESKEOF
+sudo tee "$DESKTOP_FILE" > /dev/null << EOF
 [Desktop Entry]
 Type=Application
 Name=Delёz
@@ -65,20 +47,15 @@ Exec=$INSTALL_DIR/run-delez.sh
 Icon=delez
 Categories=Utility;
 Terminal=false
-DESKEOF
+EOF
 
-# 6. Модель whisper
 MODEL_DIR="$HOME/.cache/delez/whisper"
-MODEL_FILE="$MODEL_DIR/ggml-medium.bin"
+MODEL_FILE="$MODEL_DIR/ggml-small.bin"
 if [ ! -f "$MODEL_FILE" ]; then
     echo "Скачиваем модель whisper..."
     mkdir -p "$MODEL_DIR"
-    curl -# -L -o "$MODEL_FILE" "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium.bin"
-else
-    echo "Модель whisper уже в кэше"
+    curl -# -L -o "$MODEL_FILE" "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin"
 fi
 
 echo ""
-echo "Установка завершена!"
-echo "   Запустите Delёz из меню приложений или командой: $INSTALL_DIR/run-delez.sh"
-echo "   Для удаления: sudo rm -rf $INSTALL_DIR $DESKTOP_FILE /usr/share/icons/hicolor/128x128/apps/delez.png"
+echo "Production-установка завершена."

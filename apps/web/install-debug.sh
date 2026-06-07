@@ -2,54 +2,58 @@
 set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
-DEBUG_BINARY="$PROJECT_DIR/src-tauri/target/debug/delez"
 INSTALL_DIR="/opt/delez"
-ICON_SRC="$PROJECT_DIR/src-tauri/icons/128x128.png"
 DESKTOP_FILE="/usr/share/applications/delez.desktop"
+ICON_SRC="$PROJECT_DIR/src-tauri/icons/128x128.png"
 WHISPER_SRC="$PROJECT_DIR/src-tauri/DelezApp/usr/bin/whisper-cli"
 
-echo "=== Установка Delёz ==="
+echo "=== Автономная сборка и установка Delёz (Linux mode)==="
 
-# 1. Проверяем бинарник
-if [ ! -f "$DEBUG_BINARY" ]; then
-    echo "Debug-бинарник не найден. Сначала запустите 'npm run tauri dev' для его сборки."
-    exit 1
+if [ ! -d "node_modules" ]; then
+    echo "Установка зависимостей..."
+    npm install
 fi
 
-# 2. Копируем бинарник и whisper-cli
+if [ ! -f "src-tauri/target/debug/delez" ]; then
+    echo "Сборка debug-бинарника..."
+    npx tauri build --debug --no-bundle
+fi
+
+sudo rm -rf "$INSTALL_DIR"
 sudo mkdir -p "$INSTALL_DIR"
-sudo cp "$DEBUG_BINARY" "$INSTALL_DIR/delez"
-sudo chmod +x "$INSTALL_DIR/delez"
+echo "Копирование проекта в $INSTALL_DIR..."
+rsync -av --exclude='node_modules' --exclude='.git' --exclude='target' "$PROJECT_DIR/" "$INSTALL_DIR/"
+sudo chown -R "$USER:$USER" "$INSTALL_DIR"
+
+mkdir -p "$INSTALL_DIR/src-tauri/target/debug"
+cp "src-tauri/target/debug/delez" "$INSTALL_DIR/src-tauri/target/debug/delez"
+
+cd "$INSTALL_DIR"
+echo "Установка зависимостей в /opt/delez..."
+npm install
 
 if [ -f "$WHISPER_SRC" ]; then
-    sudo cp "$WHISPER_SRC" "$INSTALL_DIR/whisper-cli"
-    sudo chmod +x "$INSTALL_DIR/whisper-cli"
+    cp "$WHISPER_SRC" "$INSTALL_DIR/whisper-cli"
+    chmod +x "$INSTALL_DIR/whisper-cli"
     echo "whisper-cli скопирован"
-else
-    echo "whisper-cli не найден в проекте, голосовой ввод не будет работать"
 fi
 
-echo "Бинарник установлен в $INSTALL_DIR/delez"
-
-# 3. Иконка
 if [ -f "$ICON_SRC" ]; then
     sudo mkdir -p /usr/share/icons/hicolor/128x128/apps
     sudo cp "$ICON_SRC" "/usr/share/icons/hicolor/128x128/apps/delez.png"
     echo "Иконка установлена"
-else
-    echo "Иконка не найдена"
 fi
 
-# 4. Скрипт запуска (с экспортом WHISPER_CLI_PATH)
-sudo tee "$INSTALL_DIR/run-delez.sh" > /dev/null << RUNEOF
+sudo tee "$INSTALL_DIR/run-delez.sh" > /dev/null << 'EOF'
 #!/bin/bash
-cd "$PROJECT_DIR"
+cd /opt/delez
 
-export WHISPER_CLI_PATH="$INSTALL_DIR/whisper-cli"
+export WHISPER_CLI_PATH=/opt/delez/whisper-cli
+export WHISPER_MODEL_PATH="$HOME/.cache/delez/whisper/ggml-small.bin"
 
 echo "Запуск Vite..."
 npx vite --port 3000 --host 127.0.0.1 &
-VITE_PID=\$!
+VITE_PID=$!
 
 echo "Ожидание Vite..."
 until curl -s http://127.0.0.1:3000 > /dev/null 2>&1; do
@@ -57,14 +61,13 @@ until curl -s http://127.0.0.1:3000 > /dev/null 2>&1; do
 done
 
 echo "Запуск Delёz..."
-"$INSTALL_DIR/delez"
+/opt/delez/src-tauri/target/debug/delez
 
-kill \$VITE_PID 2>/dev/null
-wait \$VITE_PID 2>/dev/null
-RUNEOF
+kill $VITE_PID 2>/dev/null
+wait $VITE_PID 2>/dev/null
+EOF
 sudo chmod +x "$INSTALL_DIR/run-delez.sh"
 
-# 5. .desktop файл
 sudo tee "$DESKTOP_FILE" > /dev/null << EOF
 [Desktop Entry]
 Type=Application
@@ -76,7 +79,6 @@ Categories=Utility;
 Terminal=false
 EOF
 
-# 6. Модель whisper (если ещё не загружена) — оставляем small
 MODEL_DIR="$HOME/.cache/delez/whisper"
 MODEL_FILE="$MODEL_DIR/ggml-small.bin"
 if [ ! -f "$MODEL_FILE" ]; then
