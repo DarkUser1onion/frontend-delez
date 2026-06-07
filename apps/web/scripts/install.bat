@@ -28,8 +28,8 @@ if not exist "node_modules\" (
 )
 
 if not exist "%BINARY_SRC%" (
-    echo ERROR: Debug-бинарник не найден. Сначала запустите "run.bat" для его сборки.
-    exit /b 1
+    echo ERROR: Debug-бинарник не найден. Запуск компиляции проекта...
+    call npx tauri build --debug --no-bundle
 )
 
 echo Копирование проекта в %INSTALL_DIR%...
