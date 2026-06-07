@@ -6,6 +6,7 @@ INSTALL_DIR="/opt/delez"
 DESKTOP_FILE="/usr/share/applications/delez.desktop"
 ICON_SRC="$PROJECT_DIR/src-tauri/icons/128x128.png"
 WHISPER_SRC="$PROJECT_DIR/src-tauri/DelezApp/usr/bin/whisper-cli"
+DEBUG_BINARY="$PROJECT_DIR/src-tauri/target/debug/delez"
 
 echo "=== Автономная сборка и установка Delёz (Linux mode)==="
 
@@ -14,7 +15,7 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
-if [ ! -f "src-tauri/target/debug/delez" ]; then
+if [ ! -f "$DEBUG_BINARY" ]; then
     echo "Сборка debug-бинарника..."
     npx tauri build --debug --no-bundle
 fi
@@ -22,11 +23,11 @@ fi
 sudo rm -rf "$INSTALL_DIR"
 sudo mkdir -p "$INSTALL_DIR"
 echo "Копирование проекта в $INSTALL_DIR..."
-rsync -av --exclude='node_modules' --exclude='.git' --exclude='target' "$PROJECT_DIR/" "$INSTALL_DIR/"
+sudo rsync -av --exclude='node_modules' --exclude='.git' --exclude='target' "$PROJECT_DIR/" "$INSTALL_DIR/"
 sudo chown -R "$USER:$USER" "$INSTALL_DIR"
 
 mkdir -p "$INSTALL_DIR/src-tauri/target/debug"
-cp "src-tauri/target/debug/delez" "$INSTALL_DIR/src-tauri/target/debug/delez"
+cp "$DEBUG_BINARY" "$INSTALL_DIR/src-tauri/target/debug/delez"
 
 cd "$INSTALL_DIR"
 echo "Установка зависимостей в /opt/delez..."
@@ -50,6 +51,7 @@ cd /opt/delez
 
 export WHISPER_CLI_PATH=/opt/delez/whisper-cli
 export WHISPER_MODEL_PATH="$HOME/.cache/delez/whisper/ggml-small.bin"
+export TAURI_DEV_URL=http://localhost:3000
 
 echo "Запуск Vite..."
 npx vite --port 3000 --host 127.0.0.1 &
@@ -90,4 +92,4 @@ else
 fi
 
 echo ""
-echo "Установка завершена."
+echo "Установка завершена!"
