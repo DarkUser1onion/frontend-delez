@@ -31,9 +31,7 @@ export const clearAuthToken = (): void => {
   localStorage.removeItem("auth_token");
 };
 
-const API_BASE_URL = import.meta.env.PROD
-  ? (import.meta.env.VITE_API_URL ?? "https://api.delez-repo.ru")
-  : "";
+const API_BASE_URL = (import.meta.env.PROD && !(window as any).__TAURI__) ? (import.meta.env.VITE_API_URL ?? "https://api.delez-repo.ru") : "";
 const getApiCredentials = () => {
   const username = import.meta.env.VITE_API_USERNAME;
   const password = import.meta.env.VITE_API_PASSWORD;

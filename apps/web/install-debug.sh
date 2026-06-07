@@ -51,7 +51,6 @@ cd /opt/delez
 
 export WHISPER_CLI_PATH=/opt/delez/whisper-cli
 export WHISPER_MODEL_PATH="$HOME/.cache/delez/whisper/ggml-small.bin"
-export TAURI_DEV_URL=http://localhost:3000
 
 echo "Запуск Vite..."
 npx vite --port 3000 --host 127.0.0.1 &
@@ -63,7 +62,7 @@ until curl -s http://127.0.0.1:3000 > /dev/null 2>&1; do
 done
 
 echo "Запуск Delёz..."
-/opt/delez/src-tauri/target/debug/delez
+/opt/delez/src-tauri/target/debug/delez --open http://127.0.0.1:3000
 
 kill $VITE_PID 2>/dev/null
 wait $VITE_PID 2>/dev/null
