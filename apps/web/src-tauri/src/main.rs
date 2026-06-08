@@ -156,6 +156,7 @@ fn main() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_http::init())
         .manage(WindowHidden(Mutex::new(false)))
         .invoke_handler(tauri::generate_handler![hide_window, record_and_transcribe])
         .setup(|app| {

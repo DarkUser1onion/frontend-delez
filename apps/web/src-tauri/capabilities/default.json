@@ -28,6 +28,12 @@
     "shell:allow-open",
     "notification:default",
     "notification:allow-is-permission-granted",
-    "notification:allow-notify"
+    "notification:allow-notify",
+    "http:default",
+    "http:allow-fetch",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [{ "url": "https://api.delez-repo.ru/**" }]
+    }
   ]
 }

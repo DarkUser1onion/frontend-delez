@@ -1,6 +1,6 @@
 // API клиент для работы с backend
 import { logger } from "./logger";
-
+import { fetch } from '@tauri-apps/plugin-http';
 // Вспомогательная функция для декодирования JWT без внешних зависимостей
 const decodeJwt = (token: string) => {
   try {
@@ -31,10 +31,30 @@ export const clearAuthToken = (): void => {
   localStorage.removeItem("auth_token");
 };
 
-const API_BASE_URL = (import.meta.env.PROD && !(window as any).__TAURI__) ? (import.meta.env.VITE_API_URL ?? "https://api.delez-repo.ru") : "";
+const API_BASE_URL = (window as any).__TAURI__
+  ? (import.meta.env.VITE_API_URL ?? "https://api.delez-repo.ru")
+  : (import.meta.env.PROD ? (import.meta.env.VITE_API_URL ?? "https://api.delez-repo.ru") : "");
+/**
+ * Получение учётных данных для Basic Auth.
+ * Сначала проверяется localStorage, потом import.meta.env (для dev-режима).
+ */
 const getApiCredentials = () => {
-  const username = import.meta.env.VITE_API_USERNAME;
-  const password = import.meta.env.VITE_API_PASSWORD;
+  let username: string | null = null;
+  let password: string | null = null;
+
+  // 1. Пробуем прочитать из localStorage (можно задать через DevTools или скрипт установки)
+  try {
+    username = localStorage.getItem("VITE_API_USERNAME");
+    password = localStorage.getItem("VITE_API_PASSWORD");
+  } catch {
+    // localStorage недоступен
+  }
+
+  // 2. Если в localStorage нет – берём из import.meta.env (для dev-режима)
+  if (!username || !password) {
+    username = import.meta.env.VITE_API_USERNAME;
+    password = import.meta.env.VITE_API_PASSWORD;
+  }
 
   if (!username || !password) {
     return null;
@@ -85,7 +105,6 @@ const createAuthHeaders = (additionalHeaders: Record<string, string> = {}) => {
   }
 };
 
-// Универсальная функция для API запросов
 export const apiRequest = async (
   endpoint: string,
   options: RequestInit = {},
@@ -93,32 +112,12 @@ export const apiRequest = async (
   const url = `${API_BASE_URL}${endpoint}`;
   const headers = createAuthHeaders(options.headers as Record<string, string>);
 
-  if (!import.meta.env.PROD) {
-    let debugBody: unknown = "";
-    if (options.body) {
-      try {
-        debugBody = JSON.parse(options.body as string);
-      } catch {
-        debugBody = options.body;
-      }
-    }
-    console.log(
-      `[DEBUG] API Request: ${options.method || "GET"} ${url}`,
-      debugBody,
-    );
-  }
-
   const response = await fetch(url, {
     ...options,
     headers,
     credentials: "include",
   });
 
-  if (!import.meta.env.PROD) {
-    console.log(`[DEBUG] API Response: ${response.status} ${url}`);
-  }
-
-  // Если сервер вернул 401, удаляем устаревший токен
   if (response.status === 401 && getAuthToken()) {
     logger.debug("Received 401, clearing stale auth token");
     clearAuthToken();

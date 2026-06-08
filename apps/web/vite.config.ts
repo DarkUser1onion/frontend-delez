@@ -7,7 +7,6 @@ const frontendRoot = path.resolve(__dirname, "../..");
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, frontendRoot, "");
-  /** Локальный uvicorn: http://127.0.0.1:8000 — тогда /v1 идёт без префикса /api */
   const devApiTarget = env.VITE_DEV_API_PROXY_TARGET?.trim();
   const defaultRemote = "https://api.delez-repo.ru";
   const v1Target = devApiTarget || defaultRemote;
