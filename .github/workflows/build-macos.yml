@@ -24,7 +24,7 @@ jobs:
         run: npm install -g @tauri-apps/cli
 
       - name: Build frontend & bundle .app
-        working-directory: frontend/apps/web
+        working-directory: apps/web
         run: |
           npm ci
           npm run tauri build -- --bundles dmg
@@ -33,4 +33,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: delez-macos
-          path: frontend/apps/web/src-tauri/target/release/bundle/dmg/*.dmg
+          path: apps/web/src-tauri/target/release/bundle/dmg/*.dmg
