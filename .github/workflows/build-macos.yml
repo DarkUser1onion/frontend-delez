@@ -1,0 +1,36 @@
+name: Build macOS App
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Install Tauri CLI
+        run: npm install -g @tauri-apps/cli
+
+      - name: Build frontend & bundle .app
+        working-directory: frontend/apps/web
+        run: |
+          npm ci
+          npm run tauri build -- --bundles dmg
+
+      - name: Upload .app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: delez-macos
+          path: frontend/apps/web/src-tauri/target/release/bundle/dmg/*.dmg
