@@ -1,0 +1,4 @@
+Готовые установщики для всех платформ доступны в GitHub Releases:
+https://github.com/DarkUser1onion/frontend-delez/releases/tag/v0.1.0
+
+Также проект можно развернуть через Docker (см. DEPLOYMENT.md).

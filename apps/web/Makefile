@@ -1,4 +1,4 @@
-.PHONY: help setup run check format docker-build docker-up docker-down logs clean appimage install uninstall
+.PHONY: help setup run check format docker-build docker-up docker-down logs clean appimage install uninstall restart
 
 help: ## Show this help
 	@echo "Available commands:"
@@ -47,3 +47,7 @@ install: ## Install as desktop application (Linux)
 
 uninstall: ## Uninstall desktop application (Linux)
 	./uninstall-debug.sh
+
+restart:
+	@echo "Restarting Delez docker..."
+	docker compose restart
