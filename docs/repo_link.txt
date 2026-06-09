@@ -1,0 +1,5 @@
+https://github.com/DarkUser1onion/frontend-delez
+Ветка: main
+Web-версия: https://delez.tech
+API: https://api.delez-repo.ru
+Релиз: https://github.com/DarkUser1onion/frontend-delez/releases/tag/v0.1.0

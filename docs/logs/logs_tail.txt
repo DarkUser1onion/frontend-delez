@@ -1,0 +1,3 @@
+
+(delez:10126): Gdk-CRITICAL **: 23:48:40.086: gdk_window_thaw_toplevel_updates: assertion 'window->update_and_descendants_freeze_count > 0' failed
+VM 0x7fac4a419000 on pid 10168 received NeedDebuggerBreak trap
