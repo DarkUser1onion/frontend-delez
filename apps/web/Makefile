@@ -1,4 +1,4 @@
-.PHONY: help setup run check format docker-build docker-up docker-down logs clean appimage install uninstall restart
+.PHONY: help setup run check format docker-build docker-up docker-down logs clean appimage install uninstall restart test api-test logs-check performance quality-check
 
 help: ## Show this help
 	@echo "Available commands:"
@@ -51,3 +51,32 @@ uninstall: ## Uninstall desktop application (Linux)
 restart:
 	@echo "Restarting Delez docker..."
 	docker compose restart
+
+test: ## Run smoke tests (build check)
+	@echo "Running smoke tests..."
+	npm install
+	npm run build
+
+api-test: ## Test API endpoints with curl
+	@echo "Testing API endpoints..."
+	@echo "Health:"
+	@curl -s -o /dev/null -w "HTTP %{http_code}\n" https://api.delez-repo.ru/v1/health
+	@echo "Failed login:"
+	@curl -s -o /dev/null -w "HTTP %{http_code}\n" -X POST https://api.delez-repo.ru/auth/sign-in/email -H "Content-Type: application/json" -d '{"email":"none@example.com","password":"wrong"}'
+	@echo "Missing entry:"
+	@curl -s -o /dev/null -w "HTTP %{http_code}\n" https://api.delez-repo.ru/v1/entries/999999
+
+logs-check: ## Collect logs from Docker or Tauri
+	@echo "Collecting logs..."
+	@mkdir -p reports
+	@docker logs api --tail=100 > reports/logs_tail.txt 2>&1 || (echo "Docker not available, trying Tauri logs..." && (test -f ~/.config/delez/logs/*.log && cat ~/.config/delez/logs/*.log > reports/logs_tail.txt || echo "No logs found" > reports/logs_tail.txt))
+
+performance: ## Run Lighthouse performance test (web)
+	@echo "Running Lighthouse for web version..."
+	@mkdir -p reports
+	@npx lighthouse https://delez.tech --preset=desktop --output=html --output-path=reports/lighthouse_report.html
+
+quality-check: test api-test logs-check ## Run all quality checks
+	@echo "========================================"
+	@echo "Quality check completed successfully"
+	@echo "========================================"
