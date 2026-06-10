@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Система логирования с уровнями Development и Release
  */

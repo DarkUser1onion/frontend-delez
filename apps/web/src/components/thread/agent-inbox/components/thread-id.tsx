@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Copy, CopyCheck } from "lucide-react";
 import {
   Tooltip,

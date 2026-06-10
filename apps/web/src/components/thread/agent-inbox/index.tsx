@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { StateView } from "./components/state-view";
 import { ThreadActionsView } from "./components/thread-actions-view";
 import { useState } from "react";

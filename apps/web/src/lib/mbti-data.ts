@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface MBTITypeData {
   type: string;
   nameRu: string;

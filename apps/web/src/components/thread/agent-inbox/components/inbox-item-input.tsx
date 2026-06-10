@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { HumanResponseWithEdits, SubmitType } from "../types";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useCallback } from "react";

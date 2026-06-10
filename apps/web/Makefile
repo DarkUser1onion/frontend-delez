@@ -80,3 +80,9 @@ quality-check: test api-test logs-check ## Run all quality checks
 	@echo "========================================"
 	@echo "Quality check completed successfully"
 	@echo "========================================"
+
+release-check:
+	@echo "=== Release check ==="
+	@command -v curl >/dev/null 2>&1 || (echo "curl not found" && exit 1)
+	@curl -s -f https://api.delez-repo.ru/v1/health > /dev/null && echo "API health OK" || (echo "API health failed" && exit 1)
+	@echo "All checks passed"

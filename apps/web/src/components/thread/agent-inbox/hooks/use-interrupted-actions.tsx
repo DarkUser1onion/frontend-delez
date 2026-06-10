@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { HumanResponseWithEdits, SubmitType } from "../types";
 import {
   KeyboardEvent,

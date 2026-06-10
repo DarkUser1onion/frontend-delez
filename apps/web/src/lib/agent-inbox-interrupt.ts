@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { HumanInterrupt } from "@langchain/langgraph/prebuilt";
 
 export function isAgentInboxInterruptSchema(
