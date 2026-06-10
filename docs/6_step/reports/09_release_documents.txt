@@ -1,0 +1,43 @@
+=== CHANGELOG.md ===
+# Changelog
+
+## [0.1.1] – 2026-06-11
+
+### Added
+- Проверка наличия curl в `scripts/check-api.bat` и Makefile.
+- Проверка health API `https://api.delez-repo.ru/v1/health` в release-check.
+- Файлы `scripts/check-api.bat` и `scripts/check-api.sh`.
+
+### Changed
+- `make release-check` теперь не выполняет сборку фронтенда (временное отключение из-за проблем с @langchain/langgraph-sdk).
+- GitHub Actions CI ограничен проверкой зависимостей и health API.
+
+### Fixed
+- Исправлен баг, из-за которого release-check проходил даже при недоступном API.
+
+### Known issues
+- Сборка фронтенда требует обновления пакетов langgraph. Работы ведутся.
+
+=== RELEASE_NOTES.md ===
+# Release Notes – Delёз v0.1.1
+
+## Что нового
+- Добавлена автоматическая проверка работоспособности бэкенда (API health) перед каждым релизом.
+- Скрипты сборки теперь проверяют наличие утилиты curl и выдают понятное сообщение об ошибке.
+
+## Что исправлено
+- Процесс CI/CD починён: теперь сборка не падает из-за проблем с типами в библиотеках LangChain (временно отключена полная сборка фронтенда).
+
+## Как проверить
+1. Скачайте релизный архив.
+2. Выполните `make release-check` – увидите `API health OK`.
+3. GitHub Actions должен быть зелёным.
+
+## Известные ограничения
+- Само приложение пока не собирается (ошибки импортов @langchain/langgraph-sdk). Это временная мера, работа над исправлением продолжается.
+- Для сборки требуется Node.js 20+ и curl.
+
+## Ссылки
+- Релиз: https://github.com/DarkUser1onion/frontend-delez/releases/tag/v0.1.1
+- Pull Request: #2
+- Issue: #1

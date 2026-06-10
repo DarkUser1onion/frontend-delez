@@ -1,0 +1,119 @@
+  @langchain/langgraph-sdk/react (imported by /home/user/Documents/Trash/frontend-delez/apps/web/src/providers/Stream.tsx)
+  @langchain/langgraph-sdk/react-ui (imported by /home/user/Documents/Trash/frontend-delez/apps/web/src/components/thread/messages/ai.tsx)
+
+Are they installed?
+    at file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:14849:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:47039:28
+1:18:04 AM [vite] (client) Pre-transform error: Failed to resolve import "@langchain/langgraph-sdk/react" from "src/providers/Stream.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/user/Documents/Trash/frontend-delez/apps/web/src/providers/Stream.tsx:9:26
+  23 |    useMemo
+  24 |  } from "react";
+  25 |  import { useStream } from "@langchain/langgraph-sdk/react";
+     |                             ^
+  26 |  import {
+  27 |    uiMessageReducer
+1:18:04 AM [vite] (client) Pre-transform error: Failed to resolve import "@langchain/langgraph-sdk/react" from "src/providers/Stream.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/user/Documents/Trash/frontend-delez/apps/web/src/providers/Stream.tsx:9:26
+  23 |    useMemo
+  24 |  } from "react";
+  25 |  import { useStream } from "@langchain/langgraph-sdk/react";
+     |                             ^
+  26 |  import {
+  27 |    uiMessageReducer (x2)
+1:18:04 AM [vite] (client) Pre-transform error: Failed to resolve import "@langchain/langgraph-sdk/react-ui" from "src/components/thread/messages/ai.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/user/Documents/Trash/frontend-delez/apps/web/src/components/thread/messages/ai.tsx:7:38
+  21 |  import { BranchSwitcher, CommandBar } from "./shared";
+  22 |  import { MarkdownText } from "../markdown-text";
+  23 |  import { LoadExternalComponent } from "@langchain/langgraph-sdk/react-ui";
+     |                                         ^
+  24 |  import { ToolCalls, ToolResult } from "./tool-calls";
+  25 |  import { Fragment as Fragment2 } from "react/jsx-runtime";
+1:18:05 AM [vite] (client) Pre-transform error: Failed to resolve import "@langchain/langgraph-sdk/react" from "src/providers/Stream.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/user/Documents/Trash/frontend-delez/apps/web/src/providers/Stream.tsx:9:26
+  23 |    useMemo
+  24 |  } from "react";
+  25 |  import { useStream } from "@langchain/langgraph-sdk/react";
+     |                             ^
+  26 |  import {
+  27 |    uiMessageReducer
+1:18:05 AM [vite] (client) Pre-transform error: Failed to resolve import "@langchain/langgraph-sdk/react" from "src/providers/Stream.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/user/Documents/Trash/frontend-delez/apps/web/src/providers/Stream.tsx:9:26
+  23 |    useMemo
+  24 |  } from "react";
+  25 |  import { useStream } from "@langchain/langgraph-sdk/react";
+     |                             ^
+  26 |  import {
+  27 |    uiMessageReducer (x2)
+1:18:05 AM [vite] (client) Pre-transform error: Failed to resolve import "@langchain/langgraph-sdk/react" from "src/providers/Stream.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/user/Documents/Trash/frontend-delez/apps/web/src/providers/Stream.tsx:9:26
+  23 |    useMemo
+  24 |  } from "react";
+  25 |  import { useStream } from "@langchain/langgraph-sdk/react";
+     |                             ^
+  26 |  import {
+  27 |    uiMessageReducer (x3)
+1:18:05 AM [vite] (client) Pre-transform error: Failed to resolve import "@langchain/langgraph-sdk/react" from "src/providers/Stream.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/user/Documents/Trash/frontend-delez/apps/web/src/providers/Stream.tsx:9:26
+  23 |    useMemo
+  24 |  } from "react";
+  25 |  import { useStream } from "@langchain/langgraph-sdk/react";
+     |                             ^
+  26 |  import {
+  27 |    uiMessageReducer (x4)
+1:18:05 AM [vite] Internal server error: Failed to resolve import "@langchain/langgraph-sdk/react" from "src/providers/Stream.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/user/Documents/Trash/frontend-delez/apps/web/src/providers/Stream.tsx:9:26
+  23 |    useMemo
+  24 |  } from "react";
+  25 |  import { useStream } from "@langchain/langgraph-sdk/react";
+     |                             ^
+  26 |  import {
+  27 |    uiMessageReducer
+      at TransformPluginContext._formatLog (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42553:41)
+      at TransformPluginContext.error (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42550:16)
+      at normalizeUrl (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:40529:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:40648:37
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:40575:7)
+      at async EnvironmentPluginContainer.transform (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+      at async loadAndTransform (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+      at async viteTransformMiddleware (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:37264:24)
+1:18:07 AM [vite] Internal server error: Failed to resolve import "@langchain/langgraph-sdk/react-ui" from "src/components/thread/messages/ai.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/user/Documents/Trash/frontend-delez/apps/web/src/components/thread/messages/ai.tsx:7:38
+  21 |  import { BranchSwitcher, CommandBar } from "./shared";
+  22 |  import { MarkdownText } from "../markdown-text";
+  23 |  import { LoadExternalComponent } from "@langchain/langgraph-sdk/react-ui";
+     |                                         ^
+  24 |  import { ToolCalls, ToolResult } from "./tool-calls";
+  25 |  import { Fragment as Fragment2 } from "react/jsx-runtime";
+      at TransformPluginContext._formatLog (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42553:41)
+      at TransformPluginContext.error (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42550:16)
+      at normalizeUrl (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:40529:23)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:40648:37
+      at async Promise.all (index 8)
+      at async TransformPluginContext.transform (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:40575:7)
+      at async EnvironmentPluginContainer.transform (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:42348:18)
+      at async loadAndTransform (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:35740:27)
+      at async viteTransformMiddleware (file:///home/user/Documents/Trash/frontend-delez/apps/web/node_modules/vite/dist/node/chunks/dep-Dq2t6Dq0.js:37264:24)
+1:18:07 AM [vite] (client) Pre-transform error: Failed to resolve import "@langchain/langgraph-sdk/react" from "src/providers/Stream.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/user/Documents/Trash/frontend-delez/apps/web/src/providers/Stream.tsx:9:26
+  23 |    useMemo
+  24 |  } from "react";
+  25 |  import { useStream } from "@langchain/langgraph-sdk/react";
+     |                             ^
+  26 |  import {
+  27 |    uiMessageReducer
+1:18:08 AM [vite] (client) ✨ new dependencies optimized: @tauri-apps/plugin-notification, @radix-ui/react-slot, class-variance-authority, nuqs, @radix-ui/react-dropdown-menu, uuid, clsx, tailwind-merge, @tauri-apps/api/window, @tauri-apps/api/event, @radix-ui/react-label, docx, @langchain/core/output_parsers, @radix-ui/react-tooltip, react-markdown, remark-gfm, rehype-katex, remark-math, @radix-ui/react-dialog, react-syntax-highlighter, react-syntax-highlighter/dist/esm/languages/prism/tsx, react-syntax-highlighter/dist/esm/languages/prism/python, react-syntax-highlighter/dist/cjs/styles/prism, @langchain/core/messages, date-fns, lodash, @langchain/langgraph/web, @radix-ui/react-separator
+1:18:08 AM [vite] (client) ✨ optimized dependencies changed. reloading

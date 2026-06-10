@@ -1,0 +1,5 @@
+=== Checking old check-api.bat ===
+grep: scripts/check-api.bat: No such file or directory
+No curl check found
+=== TypeScript errors count ===
+Found 39 errors due to missing langgraph-sdk exports

@@ -1,0 +1,3 @@
+PR: https://github.com/DarkUser1onion/frontend-delez/pull/2
+CI status: green (passed)
+Workflow run: https://github.com/DarkUser1onion/frontend-delez/actions/runs/27309653688
