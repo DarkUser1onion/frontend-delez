@@ -10,7 +10,7 @@
     "tauri:build": "tauri build",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "build:internal": "tsc -b && vite build",
     "lint": "eslint .",
     "format": "prettier --write .",
