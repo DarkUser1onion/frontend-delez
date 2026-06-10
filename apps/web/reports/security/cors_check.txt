@@ -1,0 +1,1 @@
+No Access-Control headers returned by the API. CORS is handled by Tauri plugin.

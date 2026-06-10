@@ -1,0 +1,9 @@
+Запуск Vite...
+Ожидание Vite...
+
+  VITE v6.4.3  ready in 345 ms
+
+  ➜  Local:   http://127.0.0.1:3000/
+Запуск Delёz...
+
+(delez:66144): Gdk-CRITICAL **: 02:59:35.540: gdk_window_thaw_toplevel_updates: assertion 'window->update_and_descendants_freeze_count > 0' failed
