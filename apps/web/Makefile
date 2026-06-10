@@ -1,4 +1,4 @@
-.PHONY: help setup run check format docker-build docker-up docker-down logs clean appimage install uninstall restart test api-test logs-check performance quality-check
+.PHONY: help setup run check format docker-build docker-up docker-down logs clean appimage install uninstall restart test api-test logs-check performance quality-check check-api release-check
 
 help: ## Show this help
 	@echo "Available commands:"
@@ -80,3 +80,13 @@ quality-check: test api-test logs-check ## Run all quality checks
 	@echo "========================================"
 	@echo "Quality check completed successfully"
 	@echo "========================================"
+
+check-api:
+	@command -v curl >/dev/null 2>&1 || (echo "curl not found" && exit 1)
+	@curl -s -f https://api.delez-repo.ru/v1/health > /dev/null || (echo "API health check failed" && exit 1)
+	@echo "API health OK"
+
+release-check: check-api
+	@echo "Running build check..."
+	npm run build --if-present
+	@echo "All release checks passed"

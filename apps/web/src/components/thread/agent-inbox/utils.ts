@@ -2,7 +2,7 @@ import { BaseMessage, isBaseMessage } from "@langchain/core/messages";
 import { format } from "date-fns";
 import { startCase } from "lodash";
 import { HumanResponseWithEdits, SubmitType } from "./types";
-import { HumanInterrupt } from "@langchain/langgraph/prebuilt";
+// import { HumanInterrupt } from "@langchain/langgraph/prebuilt";
 
 export function prettifyText(action: string) {
   return startCase(action.replaceAll("_", " "));
