@@ -1,6 +1,5 @@
 // API клиент для работы с backend
 import { logger } from "./logger";
-import { fetch } from '@tauri-apps/plugin-http';
 // Вспомогательная функция для декодирования JWT без внешних зависимостей
 const decodeJwt = (token: string) => {
   try {

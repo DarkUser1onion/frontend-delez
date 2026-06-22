@@ -1,0 +1,66 @@
+image: node:20-alpine
+
+stages:
+  - prepare
+  - test
+  - deploy
+
+prepare:
+  stage: prepare
+  only:
+    - main
+    - develop
+    - merge_requests
+  script:
+    - npm ci
+    - node create-coverage.js
+  artifacts:
+    paths:
+      - coverage/lcov.info
+    expire_in: 1 hour
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}"
+    paths:
+      - node_modules/
+    policy: pull-push
+
+sonarqube-check:
+  stage: test
+  needs: [prepare]
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+    pull_policy: if-not-present
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  before_script:
+    - git config --global --add safe.directory /builds/root/frontend
+  script:
+    - sonar-scanner
+  allow_failure: true
+  only:
+    - main
+    - develop
+    - merge_requests
+
+deploy_frontend:
+  stage: deploy
+  only:
+    - main
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > ~/.ssh/config
+  script:
+    - npm ci
+    - npm run build
+    - rsync -avz --delete apps/web/dist/ root@$SSH_HOST:/var/www/delez.tech/
+    - ssh root@$SSH_HOST "chown -R root:root /var/www/delez.tech && chmod -R 755 /var/www/delez.tech"
+  cache:
+    key: "${CI_COMMIT_REF_SLUG}"
+    paths:
+      - node_modules/
+    policy: pull

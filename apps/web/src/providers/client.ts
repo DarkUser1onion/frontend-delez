@@ -4,5 +4,6 @@ export function createClient(apiUrl: string, apiKey: string | undefined) {
   return new Client({
     apiKey,
     apiUrl,
+    fetch,
   });
 }
