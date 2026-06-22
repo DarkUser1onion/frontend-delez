@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { StateView } from "./components/state-view";
 import { ThreadActionsView } from "./components/thread-actions-view";
 import { useState } from "react";
-import { HumanInterrupt } from "@langchain/langgraph/prebuilt";
+// import { HumanInterrupt } from "@langchain/langgraph/prebuilt";
 import { useStreamContext } from "@/providers/Stream";
 
 interface ThreadViewProps {

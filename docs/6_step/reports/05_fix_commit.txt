@@ -1,0 +1,12 @@
+edefa22 fix files
+commit edefa223060d56bee1d8ea851a7f7ecb01d7cd01
+Author: DarkUser1onion <matvejselivanov4@yandex.ru>
+Date:   Thu Jun 11 01:04:44 2026 +0300
+
+    fix files
+
+ apps/web/Makefile                                      |  10 ++++++----
+ apps/web/package.json                                  |   2 +-
+ .../06_tests_passed_locally.png"                       | Bin 0 -> 129300 bytes
+ .../07_github_actions_success.png"                     | Bin 0 -> 119087 bytes
+ 4 files changed, 7 insertions(+), 5 deletions(-)

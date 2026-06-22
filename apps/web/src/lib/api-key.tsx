@@ -1,4 +1,3 @@
-// @ts-nocheck
 export function getApiKey(): string | null {
   try {
     if (globalThis.window !== undefined) {

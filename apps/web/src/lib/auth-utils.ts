@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const validateEmail = (email: string) => {
   // Более строгая валидация email
   const emailRegex =

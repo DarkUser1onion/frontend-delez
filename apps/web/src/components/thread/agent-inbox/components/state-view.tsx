@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ChevronRight, X, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import {

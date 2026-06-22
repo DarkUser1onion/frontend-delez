@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createAuthClient } from "better-auth/react";
 
 // В dev режиме запросы идут через Vite proxy (см. vite.config.ts)

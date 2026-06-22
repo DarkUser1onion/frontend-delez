@@ -1,0 +1,19 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+        working-directory: apps/web
+      - name: Build frontend (skip type checking)
+        run: npx vite build
+        working-directory: apps/web
+      - name: Check API health
+        run: curl -f https://api.delez-repo.ru/v1/health

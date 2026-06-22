@@ -1,4 +1,3 @@
-// @ts-nocheck
 // API клиент для работы с backend
 import { logger } from "./logger";
 import { fetch } from '@tauri-apps/plugin-http';

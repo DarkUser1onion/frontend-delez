@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { apiRequest, authApi, graphApi, entriesApi } from "./api-client";
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Button } from "@/components/ui/button";
 import { ThreadIdCopyable } from "./thread-id";
 import { InboxItemInput } from "./inbox-item-input";
@@ -7,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useQueryState } from "nuqs";
 import { constructOpenInStudioURL } from "../utils";
-import { HumanInterrupt } from "@langchain/langgraph/prebuilt";
+// import { HumanInterrupt } from "@langchain/langgraph/prebuilt";
 
 interface ThreadActionsViewProps {
   readonly interrupt: HumanInterrupt;

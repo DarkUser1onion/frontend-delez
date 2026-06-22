@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { renderHook, act } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import useInterruptedActions from "./use-interrupted-actions";

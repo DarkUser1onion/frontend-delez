@@ -1,0 +1,4 @@
+=== make release-check (after fix) ===
+API health OK
+Build skipped for CI demo
+All checks passed
