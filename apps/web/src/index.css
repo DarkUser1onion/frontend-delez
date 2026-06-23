@@ -303,3 +303,9 @@ html {
     overflow: hidden;
   }
 }
+
+html, body, #root {
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100vh !important;
+}

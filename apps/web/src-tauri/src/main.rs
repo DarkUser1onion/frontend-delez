@@ -6,7 +6,7 @@ use tauri::{
     menu::{Menu, MenuItem},
     tray::{TrayIconBuilder, TrayIconEvent, TrayIcon},
     AppHandle, Emitter, Manager, WindowEvent,
-    path::BaseDirectory, // <--- ИСПРАВЛЕНО
+    path::BaseDirectory,
 };
 
 struct WindowHidden(Mutex<bool>);
@@ -33,7 +33,6 @@ async fn record_and_transcribe(app: tauri::AppHandle) -> Result<String, String> 
     use std::process::Command;
     use tempfile::NamedTempFile;
 
-    // Запись звука
     let audio_file = NamedTempFile::new().map_err(|e| format!("tempfile: {}", e))?;
     let audio_path = audio_file.path().to_str().unwrap().to_string();
     drop(audio_file);
@@ -58,11 +57,8 @@ async fn record_and_transcribe(app: tauri::AppHandle) -> Result<String, String> 
         let exe = std::env::current_exe().unwrap_or_else(|_| std::path::PathBuf::from("."));
         let exe_dir = exe.parent().unwrap_or(&std::path::Path::new("."));
 
-        // Список возможных путей
         let candidates = [
-            // Путь, найденный в AppImage
             exe_dir.join("../../opt/delez/src-tauri/bin/whisper-cli-x86_64-unknown-linux-gnu"),
-            // Стандартные пути
             exe_dir.join("../opt/delez/src-tauri/bin/whisper-cli-x86_64-unknown-linux-gnu"),
             exe_dir.join("whisper-cli"),
             exe_dir.join("../Resources/whisper-cli"),
@@ -78,11 +74,9 @@ async fn record_and_transcribe(app: tauri::AppHandle) -> Result<String, String> 
             }
         }
 
-        // Если не нашли – пробуем просто "whisper-cli" (надеемся на PATH)
         found.unwrap_or_else(|| "whisper-cli".to_string())
     };
 
-    // Проверим, что бинарник исполняемый (Linux)
     #[cfg(unix)]
     {
         if let Ok(path) = std::path::Path::new(&whisper_bin).canonicalize() {
