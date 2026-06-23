@@ -6,6 +6,7 @@ use tauri::{
     menu::{Menu, MenuItem},
     tray::{TrayIconBuilder, TrayIconEvent, TrayIcon},
     AppHandle, Emitter, Manager, WindowEvent,
+    path::BaseDirectory, // <--- ИСПРАВЛЕНО
 };
 
 struct WindowHidden(Mutex<bool>);
@@ -28,10 +29,11 @@ fn hide_window(app: AppHandle) {
 }
 
 #[command]
-async fn record_and_transcribe(_app: tauri::AppHandle) -> Result<String, String> {
+async fn record_and_transcribe(app: tauri::AppHandle) -> Result<String, String> {
     use std::process::Command;
     use tempfile::NamedTempFile;
 
+    // Запись звука
     let audio_file = NamedTempFile::new().map_err(|e| format!("tempfile: {}", e))?;
     let audio_path = audio_file.path().to_str().unwrap().to_string();
     drop(audio_file);
@@ -51,16 +53,43 @@ async fn record_and_transcribe(_app: tauri::AppHandle) -> Result<String, String>
         return Err(format!("arecord error: {}", String::from_utf8_lossy(&arecord.stderr)));
     }
 
-    let whisper_bin = std::env::var("WHISPER_CLI_PATH")
-        .unwrap_or_else(|_| {
-            let manifest_dir = std::env::var("CARGO_MANIFEST_DIR")
-                .unwrap_or_else(|_| ".".to_string());
-            std::path::PathBuf::from(manifest_dir)
-                .join("DelezApp/usr/bin/whisper-cli")
-                .to_str()
-                .unwrap_or("whisper-cli")
-                .to_string()
-        });
+    // Поиск whisper-cli
+    let whisper_bin = {
+        let exe = std::env::current_exe().unwrap_or_else(|_| std::path::PathBuf::from("."));
+        let exe_dir = exe.parent().unwrap_or(&std::path::Path::new("."));
+
+        // Список возможных путей
+        let candidates = [
+            // Путь, найденный в AppImage
+            exe_dir.join("../../opt/delez/src-tauri/bin/whisper-cli-x86_64-unknown-linux-gnu"),
+            // Стандартные пути
+            exe_dir.join("../opt/delez/src-tauri/bin/whisper-cli-x86_64-unknown-linux-gnu"),
+            exe_dir.join("whisper-cli"),
+            exe_dir.join("../Resources/whisper-cli"),
+            exe_dir.join("../../usr/bin/whisper-cli"),
+            std::path::PathBuf::from("/usr/bin/whisper-cli"),
+        ];
+
+        let mut found = None;
+        for cand in &candidates {
+            if cand.exists() {
+                found = Some(cand.to_str().unwrap_or("whisper-cli").to_string());
+                break;
+            }
+        }
+
+        // Если не нашли – пробуем просто "whisper-cli" (надеемся на PATH)
+        found.unwrap_or_else(|| "whisper-cli".to_string())
+    };
+
+    // Проверим, что бинарник исполняемый (Linux)
+    #[cfg(unix)]
+    {
+        if let Ok(path) = std::path::Path::new(&whisper_bin).canonicalize() {
+            use std::os::unix::fs::PermissionsExt;
+            let _ = std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o755));
+        }
+    }
 
     let model_path = std::env::var("WHISPER_MODEL_PATH")
         .unwrap_or_else(|_| {
@@ -179,17 +208,17 @@ fn main() {
             app.manage(tray);
             Ok(())
         })
-		.on_window_event(|window, event| {
-		    if let WindowEvent::CloseRequested { api, .. } = event {
-		        let app = window.app_handle();
-		        let _ = window.hide();
-		        api.prevent_close();
-		        app.state::<WindowHidden>().set_hidden(true);
-		        if let Some(tray) = app.try_state::<TrayIcon>() {
-		            update_tray_menu(&app, &tray);
-		        }
-		    }
-		})
+        .on_window_event(|window, event| {
+            if let WindowEvent::CloseRequested { api, .. } = event {
+                let app = window.app_handle();
+                let _ = window.hide();
+                api.prevent_close();
+                app.state::<WindowHidden>().set_hidden(true);
+                if let Some(tray) = app.try_state::<TrayIcon>() {
+                    update_tray_menu(&app, &tray);
+                }
+            }
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
