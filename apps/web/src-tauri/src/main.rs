@@ -11,8 +11,12 @@ use tauri::{
 struct WindowHidden(Mutex<bool>);
 
 impl WindowHidden {
-    fn set_hidden(&self, hidden: bool) { *self.0.lock().unwrap() = hidden; }
-    fn is_hidden(&self) -> bool { *self.0.lock().unwrap() }
+    fn set_hidden(&self, hidden: bool) {
+        *self.0.lock().unwrap() = hidden;
+    }
+    fn is_hidden(&self) -> bool {
+        *self.0.lock().unwrap()
+    }
 }
 
 #[command]
@@ -27,8 +31,9 @@ fn hide_window(app: AppHandle) {
     }
 }
 
-#[command]
-async fn record_and_transcribe(_app: tauri::AppHandle) -> Result<String, String> {
+// ==================== РАСПОЗНАВАНИЕ ГОЛОСА (ТОЛЬКО LINUX) ====================
+#[cfg(target_os = "linux")]
+async fn record_and_transcribe_impl(_app: tauri::AppHandle) -> Result<String, String> {
     use std::process::Command;
     use tempfile::NamedTempFile;
 
@@ -37,21 +42,28 @@ async fn record_and_transcribe(_app: tauri::AppHandle) -> Result<String, String>
     drop(audio_file);
 
     let arecord = Command::new("arecord")
-        .arg("-D").arg("default")
-        .arg("-f").arg("S16_LE")
-        .arg("-r").arg("44100")
-        .arg("-c").arg("2")
-        .arg("-d").arg("5")
+        .arg("-D")
+        .arg("default")
+        .arg("-f")
+        .arg("S16_LE")
+        .arg("-r")
+        .arg("44100")
+        .arg("-c")
+        .arg("2")
+        .arg("-d")
+        .arg("5")
         .arg("-q")
         .arg(&audio_path)
         .output()
         .map_err(|e| format!("arecord: {}", e))?;
 
     if !arecord.status.success() {
-        return Err(format!("arecord error: {}", String::from_utf8_lossy(&arecord.stderr)));
+        return Err(format!(
+            "arecord error: {}",
+            String::from_utf8_lossy(&arecord.stderr)
+        ));
     }
 
-    // Поиск whisper-cli
     let whisper_bin = {
         let exe = std::env::current_exe().unwrap_or_else(|_| std::path::PathBuf::from("."));
         let exe_dir = exe.parent().unwrap_or(&std::path::Path::new("."));
@@ -72,7 +84,6 @@ async fn record_and_transcribe(_app: tauri::AppHandle) -> Result<String, String>
                 break;
             }
         }
-
         found.unwrap_or_else(|| "whisper-cli".to_string())
     };
 
@@ -84,22 +95,27 @@ async fn record_and_transcribe(_app: tauri::AppHandle) -> Result<String, String>
         }
     }
 
-    let model_path = std::env::var("WHISPER_MODEL_PATH")
-        .unwrap_or_else(|_| {
-            let home = std::env::var("HOME").unwrap_or_else(|_| "/home/user".to_string());
-            format!("{}/.cache/delez/whisper/ggml-small.bin", home)
-        });
+    let model_path = std::env::var("WHISPER_MODEL_PATH").unwrap_or_else(|_| {
+        let home = std::env::var("HOME").unwrap_or_else(|_| "/home/user".to_string());
+        format!("{}/.cache/delez/whisper/ggml-small.bin", home)
+    });
 
     let output = Command::new(&whisper_bin)
-        .arg("-m").arg(&model_path)
-        .arg("-f").arg(&audio_path)
-        .arg("-l").arg("ru")
+        .arg("-m")
+        .arg(&model_path)
+        .arg("-f")
+        .arg(&audio_path)
+        .arg("-l")
+        .arg("ru")
         .arg("--no-prints")
         .output()
         .map_err(|e| format!("whisper: {}", e))?;
 
     if !output.status.success() {
-        return Err(format!("whisper error: {}", String::from_utf8_lossy(&output.stderr)));
+        return Err(format!(
+            "whisper error: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ));
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -123,8 +139,22 @@ async fn record_and_transcribe(_app: tauri::AppHandle) -> Result<String, String>
     Ok(text)
 }
 
+#[cfg(not(target_os = "linux"))]
+async fn record_and_transcribe_impl(_app: tauri::AppHandle) -> Result<String, String> {
+    Err("Голосовой ввод доступен только на Linux".to_string())
+}
+
+#[command]
+async fn record_and_transcribe(app: tauri::AppHandle) -> Result<String, String> {
+    record_and_transcribe_impl(app).await
+}
+// ==================== КОНЕЦ РАСПОЗНАВАНИЯ ГОЛОСА ====================
+
 fn update_tray_menu(app: &AppHandle, tray: &TrayIcon) {
-    let hidden = app.try_state::<WindowHidden>().map(|s| s.is_hidden()).unwrap_or(false);
+    let hidden = app
+        .try_state::<WindowHidden>()
+        .map(|s| s.is_hidden())
+        .unwrap_or(false);
     let toggle_text = if hidden { "Открыть" } else { "Свернуть в трей" };
     let toggle = MenuItem::with_id(app, "toggle", toggle_text, true, None::<&str>).unwrap();
     let new_entry = MenuItem::with_id(app, "new_entry", "Новая запись", true, None::<&str>).unwrap();
@@ -140,16 +170,19 @@ fn handle_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent, tray: &Tray
                 let hidden_state = app.state::<WindowHidden>();
                 let was_hidden = hidden_state.is_hidden();
                 if was_hidden {
-                    let _ = window.show(); let _ = window.set_focus();
+                    let _ = window.show();
+                    let _ = window.set_focus();
                     hidden_state.set_hidden(false);
                 } else {
-                    let _ = window.hide(); hidden_state.set_hidden(true);
+                    let _ = window.hide();
+                    hidden_state.set_hidden(true);
                 }
                 update_tray_menu(app, tray);
             }
             "new_entry" => {
                 app.state::<WindowHidden>().set_hidden(false);
-                let _ = window.show(); let _ = window.set_focus();
+                let _ = window.show();
+                let _ = window.set_focus();
                 let _ = window.emit("new-entry", ());
                 update_tray_menu(app, tray);
             }
@@ -167,7 +200,8 @@ fn handle_tray_event(app: &AppHandle, event: TrayIconEvent, tray: &TrayIcon) {
     } = event {
         if let Some(window) = app.get_webview_window("main") {
             app.state::<WindowHidden>().set_hidden(false);
-            let _ = window.show(); let _ = window.set_focus();
+            let _ = window.show();
+            let _ = window.set_focus();
             update_tray_menu(app, tray);
         }
     }
@@ -191,11 +225,15 @@ fn main() {
                 .show_menu_on_left_click(false)
                 .icon(app.default_window_icon().unwrap().clone())
                 .on_menu_event(move |app, event| {
-                    if let Some(tray) = app.try_state::<TrayIcon>() { handle_menu_event(app, event, &tray); }
+                    if let Some(tray) = app.try_state::<TrayIcon>() {
+                        handle_menu_event(app, event, &tray);
+                    }
                 })
                 .on_tray_icon_event(move |tray_event, event| {
                     let app = tray_event.app_handle();
-                    if let Some(tray) = app.try_state::<TrayIcon>() { handle_tray_event(app, event, &tray); }
+                    if let Some(tray) = app.try_state::<TrayIcon>() {
+                        handle_tray_event(app, event, &tray);
+                    }
                 })
                 .build(app)?;
             app.manage(tray);

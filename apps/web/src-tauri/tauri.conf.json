@@ -41,8 +41,8 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "externalBin": [
-      "bin/whisper-cli"
+    "resources": [
+      "DelezApp/usr/bin/whisper-cli"
     ]
   },
   "plugins": {}
