@@ -6,7 +6,6 @@ use tauri::{
     menu::{Menu, MenuItem},
     tray::{TrayIconBuilder, TrayIconEvent, TrayIcon},
     AppHandle, Emitter, Manager, WindowEvent,
-    path::BaseDirectory,
 };
 
 struct WindowHidden(Mutex<bool>);
@@ -29,7 +28,7 @@ fn hide_window(app: AppHandle) {
 }
 
 #[command]
-async fn record_and_transcribe(app: tauri::AppHandle) -> Result<String, String> {
+async fn record_and_transcribe(_app: tauri::AppHandle) -> Result<String, String> {
     use std::process::Command;
     use tempfile::NamedTempFile;
 
