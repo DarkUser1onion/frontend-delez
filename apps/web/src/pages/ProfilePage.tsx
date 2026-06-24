@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { authApi, importApi, type ProfileData } from "../lib/api-client";
 import { MBTI_DATA } from "../lib/mbti-data";
-import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { toast } from "sonner";
 
 type GenderValue = "male" | "female" | "other" | "";
@@ -62,17 +61,10 @@ export default function ProfilePage() {
     useState<boolean>(true);
   const [importResult, setImportResult] = useState<string | null>(null);
 
-  // Голосовой ввод для поля "О себе"
-  const bioTextareaRef = useRef<HTMLTextAreaElement>(null);
-  const {
-    isListening: isBioListening,
-    transcript: bioTranscript,
-    isSupported: isSpeechSupported,
-    startListening,
-    stopListening,
-    resetTranscript,
-  } = useSpeechRecognition();
+  // ----------------- УДАЛЁН ГОЛОСОВОЙ ВВОД -----------------
+  // Раньше здесь были useSpeechRecognition и связанные переменные.
 
+  // Загрузка персонажа ИИ из localStorage
   useEffect(() => {
     try {
       const raw = localStorage.getItem(AI_PERSONA_STORAGE_KEY);
@@ -89,29 +81,24 @@ export default function ProfilePage() {
     }
   }, []);
 
+  // Загрузка профиля
   useEffect(() => {
-    if (bioTranscript) {
-      setProfile((prev) => {
-        const separator = prev.bio?.trim() ? " " : "";
-        return { ...prev, bio: (prev.bio ?? "") + separator + bioTranscript };
-      });
-      resetTranscript();
-    }
-  }, [bioTranscript, resetTranscript]);
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await authApi.getProfile();
+        setProfile(data);
+      } catch (err: any) {
+        setError(err?.message || "Не удалось загрузить профиль");
+      } finally {
+        setLoading(false);
+      }
+    };
+    void load();
+  }, []);
 
-  const handleBioVoiceInput = useCallback(() => {
-    if (!isSpeechSupported) {
-      toast.error("Голосовой ввод не поддерживается в вашем браузере");
-      return;
-    }
-    if (isBioListening) {
-      stopListening();
-    } else {
-      setTimeout(() => bioTextareaRef.current?.focus(), 0);
-      startListening();
-    }
-  }, [isSpeechSupported, isBioListening, stopListening, startListening]);
-
+  // Чтение MBTI из localStorage
   const readMbtiResultFromStorage = useMemo(
     () => () => {
       try {
@@ -132,23 +119,6 @@ export default function ProfilePage() {
     },
     [],
   );
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await authApi.getProfile();
-        setProfile(data);
-      } catch (err: any) {
-        setError(err?.message || "Не удалось загрузить профиль");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void load();
-  }, []);
 
   useEffect(() => {
     readMbtiResultFromStorage();
@@ -312,6 +282,7 @@ export default function ProfilePage() {
       setImportSaving(false);
     }
   };
+
   const handleSaveAssistantPersona = () => {
     const persona = assistantPersona.trim();
     const role = assistantRole.trim();
@@ -327,6 +298,7 @@ export default function ProfilePage() {
     setError(null);
     setSuccess("Персона ИИ сохранена и применяется в чате");
   };
+
   // Status content based on current section
   const statusContent = (() => {
     if (section === "profile") {
@@ -377,6 +349,7 @@ export default function ProfilePage() {
       />
     );
   })();
+
   return (
     <div className="h-screen overflow-hidden bg-[#000019] text-white">
       <div className="relative mx-auto h-full max-w-6xl px-6 py-6">
@@ -640,54 +613,17 @@ export default function ProfilePage() {
                         <span className="mb-2 block text-sm text-slate-300">
                           О себе
                         </span>
-                        <div className="relative">
-                          <textarea
-                            ref={bioTextareaRef}
-                            rows={5}
-                            value={profile.bio ?? ""}
-                            onChange={(e) =>
-                              setProfile((prev) => ({
-                                ...prev,
-                                bio: e.target.value,
-                              }))
-                            }
-                            className="delez-scrollbar h-[calc(100%-1.75rem)] min-h-28 w-full resize-none rounded-xl border border-white/15 bg-[#070b22]/90 px-4 py-3 pr-10 text-sm outline-none transition focus:border-white/35"
-                          />
-                          <motion.button
-                            type="button"
-                            onClick={handleBioVoiceInput}
-                            title={
-                              isBioListening
-                                ? "Остановить запись"
-                                : "Голосовой ввод"
-                            }
-                            animate={{ scale: isBioListening ? 1.2 : 1 }}
-                            transition={{
-                              duration: 0.3,
-                              ease: [0.4, 0, 0.2, 1],
-                            }}
-                            className="absolute bottom-3 right-3 cursor-pointer border-none bg-transparent p-0 outline-none"
-                          >
-                            <img
-                              src="/image 3.png"
-                              alt="Voice Input"
-                              className={`h-5 w-auto transition-opacity duration-300 ${isBioListening ? "opacity-100" : "opacity-50 hover:opacity-100"}`}
-                            />
-                            <motion.div
-                              animate={{
-                                opacity: isBioListening ? 1 : 0,
-                                scale: isBioListening ? 1 : 0,
-                              }}
-                              transition={{ duration: 0.3 }}
-                              className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-white"
-                            />
-                          </motion.button>
-                          {isBioListening && (
-                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 rounded-lg bg-white px-4 py-2 text-xs font-medium text-[#000019] shadow-lg pointer-events-none">
-                              Говорите...
-                            </div>
-                          )}
-                        </div>
+                        <textarea
+                          rows={5}
+                          value={profile.bio ?? ""}
+                          onChange={(e) =>
+                            setProfile((prev) => ({
+                              ...prev,
+                              bio: e.target.value,
+                            }))
+                          }
+                          className="delez-scrollbar h-[calc(100%-1.75rem)] min-h-28 w-full resize-none rounded-xl border border-white/15 bg-[#070b22]/90 px-4 py-3 pr-10 text-sm outline-none transition focus:border-white/35"
+                        />
                       </label>
                     </div>
                   ) : section === "security" ? (

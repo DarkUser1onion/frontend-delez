@@ -24,3 +24,7 @@ codegen-units = 1
 lto = true
 opt-level = "s"
 strip = true
+
+[lib]
+crate-type = ["cdylib"]
+name = "delez"

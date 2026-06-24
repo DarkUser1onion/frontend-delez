@@ -145,7 +145,6 @@ html {
     background-color: #000019;
     overscroll-behavior: none;
     font-family: "Shantell Sans", "Segoe UI", sans-serif;
-    /* Убираем отступы браузера, чтобы не было скроллбаров по краям */
   }
 
   #root,
@@ -186,7 +185,6 @@ html {
     box-shadow: inset 9px 0 6px -1px rgb(0 0 0 / 0.02);
   }
 
-  /* Custom scrollbar for textarea */
   textarea::-webkit-scrollbar {
     width: 4px;
   }
@@ -204,7 +202,6 @@ html {
     background: rgba(255, 255, 255, 0.4);
   }
 
-  /* Custom thin scrollbar for blocks */
   .experiment-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
@@ -228,10 +225,6 @@ html {
     background-color: rgba(255, 255, 255, 0.3);
   }
 
-  /**
-   * Узкий скроллбар в холодно-сером тоне под #000019 / border-white/20.
-   * WebKit: без стрелок; Firefox: thin + цвет ползунка.
-   */
   .delez-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(152, 162, 188, 0.55) rgba(255, 255, 255, 0.06);
@@ -269,7 +262,6 @@ html {
   }
 }
 
-/* TitleBar styles for Tauri Desktop App */
 .titlebar {
   -webkit-app-region: drag;
   app-region: drag;
@@ -280,7 +272,6 @@ html {
   app-region: no-drag;
 }
 
-/* Spin animation for refresh button */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -294,14 +285,8 @@ html {
   animation: spin 1s linear infinite;
 }
 
-/* Desktop app adjustments */
-@media (display-mode: standalone) {
-  html,
-  body,
-  #root {
-    height: 100%;
-    overflow: hidden;
-  }
+html {
+  font-size: 12px;
 }
 
 html, body, #root {

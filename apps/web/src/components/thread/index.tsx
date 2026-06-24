@@ -19,7 +19,6 @@ import { useQueryState, parseAsBoolean } from "nuqs";
 import ThreadHistory from "./history";
 import { toast } from "sonner";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import ParticlesBackground from "@/components/ParticlesBackground";
 import { useHints } from "@/hooks/useHints";
 import { ChatHints } from "./chat-hints";
@@ -97,87 +96,15 @@ function ScrollToBottom({
   );
 }
 
-function VoiceInputIndicator({
-  isListening,
-}: Readonly<{ isListening: boolean }>) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.8 }}
-      animate={{
-        opacity: isListening ? 1 : 0,
-        y: isListening ? 0 : 10,
-        scale: isListening ? 1 : 0.8,
-      }}
-      transition={{
-        duration: 0.4,
-        ease: [0.4, 0, 0.2, 1],
-      }}
-      className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-white text-[#000019] px-6 py-3 rounded-lg text-sm font-medium z-20 shadow-lg pointer-events-none"
-    >
-      Говорите...
-    </motion.div>
-  );
-}
-
-function VoiceInputButton({
-  isListening,
-  onVoiceInput,
-}: Readonly<{
-  isListening: boolean;
-  onVoiceInput: () => void;
-}>) {
-  return (
-    <motion.button
-      type="button"
-      onClick={onVoiceInput}
-      className="cursor-pointer outline-none focus:outline-none active:opacity-100 bg-transparent hover:bg-transparent focus:bg-transparent border-none flex-shrink-0 relative"
-      title={isListening ? "Остановить запись" : "Начать голосовой ввод"}
-      animate={{
-        scale: isListening ? 1.25 : 1,
-      }}
-      transition={{
-        duration: 0.4,
-        ease: [0.4, 0, 0.2, 1],
-      }}
-    >
-      <img
-        src="/image 3.png"
-        alt="Voice Input"
-        className={cn(
-          "h-4 sm:h-5 w-auto transition-opacity duration-300 ease-in-out",
-          !isListening && "opacity-70 hover:opacity-100",
-        )}
-      />
-      <motion.div
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{
-          opacity: isListening ? 1 : 0,
-          scale: isListening ? 1 : 0,
-        }}
-        transition={{
-          duration: 0.3,
-          ease: [0.4, 0, 0.2, 1],
-          delay: isListening ? 0.1 : 0,
-        }}
-        className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-white rounded-full"
-      />
-    </motion.button>
-  );
-}
-
 function ChatInput({
   input,
   setInput,
   onSubmit,
-  isListening,
-  onVoiceInput,
   chatStarted,
 }: Readonly<{
   input: string;
   setInput: (value: string) => void;
   onSubmit: () => void;
-  isListening: boolean;
-  onVoiceInput: () => void;
   chatStarted?: boolean;
 }>) {
   const isDesktop = useMediaQuery("(min-width: 640px)");
@@ -225,7 +152,6 @@ function ChatInput({
 
   return (
     <div className="flex justify-center w-full max-w-3xl mx-auto pb-2 px-4">
-      <VoiceInputIndicator isListening={isListening} />
       <div className="flex-1 bg-[#000019] rounded-[20px] border border-white/20 shadow-xs relative z-10 px-3 sm:px-4 py-2 flex flex-col gap-0">
         <div
           className={`flex gap-2 ${input.length > 60 || input.includes("\n") ? "flex-col" : "flex-row items-center"}`}
@@ -250,10 +176,6 @@ function ChatInput({
           <div
             className={`flex items-center gap-2 flex-shrink-0  ${input.length > 60 || input.includes("\n") ? "justify-end" : ""}`}
           >
-            <VoiceInputButton
-              isListening={isListening}
-              onVoiceInput={onVoiceInput}
-            />
             <button
               type="button"
               onClick={onSubmit}
@@ -509,14 +431,8 @@ export function Thread() {
     null,
   );
 
-  const {
-    isListening,
-    transcript,
-    isSupported: isSpeechSupported,
-    startListening,
-    stopListening,
-    resetTranscript,
-  } = useSpeechRecognition();
+  // ====== УДАЛЕНО ВСЁ, СВЯЗАННОЕ С МИКРОФОНОМ ======
+  // (раньше здесь был useSpeechRecognition)
 
   const stream = useStreamContext();
   const messages = stream.messages;
@@ -526,33 +442,9 @@ export function Thread() {
   const lastError = useRef<string | undefined>(undefined);
   const prevMessageLength = useRef(0);
 
-  useEffect(() => {
-    if (transcript) {
-      setInput((prev) => {
-        const separator = prev.trim() ? " " : "";
-        return prev + separator + transcript;
-      });
-      resetTranscript();
-    }
-  }, [transcript, resetTranscript]);
+  // ====== УДАЛЁН useEffect, который обрабатывал transcript ======
 
-  const handleVoiceInput = useCallback(() => {
-    console.log(
-      "[Voice] Button clicked. Supported:",
-      isSpeechSupported,
-      "Listening:",
-      isListening,
-    );
-    if (!isSpeechSupported) {
-      toast.error("Голосовой ввод не поддерживается в вашем браузере");
-      return;
-    }
-    if (isListening) {
-      stopListening();
-    } else {
-      startListening();
-    }
-  }, [isSpeechSupported, isListening, stopListening, startListening]);
+  // ====== УДАЛЁН handleVoiceInput ======
 
   useEffect(() => {
     if (!stream.error) {
@@ -725,7 +617,7 @@ export function Thread() {
         boxSizing: "border-box",
       }}
     >
-      <div className="flex w-full h-full overflow-hidden">
+      <div className="flex w-full h-full">
         <div className="relative lg:flex hidden bg-[#000019]">
           <motion.div
             className="absolute h-full overflow-hidden z-40 bg-[#000019]"
@@ -749,7 +641,7 @@ export function Thread() {
 
         <motion.div
           className={cn(
-            "flex-1 flex flex-col min-w-0 overflow-hidden relative bg-[#000019]",
+            "flex-1 flex flex-col min-w-0 relative bg-[#000019]",
             !chatStarted && "grid-rows-[1fr]",
           )}
           layout={isLargeScreen}
@@ -830,8 +722,6 @@ export function Thread() {
                         input={input}
                         setInput={setInput}
                         onSubmit={handleSubmit}
-                        isListening={isListening}
-                        onVoiceInput={handleVoiceInput}
                         chatStarted={false}
                       />
                     </div>
@@ -867,8 +757,6 @@ export function Thread() {
                     input={input}
                     setInput={setInput}
                     onSubmit={handleSubmit}
-                    isListening={isListening}
-                    onVoiceInput={handleVoiceInput}
                     chatStarted={true}
                   />
                 </div>

@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
     devApiTarget ? p : p.replace(/^\/auth/, "/api/auth");
 
   return {
+    base: './',
     plugins: [react(), tailwindcss() as any],
     envDir: frontendRoot,
     resolve: {
