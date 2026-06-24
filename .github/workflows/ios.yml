@@ -41,7 +41,7 @@ jobs:
           rm -rf src-tauri/gen/apple
           npx tauri ios init
 
-      - name: Build for iOS simulator
+      - name: Build for iOS
         working-directory: apps/web
         run: |
           npx tauri ios build --target aarch64-sim
@@ -49,5 +49,5 @@ jobs:
       - name: Upload iOS artifact (.app)
         uses: actions/upload-artifact@v4
         with:
-          name: delez-ios-simulator
+          name: delez-ios-test
           path: apps/web/src-tauri/gen/apple/build/arm64-sim/**/*.app
