@@ -2,7 +2,7 @@ name: Build iOS (simulator)
 
 on:
   push:
-    branches: [ main, android-build, release/** ]
+    branches: [ main, android-build, feature/mobile-build, release/** ]
   workflow_dispatch:
 
 jobs:
