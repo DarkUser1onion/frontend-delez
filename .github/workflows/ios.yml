@@ -21,7 +21,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          target: aarch64-apple-ios
+          target: aarch64-apple-ios-sim
 
       - name: Install Tauri CLI
         run: npm install -g @tauri-apps/cli
@@ -40,9 +40,9 @@ jobs:
           rm -rf src-tauri/gen/apple
           tauri ios init
 
-      - name: Build for iOS simulator
+      - name: Build for iOS simulator (aarch64)
         working-directory: apps/web
-        run: tauri ios build --target aarch64-apple-ios-sim
+        run: tauri ios build --target aarch64-sim
 
       - name: Upload iOS artifact (.app)
         uses: actions/upload-artifact@v4
